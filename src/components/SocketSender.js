@@ -1,10 +1,19 @@
 import React from 'react';
-import { Button, Stack, Typography, Box, LinearProgress } from '@mui/material';
+import {
+  Button,
+  Stack,
+  Typography,
+  Box,
+  LinearProgress,
+  Collapse,
+  Divider,
+} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Card from '@mui/material/Card';
+import SocketCard from './SocketCard';
 // import StepContent from '@mui/material/StepContent';
 
 const SOCKET_URI =
@@ -21,6 +30,7 @@ class SocketSender extends React.Component {
       ws: null,
       data: null,
       showTextbox: true,
+      outcomes: [],
     };
     this.openListener = this.openListener.bind(this);
     this.messageListener = this.messageListener.bind(this);
@@ -36,14 +46,21 @@ class SocketSender extends React.Component {
     const { data } = msg;
     const json = JSON.parse(data);
     // if (!(json?.available || json?.message)) return console.log(json);
-    const { available, steps } = json;
+    const { available, steps, data: socketData } = json;
 
     // console.log({ json });
     !!json &&
       !!available &&
       this.setState({ ...json, tests: available?.split(',') });
-    !!json && !!steps && this.setState({ ...json, steps: steps?.split(',') });
-    !!json && !!json.data?.message && this.setState({ ...json.data });
+    !!json &&
+      !!steps &&
+      this.setState({ ...json, outcomes: [], steps: steps?.split(',') });
+    !!json && !!socketData?.message && this.setState({ ...socketData });
+    !!socketData?.s3Location &&
+      this.setState({
+        ...this.state,
+        outcomes: this.state.outcomes.concat(socketData),
+      });
     !!json.complete && this.onComplete();
   }
 
@@ -118,12 +135,16 @@ class SocketSender extends React.Component {
       steps,
       activeStep = 0,
       progress,
+      outcomes,
+      connected,
     } = this.state;
-
+    const headerText = !connected
+      ? 'Waiting to connect...'
+      : 'Select a test to run.';
     return (
       <>
         <Box className="card-body flex">
-          <Box ml={2}>Select a test to run.</Box>
+          <Box ml={2}>{headerText}</Box>
           <Box sx={{ flexGrow: 1 }} />
           {tests?.map((t) => (
             <Button
@@ -147,6 +168,11 @@ class SocketSender extends React.Component {
               {!steps && (
                 <Typography mt={4} variant="subtitle1">
                   No test is loaded.
+                </Typography>
+              )}
+              {!!steps && !thumbnail && (
+                <Typography mt={4} variant="subtitle1">
+                  Waiting for first image...
                 </Typography>
               )}
               {!!thumbnail && (
@@ -188,10 +214,22 @@ class SocketSender extends React.Component {
               )}
             </Grid>
           </Grid>
+          {!!outcomes.length && (
+            <Collapse in={progress > 95}>
+              <Divider>Test Results</Divider>
+
+              <Box className="auto-grid">
+                {outcomes.map((outcome, i) => (
+                  <SocketCard key={i} {...outcome} />
+                ))}
+              </Box>
+            </Collapse>
+          )}
         </Card>
+        {/* {JSON.stringify(outcomes)} */}
         {/* <h1>{message}</h1>
         [[{steps}]]
-        {JSON.stringify(this.state)}
+        {JSON.stringify(outcomes)}
         {thumbnail} */}
       </>
     );

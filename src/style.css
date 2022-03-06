@@ -1,8 +1,8 @@
 body {
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
+    'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   background-color: rgba(0, 0, 0, 0.1);
 }
- 
 
 .card-body {
   margin: 12px 48px;
@@ -47,4 +47,11 @@ body {
 }
 .flex.middle {
   justify-content: center;
+}
+
+.auto-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  padding: 24px;
 }
