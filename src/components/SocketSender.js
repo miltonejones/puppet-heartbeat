@@ -1,11 +1,11 @@
 import React from 'react';
-import { Button, Stack, Typography, Box } from '@mui/material';
+import { Button, Stack, Typography, Box, LinearProgress } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Card from '@mui/material/Card';
-import StepContent from '@mui/material/StepContent';
+// import StepContent from '@mui/material/StepContent';
 
 const SOCKET_URI =
   'wss://2zoxhl25v2.execute-api.us-east-1.amazonaws.com/production';
@@ -111,7 +111,14 @@ class SocketSender extends React.Component {
   }
 
   render() {
-    const { tests, message, thumbnail, steps, activeStep = 0 } = this.state;
+    const {
+      tests,
+      message,
+      thumbnail,
+      steps,
+      activeStep = 0,
+      progress,
+    } = this.state;
 
     return (
       <>
@@ -129,7 +136,7 @@ class SocketSender extends React.Component {
           ))}
           <hr />
         </Box>
-        <Card className="card-body" sx={{ minHeight: 500 }}>
+        <Card className="card-body" sx={{ minHeight: 300 }}>
           <Grid container>
             <Grid
               item
@@ -137,7 +144,11 @@ class SocketSender extends React.Component {
               xs={5}
               sx={{ textAlign: 'center' }}
             >
-              {!steps && <em>No test is loaded.</em>}
+              {!steps && (
+                <Typography mt={4} variant="subtitle1">
+                  No test is loaded.
+                </Typography>
+              )}
               {!!thumbnail && (
                 <Stack mt={4} className="preview-stack">
                   <Box className="preview-head">
@@ -158,7 +169,7 @@ class SocketSender extends React.Component {
                 </Stack>
               )}
             </Grid>
-            <Grid item pt={5} xs={7}>
+            <Grid item pt={5} xs={2}>
               <Stepper mt={5} activeStep={activeStep} orientation="vertical">
                 {steps?.map((label, index) => (
                   <Step key={label}>
@@ -166,6 +177,15 @@ class SocketSender extends React.Component {
                   </Step>
                 ))}
               </Stepper>
+            </Grid>
+            <Grid item p={5} xs={5}>
+              {message}
+
+              {!!progress && (
+                <Box mt={6}>
+                  <LinearProgress variant="determinate" value={progress} />
+                </Box>
+              )}
             </Grid>
           </Grid>
         </Card>
