@@ -6,7 +6,8 @@ import {
   Box,
   LinearProgress,
   Collapse,
-  Divider 
+  Divider ,
+  Alert
 } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -151,6 +152,12 @@ class SocketSender extends React.Component {
       : 'Select a test to run.';
     const ButtonIcon = execRunning ? Sync : PlayCircle;
     const buttonClass = execRunning ? 'spin' : '';
+    if (!tests?.length) {
+      return <Alert className="flex" severity="error">
+        Could not connect to Puppeteer server. Go tell Milton to turn his laptop on!
+          <Button sx={{ml: 4}} variant="contained" color="error" onClick={() => window.location.reload()}>try again</Button>
+        </Alert>
+    }
     return (
       <>
         <Card className="card-body flex">
