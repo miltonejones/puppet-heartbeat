@@ -6,14 +6,20 @@ import {
   Box,
   LinearProgress,
   Collapse,
-  Divider,
+  Divider 
 } from '@mui/material';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import Grid from '@mui/material/Grid';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Card from '@mui/material/Card';
 import SocketCard from './SocketCard';
+import { PlayCircle, Sync }  from '@mui/icons-material';
 // import StepContent from '@mui/material/StepContent';
 
 const SOCKET_URI =
@@ -136,29 +142,44 @@ class SocketSender extends React.Component {
       activeStep = 0,
       progress,
       outcomes,
-      connected,
+      connected,currentTest
     } = this.state;
+    const execRunning = !!progress && progress < 100;
+    const execDisabled = !currentTest || execRunning
     const headerText = !connected
       ? 'Waiting to connect...'
       : 'Select a test to run.';
+    const ButtonIcon = execRunning ? Sync : PlayCircle;
+    const buttonClass = execRunning ? 'spin' : '';
     return (
       <>
-        <Box className="card-body flex">
+        <Card className="card-body flex">
           <Box ml={2}>{headerText}</Box>
           <Box sx={{ flexGrow: 1 }} />
-          {tests?.map((t) => (
-            <Button
-              variant="contained"
-              style={{ margin: 4 }}
-              onClick={() => this.sendCommand(t)}
-            >
-              {t}
-            </Button>
-          ))}
+          <TestSelect
+            value={currentTest}
+            onChange={e => this.setState({currentTest: e})}
+            testList={tests}
+          />
+         <Button onClick={() => this.sendCommand(currentTest)} disabled={execDisabled} 
+         sx={{mr: 3}} variant="contained" color="error"
+         >Run <ButtonIcon className={buttonClass} sx={{ml: 1}} /></Button>
           <hr />
-        </Box>
+        </Card>
         <Card className="card-body" sx={{ minHeight: 300 }}>
           <Grid container>
+          {!!currentTest &&(  <Grid item xs={12}>
+            <Stack>
+            <Typography sx={{mt: 1, ml: 2}} variant="h6">
+                {currentTest}
+              </Typography>
+              
+            <Typography sx={{mb: 1, ml: 2}}  variant="caption">
+                {execRunning ? 'Please wait while the test completes...' : 'Click Run to start the test'}
+              </Typography>
+              
+            </Stack>
+              </Grid>)}
             <Grid
               item
               className="flex center middle"
@@ -171,9 +192,12 @@ class SocketSender extends React.Component {
                 </Typography>
               )}
               {!!steps && !thumbnail && (
-                <Typography mt={4} variant="subtitle1">
-                  Waiting for first image...
-                </Typography>
+                  <Box mt={6}>
+                    <LinearProgress variant="indeterminate"   />
+                    <Typography mt={4} variant="subtitle1">
+                      Waiting for first image...
+                    </Typography>
+                  </Box>
               )}
               {!!thumbnail && (
                 <Stack mt={4} className="preview-stack">
@@ -216,7 +240,7 @@ class SocketSender extends React.Component {
           </Grid>
           {!!outcomes.length && (
             <Collapse in={progress > 95}>
-              <Divider>Test Results</Divider>
+              <Divider sx={{mt: 4, mb: 4}}>Test Results</Divider>
 
               <Box className="auto-grid">
                 {outcomes.map((outcome, i) => (
@@ -237,3 +261,28 @@ class SocketSender extends React.Component {
 }
 
 export default SocketSender;
+
+function TestSelect ({testList, value ,onChange}) {
+  if (!testList) return <i />
+  return (<>
+  
+  <FormControl sx={{ m: 1, minWidth: 120 }}>
+        <InputLabel >Available Tests</InputLabel>
+        <Select  
+        style={{minWidth: 240}}
+        size="small"
+          value={value}
+          label="Age"
+          onChange={e => onChange(e.target.value)}
+        >
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
+          {testList.map(e => <MenuItem value={e} key={e}>{e}</MenuItem>)}
+         
+        </Select> 
+      </FormControl>
+
+
+  </>)
+}
