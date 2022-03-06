@@ -1,0 +1,50 @@
+body {
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+ 
+
+.card-body {
+  margin: 12px 48px;
+  background-color: white;
+}
+
+.preview-stack {
+  border: solid 1px rgba(0, 0, 0, 0.4);
+  margin: 12px;
+  border-radius: 4px;
+  max-width: 348px;
+}
+.preview-head {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  display: flex;
+}
+
+.preview-head .dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-right: 6px;
+  background-color: tomato;
+}
+
+.preview-head .dot.green {
+  background-color: green;
+}
+
+.preview-head .dot.gold {
+  background-color: gold;
+}
+
+.preview-body {
+  padding: 4px 24px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+.flex.middle {
+  justify-content: center;
+}
