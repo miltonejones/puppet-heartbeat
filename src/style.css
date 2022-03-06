@@ -38,7 +38,7 @@ body {
 }
 
 .preview-body {
-  padding: 4px 24px;
+  padding: 4px;
 }
 
 .flex {
@@ -58,6 +58,11 @@ body {
 
 .spin {
   animation: spin 0.4s infinite linear;
+}
+
+.progress-stack {
+  background-color: aliceblue;
+  border-radius: 4px;
 }
 
 @keyframes spin {

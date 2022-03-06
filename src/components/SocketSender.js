@@ -211,7 +211,7 @@ class SocketSender extends React.Component {
                   </Box>
                   <Box className="preview-body">
                     <img
-                      style={{ width: 300, height: 168 }}
+                      style={{ width: 320, height: 192 }}
                       src={'data:image/png;base64,' + thumbnail}
                       alt="thumb"
                     />
@@ -229,13 +229,15 @@ class SocketSender extends React.Component {
               </Stepper>
             </Grid>
             <Grid item p={5} xs={5}>
-              {message}
+             <Stack mt={4} className="progress-stack">
+              <Typography sx={{p: 1}} variant="subtitle1">{message || 'Ready.'}</Typography>
 
               {!!progress && (
-                <Box mt={6}>
+                <Box mt={2}>
                   <LinearProgress variant="determinate" value={progress} />
                 </Box>
               )}
+             </Stack>
             </Grid>
           </Grid>
           {!!outcomes.length && (
