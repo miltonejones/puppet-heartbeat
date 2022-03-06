@@ -143,7 +143,9 @@ class SocketSender extends React.Component {
       activeStep = 0,
       progress,
       outcomes,
-      connected,currentTest
+      connected,
+      currentTest,
+      actionText
     } = this.state;
     const execRunning = !!progress && progress < 100;
     const execDisabled = !currentTest || execRunning
@@ -240,11 +242,16 @@ class SocketSender extends React.Component {
               <Typography sx={{p: 1}} variant="subtitle1">{message || 'Ready.'}</Typography>
 
               {!!progress && (
-                <Box mt={2}>
+                <Box mt={2} mb={1}>
                   <LinearProgress variant="determinate" value={progress} />
                 </Box>
               )}
              </Stack>
+              {!!actionText && execRunning &&
+                <fieldset className="code-block"><legend>Test Code</legend>
+               <Box className="code-block-inner"> <pre>{actionText}</pre> </Box>
+              </fieldset>
+            }
             </Grid>
           </Grid>
           {!!outcomes.length && (
