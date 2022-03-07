@@ -171,7 +171,7 @@ class SocketSender extends React.Component {
     if (!tests?.length) {
       return <Stack spacing={2}>
         {header}
-        <Alert className="flex" severity="error">
+        <Alert className="flex center" severity="error">
         Could not connect to Puppeteer server. Go tell Milton to turn his laptop on!!!
           <Button sx={{ml: 4}} variant="contained" color="error" onClick={() => window.location.reload()}>try again</Button>
         </Alert>
@@ -180,7 +180,7 @@ class SocketSender extends React.Component {
     return (
       <>
       {header}
-        <Card className="card-body flex">
+        <Card className="card-body flex center">
           <Box ml={2}>{headerText}</Box>
           <Box sx={{ flexGrow: 1 }} />
           <TestSelect
@@ -210,16 +210,17 @@ class SocketSender extends React.Component {
             <Grid
               item
               className="flex center"
-              xs={5}
-              sx={{ textAlign: 'center' }}
+              xs={5} 
             >
               {!steps && (
-                <Typography mt={4} variant="subtitle1">
-                  No test is loaded.
-                </Typography>
+                <Box mt={7} ml={4}>
+                  <Typography mt={4} variant="subtitle1">
+                    No test is loaded.
+                  </Typography>
+                </Box>
               )}
               {!!steps && !thumbnail && (
-                  <Box mt={8}>
+                  <Box mt={7} ml={4}>
                     <LinearProgress variant="indeterminate"   />
                     <Typography mt={4} variant="subtitle1">
                       Waiting for first image...
@@ -227,7 +228,7 @@ class SocketSender extends React.Component {
                   </Box>
               )}
               {!!thumbnail && (
-                <Stack mt={4} className="preview-stack">
+                <Stack mt={7} ml={4} className="preview-stack">
                   <Box className="preview-head">
                     <Box className="dot" />
                     <Box className="dot gold" />
