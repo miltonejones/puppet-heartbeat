@@ -190,9 +190,8 @@ class SocketSender extends React.Component {
               </Grid>)}
             <Grid
               item
-              className="flex center"
-              xs={5}
-              sx={{ textAlign: 'center' }}
+              className="flex"
+              xs={5} 
             >
               {!steps && (
                 <Typography mt={4} variant="subtitle1">
@@ -200,7 +199,7 @@ class SocketSender extends React.Component {
                 </Typography>
               )}
               {!!steps && !thumbnail && (
-                  <Box mt={8}>
+                  <Box mt={2} ml={4}>
                     <LinearProgress variant="indeterminate"   />
                     <Typography mt={4} variant="subtitle1">
                       Waiting for first image...
