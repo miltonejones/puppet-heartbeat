@@ -35,8 +35,7 @@ class SocketSender extends React.Component {
     this.state = {
       connected: false,
       ws: null,
-      data: null,
-      showTextbox: true,
+      data: null, 
       outcomes: [],
     };
     this.openListener = this.openListener.bind(this);
@@ -194,20 +193,22 @@ class SocketSender extends React.Component {
               xs={5} 
             >
               {!steps && (
-                <Typography mt={4} variant="subtitle1">
-                  No test is loaded.
-                </Typography>
+                <Box mt={4} ml={4}> 
+                  <Typography mt={4} variant="subtitle1">
+                    No test is loaded.
+                  </Typography>
+                </Box>
               )}
               {!!steps && !thumbnail && (
-                  <Box mt={2} ml={4}>
-                    <LinearProgress variant="indeterminate"   />
-                    <Typography mt={4} variant="subtitle1">
-                      Waiting for first image...
-                    </Typography>
-                  </Box>
+                <Box mt={4} ml={4}>
+                  <LinearProgress variant="indeterminate"   />
+                  <Typography mt={4} variant="subtitle1">
+                    Waiting for first image...
+                  </Typography>
+                </Box>
               )}
               {!!thumbnail && (
-                <Stack mt={4} className="preview-stack">
+                <Stack mt={4} ml={4} className="preview-stack">
                   <Box className="preview-head">
                     <Box className="dot" />
                     <Box className="dot gold" />
