@@ -1,6 +1,5 @@
 import React from 'react';
-import SocketSender from './components/SocketSender';
-import Box from '@mui/material/Box';
+import SocketSender from './components/SocketSender'; 
 import './style.css';
 
 export default function App() {

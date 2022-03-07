@@ -19,8 +19,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Card from '@mui/material/Card';
 import SocketCard from './SocketCard';
-import { PlayCircle, Sync }  from '@mui/icons-material';
-// import StepContent from '@mui/material/StepContent';
+import { PlayCircle, Sync }  from '@mui/icons-material'; 
 
 const SOCKET_URI =
   'wss://2zoxhl25v2.execute-api.us-east-1.amazonaws.com/production';
@@ -153,6 +152,8 @@ class SocketSender extends React.Component {
     const buttonClass = execRunning ? 'spin' : '';
     return (
       <>
+
+        {/* card header */}
         <Card className="card-body flex">
           <Box ml={2}>{headerText}</Box>
           <Box sx={{ flexGrow: 1 }} />
@@ -161,25 +162,28 @@ class SocketSender extends React.Component {
             onChange={e => this.setState({currentTest: e})}
             testList={tests}
           />
-         <Button onClick={() => this.sendCommand(currentTest)} disabled={execDisabled} 
-         sx={{mr: 3}} variant="contained" color="error"
-         >Run <ButtonIcon className={buttonClass} sx={{ml: 1}} /></Button>
+          <Button 
+            onClick={() => this.sendCommand(currentTest)} disabled={execDisabled} 
+            sx={{mr: 3}} variant="contained" color="error"
+          >Run <ButtonIcon className={buttonClass} sx={{ml: 1}} /></Button>
           <hr />
         </Card>
+
+        {/* card body */}
         <Card className="card-body" sx={{ minHeight: 300 }}>
           <Grid container>
-          {!!currentTest &&(  <Grid item xs={12}>
-            <Stack>
-            <Typography sx={{mt: 1, ml: 2}} variant="h6">
-                {currentTest}
-              </Typography>
-              
-            <Typography sx={{mb: 1, ml: 2}}  variant="caption">
-                {execRunning ? 'Please wait while the test completes...' : 'Click Run to start the test'}
-              </Typography>
-              
-            </Stack>
-              </Grid>)}
+            {!!currentTest &&(  
+            <Grid item xs={12}>
+              <Stack>
+                <Typography sx={{mt: 1, ml: 2}} variant="h6">
+                    Test: "{currentTest}"
+                  </Typography>
+                  
+                <Typography sx={{mb: 1, ml: 2}}  variant="caption">
+                    {execRunning ? 'Please wait while the test completes...' : 'Click Run to start the test'}
+                  </Typography>
+              </Stack>
+            </Grid>)}
             <Grid
               item
               className="flex center middle"
@@ -240,10 +244,11 @@ class SocketSender extends React.Component {
              </Stack>
             </Grid>
           </Grid>
+
+          {/* test result thumbnail cards */}
           {!!outcomes.length && (
             <Collapse in={progress > 95}>
               <Divider sx={{mt: 4, mb: 4}}>Test Results</Divider>
-
               <Box className="auto-grid">
                 {outcomes.map((outcome, i) => (
                   <SocketCard key={i} {...outcome} />
@@ -251,12 +256,7 @@ class SocketSender extends React.Component {
               </Box>
             </Collapse>
           )}
-        </Card>
-        {/* {JSON.stringify(outcomes)} */}
-        {/* <h1>{message}</h1>
-        [[{steps}]]
-        {JSON.stringify(outcomes)}
-        {thumbnail} */}
+        </Card> 
       </>
     );
   }
@@ -266,25 +266,22 @@ export default SocketSender;
 
 function TestSelect ({testList, value ,onChange}) {
   if (!testList) return <i />
-  return (<>
-  
-  <FormControl sx={{ m: 1, minWidth: 120 }}>
-        <InputLabel >Available Tests</InputLabel>
-        <Select  
-        style={{minWidth: 240}}
-        size="small"
-          value={value}
-          label="Age"
-          onChange={e => onChange(e.target.value)}
-        >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          {testList.map(e => <MenuItem value={e} key={e}>{e}</MenuItem>)}
-         
-        </Select> 
-      </FormControl>
-
-
+  return (<> 
+    <FormControl sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel >Available Tests</InputLabel>
+          <Select  
+          style={{minWidth: 240}}
+          size="small"
+            value={value}
+            label="Age"
+            onChange={e => onChange(e.target.value)}
+          >
+        <MenuItem value="">
+          <em>None</em>
+        </MenuItem>
+        {testList.map(e => <MenuItem value={e} key={e}>{e}</MenuItem>)}
+        
+      </Select> 
+    </FormControl>
   </>)
 }
