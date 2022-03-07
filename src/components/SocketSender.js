@@ -51,11 +51,10 @@ class SocketSender extends React.Component {
 
   messageListener(msg) {
     const { data } = msg;
-    const json = JSON.parse(data);
-    // if (!(json?.available || json?.message)) return console.log(json);
+    const json = JSON.parse(data); 
     const { available, steps, data: socketData } = json;
-
-    // console.log({ json });
+ 
+    // process messages here
     !!json &&
       !!available &&
       this.setState({ ...json, tests: available?.split(',') });
@@ -180,7 +179,7 @@ class SocketSender extends React.Component {
           {!!currentTest &&(  <Grid item xs={12}>
             <Stack>
             <Typography sx={{mt: 1, ml: 2}} variant="h6">
-                {currentTest}
+                Test: "{currentTest}"
               </Typography>
               
             <Typography sx={{mb: 1, ml: 2}}  variant="caption">
@@ -265,12 +264,7 @@ class SocketSender extends React.Component {
               </Box>
             </Collapse>
           )}
-        </Card>
-        {/* {JSON.stringify(outcomes)} */}
-        {/* <h1>{message}</h1>
-        [[{steps}]]
-        {JSON.stringify(outcomes)}
-        {thumbnail} */}
+        </Card> 
       </>
     );
   }
@@ -283,22 +277,20 @@ function TestSelect ({testList, value ,onChange}) {
   return (<>
   
   <FormControl sx={{ m: 1, minWidth: 120 }}>
-        <InputLabel >Available Tests</InputLabel>
-        <Select  
-        style={{minWidth: 240}}
-        size="small"
-          value={value}
-          label="Age"
-          onChange={e => onChange(e.target.value)}
-        >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          {testList.map(e => <MenuItem value={e} key={e}>{e}</MenuItem>)}
-         
-        </Select> 
-      </FormControl>
-
-
+    <InputLabel >Available Tests</InputLabel>
+    <Select  
+    style={{minWidth: 240}}
+    size="small"
+      value={value}
+      label="Age"
+      onChange={e => onChange(e.target.value)}
+    >
+      <MenuItem value="">
+        <em>None</em>
+      </MenuItem>
+      {testList.map(e => <MenuItem value={e} key={e}>{e}</MenuItem>)}
+      
+    </Select> 
+  </FormControl>
   </>)
 }
