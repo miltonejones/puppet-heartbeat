@@ -190,7 +190,7 @@ class SocketSender extends React.Component {
               </Grid>)}
             <Grid
               item
-              className="flex center middle"
+              className="flex center"
               xs={5}
               sx={{ textAlign: 'center' }}
             >
@@ -200,7 +200,7 @@ class SocketSender extends React.Component {
                 </Typography>
               )}
               {!!steps && !thumbnail && (
-                  <Box mt={6}>
+                  <Box mt={8}>
                     <LinearProgress variant="indeterminate"   />
                     <Typography mt={4} variant="subtitle1">
                       Waiting for first image...
@@ -211,8 +211,8 @@ class SocketSender extends React.Component {
                 <Stack mt={4} className="preview-stack">
                   <Box className="preview-head">
                     <Box className="dot" />
-                    <Box className="dot green" />
                     <Box className="dot gold" />
+                    <Box className="dot green" />
                     <Typography ml={1} variant="caption">
                       Test Preview
                     </Typography>
