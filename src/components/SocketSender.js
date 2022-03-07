@@ -106,7 +106,7 @@ class SocketSender extends React.Component {
         id,
       },
     });
-    this.setState({ clicked: 1, complete: !1, downloadIndex: 0 });
+    this.setState({ actionText: !1, thumbnail: !1, progress: 0 });
   }
 
   retryConnection() {
