@@ -209,7 +209,7 @@ class SocketSender extends React.Component {
               </Grid>)}
             <Grid
               item
-              className="flex center"
+              className="flex"
               xs={5} 
             >
               {!steps && (
