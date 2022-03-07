@@ -10,6 +10,8 @@ import {
   Breadcrumbs,
   Alert
 } from '@mui/material';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -39,6 +41,7 @@ class SocketSender extends React.Component {
       data: null,
       showTextbox: true,
       outcomes: [],
+      dialogState: {open: false}
     };
     this.openListener = this.openListener.bind(this);
     this.messageListener = this.messageListener.bind(this);
@@ -52,6 +55,7 @@ class SocketSender extends React.Component {
 
   messageListener(msg) {
     const { data } = msg;
+    const { actionText } = this.state;
     const json = JSON.parse(data); 
     const { available, steps, data: socketData } = json;
  
@@ -66,7 +70,7 @@ class SocketSender extends React.Component {
     !!socketData?.s3Location &&
       this.setState({
         ...this.state,
-        outcomes: this.state.outcomes.concat(socketData),
+        outcomes: this.state.outcomes.concat({...socketData, actionText}),
       });
     !!json.complete && this.onComplete();
   }
@@ -145,7 +149,8 @@ class SocketSender extends React.Component {
       outcomes,
       connected,
       currentTest,
-      actionText
+      actionText,
+      dialogState
     } = this.state;
     
     const breadcrumbs = [
@@ -168,6 +173,7 @@ class SocketSender extends React.Component {
       : 'Select a test to run.';
     const ButtonIcon = execRunning ? Sync : PlayCircle;
     const buttonClass = execRunning ? 'spin' : '';
+    const { showCode } = controlCodeDialog(dialogState, this.setState.bind(this))
     if (!tests?.length) {
       return <Stack spacing={2}>
         {header}
@@ -279,12 +285,13 @@ class SocketSender extends React.Component {
 
               <Box className="auto-grid">
                 {outcomes.map((outcome, i) => (
-                  <SocketCard key={i} {...outcome} />
+                  <SocketCard key={i} {...outcome} showCode={showCode}/>
                 ))}
               </Box>
             </Collapse>
           )}
         </Card> 
+        <CodeDialog {...dialogState}/>
       </>
     );
   }
@@ -313,4 +320,30 @@ function TestSelect ({testList, value ,onChange}) {
     </Select> 
   </FormControl>
   </>)
+}
+
+
+function CodeDialog ({code, open, onClose}) {
+  return <><Dialog  onClose={onClose} open={open}> 
+  <DialogTitle>Test Code</DialogTitle>
+ <Box p={3}>
+ <fieldset className="code-block">
+    <legend>copy</legend>
+    <Box className="code-block-inner"> <pre>{code}</pre> </Box>
+  </fieldset>
+ </Box>
+</Dialog></>
+}
+
+function controlCodeDialog(state, setState) { 
+  const showCode = code => {
+    setState({
+      dialogState:{ 
+        open:true,
+        code,
+        onClose: () => setState({dialogState: {open: false}})
+      }
+    })
+  }
+  return { state, showCode }
 }

@@ -11,6 +11,8 @@ export default function SocketCard({
   stepLabel,
   elapsed,
   thumbnail,
+  actionText,
+  showCode
 }) {
   return (
     <Card sx={{ maxWidth: 345 }}>
@@ -30,7 +32,10 @@ export default function SocketCard({
       </CardContent>
       <CardActions>
         <Button size="small" href={s3Location} target="_blank">
-          View screenshot
+          View screenshot 
+        </Button>
+        <Button size="small" onClick={() => showCode(actionText)}>
+          code
         </Button>
       </CardActions>
     </Card>
