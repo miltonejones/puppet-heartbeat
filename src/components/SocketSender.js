@@ -7,6 +7,7 @@ import {
   LinearProgress,
   Collapse,
   Divider ,
+  Breadcrumbs,
   Alert
 } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
@@ -35,7 +36,8 @@ class SocketSender extends React.Component {
     this.state = {
       connected: false,
       ws: null,
-      data: null, 
+      data: null,
+      showTextbox: true,
       outcomes: [],
     };
     this.openListener = this.openListener.bind(this);
@@ -145,6 +147,20 @@ class SocketSender extends React.Component {
       currentTest,
       actionText
     } = this.state;
+    
+    const breadcrumbs = [
+      <b>Puppet Heartbeat</b>,
+      <em>associate-ui</em>
+    ]
+    const header = <>   
+        <Breadcrumbs separator="›" aria-label="breadcrumb">
+        {breadcrumbs}
+      </Breadcrumbs>
+      <Box><Typography variant="h4">associate-ui</Typography></Box>
+      <Box pb={2}><Typography variant="subtitle1">This page lists all tests running on the Puppeteer Server</Typography></Box>
+      <Divider sx={{mb: 2}} />
+      </>
+
     const execRunning = !!progress && progress < 100;
     const execDisabled = !currentTest || execRunning
     const headerText = !connected
@@ -153,14 +169,18 @@ class SocketSender extends React.Component {
     const ButtonIcon = execRunning ? Sync : PlayCircle;
     const buttonClass = execRunning ? 'spin' : '';
     if (!tests?.length) {
-      return <Alert className="flex center" severity="error">
-        Could not connect to Puppeteer server. Go tell Milton to turn his laptop on!
+      return <Stack spacing={2}>
+        {header}
+        <Alert className="flex" severity="error">
+        Could not connect to Puppeteer server. Go tell Milton to turn his laptop on!!!
           <Button sx={{ml: 4}} variant="contained" color="error" onClick={() => window.location.reload()}>try again</Button>
         </Alert>
+      </Stack>
     }
     return (
       <>
-        <Card className="card-body flex center">
+      {header}
+        <Card className="card-body flex">
           <Box ml={2}>{headerText}</Box>
           <Box sx={{ flexGrow: 1 }} />
           <TestSelect
@@ -189,26 +209,25 @@ class SocketSender extends React.Component {
               </Grid>)}
             <Grid
               item
-              className="flex"
-              xs={5} 
+              className="flex center"
+              xs={5}
+              sx={{ textAlign: 'center' }}
             >
               {!steps && (
-                <Box mt={7} ml={4}> 
-                  <Typography mt={4} variant="subtitle1">
-                    No test is loaded.
-                  </Typography>
-                </Box>
+                <Typography mt={4} variant="subtitle1">
+                  No test is loaded.
+                </Typography>
               )}
               {!!steps && !thumbnail && (
-                <Box mt={7} ml={4}>
-                  <LinearProgress variant="indeterminate"   />
-                  <Typography mt={4} variant="subtitle1">
-                    Waiting for first image...
-                  </Typography>
-                </Box>
+                  <Box mt={8}>
+                    <LinearProgress variant="indeterminate"   />
+                    <Typography mt={4} variant="subtitle1">
+                      Waiting for first image...
+                    </Typography>
+                  </Box>
               )}
               {!!thumbnail && (
-                <Stack mt={7} ml={4} className="preview-stack">
+                <Stack mt={4} className="preview-stack">
                   <Box className="preview-head">
                     <Box className="dot" />
                     <Box className="dot gold" />
