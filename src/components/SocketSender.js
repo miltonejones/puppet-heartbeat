@@ -193,14 +193,14 @@ class SocketSender extends React.Component {
               xs={5} 
             >
               {!steps && (
-                <Box mt={4} ml={4}> 
+                <Box mt={7} ml={4}> 
                   <Typography mt={4} variant="subtitle1">
                     No test is loaded.
                   </Typography>
                 </Box>
               )}
               {!!steps && !thumbnail && (
-                <Box mt={4} ml={4}>
+                <Box mt={7} ml={4}>
                   <LinearProgress variant="indeterminate"   />
                   <Typography mt={4} variant="subtitle1">
                     Waiting for first image...
@@ -208,7 +208,7 @@ class SocketSender extends React.Component {
                 </Box>
               )}
               {!!thumbnail && (
-                <Stack mt={4} ml={4} className="preview-stack">
+                <Stack mt={7} ml={4} className="preview-stack">
                   <Box className="preview-head">
                     <Box className="dot" />
                     <Box className="dot gold" />
