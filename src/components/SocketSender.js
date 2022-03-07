@@ -153,14 +153,14 @@ class SocketSender extends React.Component {
     const ButtonIcon = execRunning ? Sync : PlayCircle;
     const buttonClass = execRunning ? 'spin' : '';
     if (!tests?.length) {
-      return <Alert className="flex" severity="error">
+      return <Alert className="flex center" severity="error">
         Could not connect to Puppeteer server. Go tell Milton to turn his laptop on!
           <Button sx={{ml: 4}} variant="contained" color="error" onClick={() => window.location.reload()}>try again</Button>
         </Alert>
     }
     return (
       <>
-        <Card className="card-body flex">
+        <Card className="card-body flex center">
           <Box ml={2}>{headerText}</Box>
           <Box sx={{ flexGrow: 1 }} />
           <TestSelect
