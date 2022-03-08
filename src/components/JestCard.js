@@ -24,8 +24,8 @@ export default function JestCard ({ onSave, onCancel }) {
  
   // display imported steps
   return <> 
-    <Typography variant="h4">Imported Tests</Typography>
-
+    <Typography sx={{mt: 1, ml: 2}} variant="h6">Imported Tests</Typography>
+   
     {Object.keys(puppetSteps).map(key => <>
 
       <Divider textAlign="left" style={{textTransform: 'capitalize', margin: 12}}>{key}</Divider>

@@ -39,9 +39,9 @@ export class JestPuppeteerAdapter {
       }, 
     }
     
-    setSteps (fn) { 
+    setSteps (action) { 
       this.tests[this.descriptionText].steps = 
-        fn(this.tests[this.descriptionText].steps);
+        action(this.tests[this.descriptionText].steps);
     }
   
     expect (fact) {
@@ -83,23 +83,26 @@ export class JestPuppeteerAdapter {
           }
           console.log ('%s === %s', fact.value, value)
         },
-        toEqual: (value) => () => {
-          let exception = fact !== value ? `${fact} !== ${value}` : null;
+        toEqual: (value) => {
+          console.log ({fact, value})
+          const exception = fact !== value ? `${fact} !== ${value}` : null;
+          const label = `TEST: Does '${fact}' = '${value}'`;
           this.setSteps(s => s.concat({
+            label,
             descriptionText,
             action: 'equals',
             value, 
             fact
           }))
-        if ( exception) {
+          if ( exception) {
             throw  exception;
-        }
+          }
         }
       }
     }
   
     getElementById (elementId, action="lookup-by-element-id") {
-      const descriptionText = this.descriptionText;
+      const descriptionText = this.descriptionText; 
       this.setSteps(s => s.concat({
         descriptionText,
         action,
@@ -114,8 +117,8 @@ export class JestPuppeteerAdapter {
       }
     }
   
-    async act (fn) {
-      const what = await fn();
+    async act (action) {
+      const what = await action();
       console.log ({ what })
       return what;
     }
@@ -132,29 +135,33 @@ export class JestPuppeteerAdapter {
         }
       }
     }
+
+    it (description, action) {
+      this.descriptionText = description;
+      this.tests[description] = { steps: []};
+
+      try {
+        action();
+      } catch (err) {
+        // TODO: add setException method
+        console.log (err);
+      } 
+    }
   
-    loadJest(text) { 
+    loadJest(code) { 
       const screen = this.screen; 
       const fireEvent = this.fireEvent; 
       const expect = this.expect.bind(this);
       const getElementById = this.getElementById.bind(this);
       const act = this.act.bind(this);
       const within = this.within.bind(this);
-  
-      const it = (description, fn) => { 
-        this.descriptionText = description;
-        this.tests[description] = { steps: []}
-        try {
-          fn()
-        } catch (err) {
-          console.log (err) 
-        } 
-      }
+      const it = this.it.bind(this); 
   
       try {
-        eval(text)
+        eval(code);
       } catch (err) {
-        console.log (err) 
+         // TODO: add setException method
+        console.log (err); 
       } 
     }
   }
