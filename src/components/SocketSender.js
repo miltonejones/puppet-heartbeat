@@ -8,7 +8,8 @@ import {
   Collapse,
   Divider ,
   Breadcrumbs,
-  Alert
+  Alert,
+  IconButton
 } from '@mui/material';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
@@ -23,7 +24,8 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Card from '@mui/material/Card';
 import SocketCard from './SocketCard';
-import { PlayCircle, Sync }  from '@mui/icons-material';
+import { PlayCircle, Sync, Settings }  from '@mui/icons-material';
+import JestCard from './JestCard';
 // import StepContent from '@mui/material/StepContent';
 
 const SOCKET_URI =
@@ -105,10 +107,12 @@ class SocketSender extends React.Component {
   }
 
   sendCommand(id) {
+    const { puppetL } = this.state;
     this.sendMessage({
       action: 'exec',
       data: {
         id,
+        puppetL
       },
     });
     this.setState({ actionText: !1, thumbnail: !1, progress: 0 });
@@ -150,7 +154,8 @@ class SocketSender extends React.Component {
       connected,
       currentTest,
       actionText,
-      dialogState
+      dialogState,
+      showJest
     } = this.state;
     
     const breadcrumbs = [
@@ -186,6 +191,8 @@ class SocketSender extends React.Component {
     return (
       <>
       {header}
+
+        {/* toolbar */}
         <Card className="card-body flex center">
           <Box ml={2}>{headerText}</Box>
           <Box sx={{ flexGrow: 1 }} />
@@ -194,11 +201,26 @@ class SocketSender extends React.Component {
             onChange={e => this.setState({currentTest: e})}
             testList={tests}
           />
-         <Button onClick={() => this.sendCommand(currentTest)} disabled={execDisabled} 
-         sx={{mr: 3}} variant="contained" color="error"
+         <Button sx={{mr: 1}}  onClick={() => this.sendCommand(currentTest)} disabled={execDisabled} 
+        variant="contained" color="error"
          >Run <ButtonIcon className={buttonClass} sx={{ml: 1}} /></Button>
+        {!execDisabled &&( <IconButton onClick={() => this.setState({showJest: !showJest})} sx={{mr: 3}} ><Settings/></IconButton>)}
           <hr />
         </Card>
+
+        {/* jest import card */}
+        <Collapse in={showJest}>
+          <Card className="card-body" sx={{p: 2}} >
+            <JestCard 
+              onCancel={() => this.setState({showJest: !showJest}) }
+              onSave={ puppetL => {
+                this.setState({ puppetL });
+                this.setState({showJest: !showJest});
+              } }/>
+          </Card>
+        </Collapse>
+
+        {/* test run panel */}
         <Card className="card-body" sx={{ minHeight: 300 }}>
           <Grid container>
           {!!currentTest &&(  <Grid item xs={12}>
