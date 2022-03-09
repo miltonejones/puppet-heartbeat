@@ -27,9 +27,7 @@ it("has proper fields", async () => {
   expect(stateInput).toBeInTheDocument();
   expect(sameMailingAddressCheckbox).toBeInTheDocument();
 
-  await act(async () => {
-    return await fireEvent.click(sameMailingAddressCheckbox);
-  });
+  fireEvent.click(sameMailingAddressCheckbox);
 
   const address1Input = screen.queryByTestId("addressInput1");
   const address1Line2Input = screen.queryByTestId("address1Line2Input");

@@ -47,8 +47,7 @@ export class JestPuppeteerAdapter {
     expect (fact) {
       const descriptionText = this.descriptionText;
       return {
-        toBeInTheDocument: (value) =>  {
-          console.log ({ descriptionText, toBeInTheDocument: value, fact });
+        toBeInTheDocument: (value) =>  { 
   
           let exception = null;
           let label = '';
@@ -76,15 +75,14 @@ export class JestPuppeteerAdapter {
             value,
             exception,
             fact
-          }))
-  
+          }));
+
           if (exception) {
             throw exception;
           }
-          console.log ('%s === %s', fact.value, value)
+          console.log ('%s === %s', fact.value, value);
         },
-        toEqual: (value) => {
-          console.log ({fact, value})
+        toEqual: (value) => { 
           const exception = fact !== value ? `${fact} !== ${value}` : null;
           const label = `TEST: Does '${fact}' = '${value}'`;
           this.setSteps(s => s.concat({
@@ -93,9 +91,10 @@ export class JestPuppeteerAdapter {
             action: 'equals',
             value, 
             fact
-          }))
+          }));
+
           if ( exception) {
-            throw  exception;
+            throw exception;
           }
         }
       }

@@ -357,6 +357,7 @@ function CodeDialog ({code, open, onClose}) {
 </Dialog></>
 }
 
+// can't use a hook, so using a makeshift one
 function controlCodeDialog(state, setState) { 
   const showCode = code => {
     setState({
