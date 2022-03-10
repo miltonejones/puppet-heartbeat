@@ -4,10 +4,18 @@ import ChipGroup from './ChipGroup';
 
 import { Box, Tab, Tabs,  TextField, Stack, Typography, Button, Divider } from '@mui/material';
 
-export default function PuppetLConfigForm ({onSave, onCancel}) {
-  const [steps, setSteps] = React.useState([ ])
+export default function PuppetLConfigForm ({onSave, onCancel, puppetML}) {
+  const [steps, setSteps] = React.useState(puppetML?.steps || [])
   const [testName, setTestName] = React.useState('')
   const [value, setValue] = React.useState(0);
+
+  React.useEffect(() => {
+    !!puppetML && puppetML.testName !== testName && (() => {
+      setTestName(puppetML.testName);
+      setSteps(puppetML.steps)
+    })()
+  }, [puppetML, testName])
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -124,7 +132,7 @@ export const transform = step => {
   let label;
   switch (step.action) {
     case 'navigate':
-      return [step];
+      return [{...step, label: `Navigate to ${step.URL}`}];
       break;
     case 'event':
       label = !step.value

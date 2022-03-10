@@ -24,7 +24,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Card from '@mui/material/Card';
 import SocketCard from './SocketCard';
-import { PlayCircle, Sync, Settings , Add }  from '@mui/icons-material';
+import { PlayCircle, Sync, Settings , Add, Edit }  from '@mui/icons-material';
 import JestCard from './JestCard';
 import PuppetLConfigForm, { transform } from './PuppetLConfigForm';
 // import StepContent from '@mui/material/StepContent';
@@ -64,7 +64,7 @@ class SocketSender extends React.Component {
     const { actionText } = this.state;
     const json = JSON.parse(data); 
     const { available, steps, data: socketData } = json;
- 
+    console.log ({msg})
     // process messages here
     !!json &&
       !!available &&
@@ -155,7 +155,7 @@ class SocketSender extends React.Component {
     client.addEventListener('close', this.closeListener);
   }
   componentDidMount() {
-    // this.mountClient();
+     this.mountClient();
   }
 
   setCache(createdTests) {
@@ -214,9 +214,13 @@ class SocketSender extends React.Component {
     const { showCode } = controlCodeDialog(dialogState, this.setState.bind(this))
 
 
-      console.log ({createdTests})
+      
     const createdTestNames = createdTests.map(t => t.testName);
     const testList = [...tests, ...createdTestNames];
+    const createdTest = createdTests.find(f => f.testName === currentTest) ?? 
+      {testName: null, steps: []}
+
+    const AddIcon = !!createdTest.testName ? Edit : Add;
     // if (!tests?.length) {
     //   return <Stack spacing={2}>
     //     {header}
@@ -243,7 +247,7 @@ class SocketSender extends React.Component {
         variant="contained" color="error"
          >Run <ButtonIcon className={buttonClass} sx={{ml: 1}} /></Button>
         {!execDisabled &&( <IconButton onClick={() => this.setState({showJest: !showJest})} ><Settings/></IconButton>)}
-        <IconButton onClick={() => this.setState({showEdit: !showEdit})} sx={{mr: 3}} ><Add/></IconButton>
+        <IconButton onClick={() => this.setState({showEdit: !showEdit})} sx={{mr: 3}} ><AddIcon/></IconButton>
           <hr />
         </Card>
 
@@ -257,11 +261,12 @@ class SocketSender extends React.Component {
               } }/>
           </Card>
         </Collapse>
-
+ 
         {/* jest import card */}
         <Collapse in={showEdit}>
           <Card className="card-body" sx={{p: 2}} >
             <PuppetLConfigForm 
+              puppetML={createdTest}
               onCancel={() => this.setState({showEdit: !showEdit}) }
               onSave={ puppetML => {
                 this.addTest(puppetML)
@@ -288,7 +293,7 @@ class SocketSender extends React.Component {
             <Grid
               item
               className="flex"
-              xs={5} 
+              xs={4} 
             >
               {!steps && (
                 <Box mt={6} ml={4}>
@@ -325,7 +330,7 @@ class SocketSender extends React.Component {
                 </Stack>
               )}
             </Grid>
-            <Grid item pt={5} xs={2}>
+            <Grid item pt={5} xs={4}>
               <Stepper mt={5} activeStep={activeStep} orientation="vertical">
                 {steps?.map((label, index) => (
                   <Step key={label}>
@@ -334,7 +339,7 @@ class SocketSender extends React.Component {
                 ))}
               </Stepper>
             </Grid>
-            <Grid item p={5} xs={5}>
+            <Grid item p={5} xs={4}>
              <Stack mt={4} className="progress-stack">
               <Typography sx={{p: 1}} variant="subtitle1">{message || 'Ready.'}</Typography>
 
