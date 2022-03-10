@@ -1,0 +1,583 @@
+{
+    "has proper fields": {
+      "steps": [
+
+        {
+          "action": "navigate",
+          "URL": "https://associate-dev.theatlastango.com/Signin",
+          "photo": true
+        },
+        
+        { 
+          "action": "lookup-by-test-id",
+          "key": "sign_in_login_button",
+          "elementId": "text-field-addressLine20",
+          "photo": true
+        },
+        { 
+          "action": "lookup-by-selector",
+          "key": "#outlined-adornment-password"
+        },
+        { 
+          "action": "lookup-by-selector",
+          "key": "input[name=email]" 
+        },
+
+        {
+          "label": "Enter username",
+          "object": { 
+            "key": "input[name=email]", 
+            "value": "miltonejonesthelessor@gmail.com"
+          },
+          "action": "change", 
+          "value": "miltonejonesthelessor@gmail.com",
+          "photo": true
+        },
+
+        {
+          "label": "Enter password",
+          "object": { 
+            "key": "#outlined-adornment-password", 
+            "value": "sFArvU8pmwUuz4K$"
+          },
+          "action": "change", 
+          "value": "sFArvU8pmwUuz4K$"
+        },
+        {
+          "label": "EVENT: Click 'sign_in_login_button'",
+          "object": { 
+            "key": "sign_in_login_button" 
+          },
+          "action": "click"
+        },
+
+        {
+          "action": "navigate",
+          "URL": "https://associate-dev.theatlastango.com/Profile/MyInformation"
+        },
+            
+        { 
+          "action": "lookup-by-test-id",
+          "key": "edit-button-function", 
+          "photo": true
+        },
+        {
+          "label": "EVENT: Click edit button",
+          "object": { 
+            "key": "edit-button-function" 
+          },
+          "action": "click"
+        },  
+        
+
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-firstName",
+          "elementId": "text-field-firstName"
+        },
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-lastName",
+          "elementId": "text-field-lastName"
+        },
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-middleName",
+          "elementId": "text-field-middleName"
+        },
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-suffix",
+          "elementId": "text-field-suffix"
+        },
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-pronouns",
+          "elementId": "text-field-pronouns"
+        },
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-addressLine20",
+          "elementId": "text-field-addressLine20"
+        },
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-city0",
+          "elementId": "text-field-city0"
+        },
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-zipCode0",
+          "elementId": "text-field-zipCode0"
+        },
+ 
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "check-field",
+          "elementId": "check-field"
+        },
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'text-field-firstName' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "text-field-firstName",
+            "elementId": "text-field-firstName"
+          }
+        },
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'text-field-lastName' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "text-field-lastName",
+            "elementId": "text-field-lastName"
+          }
+        },
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'text-field-middleName' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "text-field-middleName",
+            "elementId": "text-field-middleName"
+          }
+        },
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'text-field-suffix' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "text-field-suffix",
+            "elementId": "text-field-suffix"
+          }
+        },
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'text-field-pronouns' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "text-field-pronouns",
+            "elementId": "text-field-pronouns"
+          }
+        },
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'text-field-addressLine20' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "text-field-addressLine20",
+            "elementId": "text-field-addressLine20"
+          }
+        },
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'text-field-city0' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "text-field-city0",
+            "elementId": "text-field-city0"
+          }
+        },
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'text-field-zipCode0' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "text-field-zipCode0",
+            "elementId": "text-field-zipCode0"
+          }
+        }, 
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'check-field' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "check-field",
+            "elementId": "check-field"
+          }
+        },
+        {
+          "label": "EVENT: Click 'check-field'",
+          "object": {
+            "descriptionText": "has proper fields",
+            "key": "check-field",
+            "elementId": "check-field"
+          },
+          "action": "click"
+        },
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-addressLine11",
+          "elementId": "text-field-addressLine11"
+        },
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-addressLine21",
+          "elementId": "text-field-addressLine21"
+        },
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-city1",
+          "elementId": "text-field-city1"
+        },
+        {
+          "descriptionText": "has proper fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-zipCode1",
+          "elementId": "text-field-zipCode1"
+        }, 
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'text-field-addressLine11' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "text-field-addressLine11",
+            "elementId": "text-field-addressLine11"
+          }
+        },
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'text-field-addressLine21' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "text-field-addressLine21",
+            "elementId": "text-field-addressLine21"
+          }
+        },
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'text-field-city1' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "text-field-city1",
+            "elementId": "text-field-city1"
+          }
+        },
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'text-field-zipCode1' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "text-field-zipCode1",
+            "elementId": "text-field-zipCode1"
+          }
+        },
+        {
+          "descriptionText": "has proper fields",
+          "label": "TEST: Does 'state1' exist",
+          "action": "exists",
+          "exception": null,
+          "fact": {
+            "descriptionText": "has proper fields",
+            "key": "state1",
+            "elementId": "state1"
+          }
+        }
+      ]
+    },
+    "triggers events on input fields": {
+      "steps": [
+
+        {
+          "action": "navigate",
+          "URL": "https://associate-dev.theatlastango.com/Signin",
+          "photo": true
+        },
+      
+        { 
+          "action": "lookup-by-test-id",
+          "key": "sign_in_login_button",
+          "elementId": "text-field-addressLine20",
+          "photo": true
+        },
+        { 
+          "action": "lookup-by-selector",
+          "key": "#outlined-adornment-password"
+        },
+        { 
+          "action": "lookup-by-selector",
+          "key": "input[name=email]" 
+        },
+
+        {
+          "label": "Enter username",
+          "object": { 
+            "key": "input[name=email]", 
+            "value": "miltonejonesthelessor@gmail.com"
+          },
+          "action": "change", 
+          "value": "miltonejonesthelessor@gmail.com",
+          "photo": true
+        },
+
+        {
+          "label": "Enter password",
+          "object": { 
+            "key": "#outlined-adornment-password", 
+            "value": "sFArvU8pmwUuz4K$"
+          },
+          "action": "change", 
+          "value": "sFArvU8pmwUuz4K$"
+        },
+        {
+          "label": "EVENT: Click 'sign_in_login_button'",
+          "object": { 
+            "key": "sign_in_login_button" 
+          },
+          "action": "click"
+        },
+
+        {
+          "action": "navigate",
+          "URL": "https://associate-dev.theatlastango.com/Profile/MyInformation",
+          "photo": true
+        },
+      
+        { 
+          "action": "lookup-by-test-id",
+          "key": "edit-button-function", 
+          "photo": true
+        },
+        {
+          "label": "EVENT: Click edit button",
+          "object": { 
+            "key": "edit-button-function" 
+          },
+          "action": "click"
+        },  
+        
+        {
+          "descriptionText": "triggers events on input fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-suffix",
+          "elementId": "text-field-suffix",
+          "photo": true
+        },
+        {
+          "label": "EVENT: Change 'text-field-suffix' to Sr.",
+          "object": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-suffix",
+            "elementId": "text-field-suffix",
+            "value": "Sr."
+          },
+          "action": "change",
+          "value": "Sr."
+        },
+        {
+          "descriptionText": "triggers events on input fields",
+          "label": "TEST: Does 'text-field-suffix.value' equal 'Sr.'",
+          "action": "exists",
+          "value": "Sr.",
+          "exception": null,
+          "fact": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-suffix",
+            "elementId": "text-field-suffix",
+            "value": "Sr."
+          }
+        },
+        {
+          "descriptionText": "triggers events on input fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-pronouns",
+          "elementId": "text-field-pronouns"
+        },
+        {
+          "label": "EVENT: Change 'text-field-pronouns' to she/her/hers",
+          "object": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-pronouns",
+            "elementId": "text-field-pronouns",
+            "value": "she/her/hers"
+          },
+          "action": "change",
+          "value": "she/her/hers"
+        },
+        {
+          "descriptionText": "triggers events on input fields",
+          "label": "TEST: Does 'text-field-pronouns.value' equal 'she/her/hers'",
+          "action": "exists",
+          "value": "she/her/hers",
+          "exception": null,
+          "fact": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-pronouns",
+            "elementId": "text-field-pronouns",
+            "value": "she/her/hers"
+          }
+        },
+        {
+          "descriptionText": "triggers events on input fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-addressLine20",
+          "elementId": "text-field-addressLine20"
+        },
+        {
+          "label": "EVENT: Change 'text-field-addressLine20' to addressline2",
+          "object": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-addressLine20",
+            "elementId": "text-field-addressLine20",
+            "value": "addressline2"
+          },
+          "action": "change",
+          "value": "addressline2"
+        },
+        {
+          "descriptionText": "triggers events on input fields",
+          "label": "TEST: Does 'text-field-addressLine20.value' equal 'addressline2'",
+          "action": "exists",
+          "value": "addressline2",
+          "exception": null,
+          "fact": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-addressLine20",
+            "elementId": "text-field-addressLine20",
+            "value": "addressline2"
+          }
+        },
+        {
+          "descriptionText": "triggers events on input fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-city0",
+          "elementId": "text-field-city0"
+        },
+        {
+          "label": "EVENT: Change 'text-field-city0' to Atlanta",
+          "object": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-city0",
+            "elementId": "text-field-city0",
+            "value": "Atlanta"
+          },
+          "action": "change",
+          "value": "Atlanta"
+        },
+        {
+          "descriptionText": "triggers events on input fields",
+          "label": "TEST: Does 'text-field-city0.value' equal 'Atlanta'",
+          "action": "exists",
+          "value": "Atlanta",
+          "exception": null,
+          "fact": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-city0",
+            "elementId": "text-field-city0",
+            "value": "Atlanta"
+          }
+        },
+        {
+          "descriptionText": "triggers events on input fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-zipCode0",
+          "elementId": "text-field-zipCode0"
+        },
+        {
+          "label": "EVENT: Change 'text-field-zipCode0' to 12345",
+          "object": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-zipCode0",
+            "elementId": "text-field-zipCode0",
+            "value": "12345"
+          },
+          "action": "change",
+          "value": "12345"
+        },
+        {
+          "descriptionText": "triggers events on input fields",
+          "label": "TEST: Does 'text-field-zipCode0.value' equal '12345'",
+          "action": "exists",
+          "value": "12345",
+          "exception": null,
+          "fact": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-zipCode0",
+            "elementId": "text-field-zipCode0",
+            "value": "12345"
+          }
+        },
+        {
+          "label": "EVENT: Blur 'text-field-zipCode0'",
+          "object": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-zipCode0",
+            "elementId": "text-field-zipCode0",
+            "value": "12345"
+          },
+          "action": "blur"
+        },
+        {
+          "descriptionText": "triggers events on input fields",
+          "action": "lookup-by-test-id",
+          "key": "text-field-state0" 
+        },
+
+        {
+          "label": "EVENT: Change 'text-field-state0' to Texas",
+          "object": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-state0",
+            "elementId": "text-field-state0",
+            "value": "Texas"
+          },
+          "action": "change",
+          "value": "Texas"
+        },
+
+ 
+        {
+          "descriptionText": "triggers events on input fields",
+          "label": "TEST: Does 'text-field-state0.value' equal 'Texas'",
+          "action": "exists",
+          "value": "Texas",
+          "exception": null,
+          "fact": {
+            "descriptionText": "triggers events on input fields",
+            "key": "text-field-state0",
+            "elementId": "text-field-state0",
+            "value": "Texas"
+          }
+        } 
+      ]
+    }
+  }
