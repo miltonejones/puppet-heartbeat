@@ -1,0 +1,63 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-puppeteerstudio-dev-112519-authRole",
+      "UnauthRoleArn": "arn:aws:iam::123823813021:role/amplify-puppeteerstudio-dev-112519-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::123823813021:role/amplify-puppeteerstudio-dev-112519-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-puppeteerstudio-dev-112519-deployment",
+      "UnauthRoleName": "amplify-puppeteerstudio-dev-112519-unauthRole",
+      "StackName": "amplify-puppeteerstudio-dev-112519",
+      "StackId": "arn:aws:cloudformation:us-east-1:123823813021:stack/amplify-puppeteerstudio-dev-112519/11a1b940-a097-11ec-9553-0eea388cb225",
+      "AmplifyAppId": "dt9lf89sbp2vj"
+    }
+  },
+  "hosting": {
+    "amplifyhosting": {
+      "service": "amplifyhosting",
+      "type": "cicd",
+      "lastPushTimeStamp": "2022-03-10T17:30:44.529Z"
+    }
+  },
+  "auth": {
+    "puppeteerstudiod8947a12": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-puppeteerstudio-dev-112519-deployment/amplify-cfn-templates/auth/puppeteerstudiod8947a12-cloudformation-template.json",
+        "logicalId": "authpuppeteerstudiod8947a12"
+      },
+      "lastPushTimeStamp": "2022-03-10T20:58:24.217Z",
+      "output": {
+        "UserPoolId": "us-east-1_CEIxdmOZi",
+        "AppClientIDWeb": "5ndie7oealmp94kodbr9o8ormb",
+        "AppClientID": "617ukd1cujpkhup3jkfacc7m7i",
+        "IdentityPoolId": "us-east-1:66a9d19c-8199-4bf7-bd90-39765377cfc4",
+        "UserPoolArn": "arn:aws:cognito-idp:us-east-1:123823813021:userpool/us-east-1_CEIxdmOZi",
+        "IdentityPoolName": "puppeteerstudiod8947a12_identitypool_d8947a12__dev",
+        "UserPoolName": "puppeteerstudiod8947a12_userpool_d8947a12"
+      },
+      "lastPushDirHash": "CKu2YJ4v6pAUnNAX4JDZRBAJRpY="
+    }
+  }
+}

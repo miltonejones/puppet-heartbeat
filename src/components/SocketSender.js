@@ -108,22 +108,25 @@ class SocketSender extends React.Component {
 
   sendMessage(json) {
     console.log('sending', json);
-    client.send(JSON.stringify(json));
+    client.readyState === 1 && client.send(JSON.stringify(json));
   }
 
   transformSteps (steps) {
     return ((out) => {
-      steps.filter(f => !!f.action).map (s => out = out.concat(transform(s)))
+      steps
+        .filter(f => !!f.action)
+        .map (s => out = out.concat(transform(s)))
       return out;
-    })([])
+    })([]);
   }
 
   sendCommand(id) {
     const { puppetML, createdTests } = this.state;
-    const puppetL = createdTests.find(f => f.testName === id);
-    //console.log (JSON.stringify(puppetL, 0, 2))
-    puppetL.steps = this.transformSteps( puppetL.steps)   
-     console.log (JSON.stringify(puppetL, 0, 2))
+    const puppetL = createdTests.find(f => f.testName === id); 
+
+    // convert "puppetML" (used only in the browser) to "puppetL"
+    puppetL.steps = this.transformSteps(puppetL.steps);
+
     this.sendMessage({
       action: 'exec',
       data: {
@@ -158,35 +161,16 @@ class SocketSender extends React.Component {
    componentDidMount() {
       this.mountClient();
       this.populate()
-  }
+  } 
 
-  setCache(createdTests) {
-    this.setState( { createdTests });
-    return localStorage.setItem(COOKIE_NAME, JSON.stringify(createdTests)) 
-  }
-
-  async getCache() {
-    const now = await getTestSuites();
-    return now.Items;
-  }
-
-  addTest (test) { 
-    // const { createdTests: existingTests } = this.state;
-    // const createdTests = existingTests
-    //   .filter(m => m.testName !== test.testName)
-    //   .concat({ ...test, markup: !0 });
-    // this.setCache(createdTests) 
-    alert (test.suiteID)
+  addTest (test) {  
     saveTestSuite(test).then (this.populate.bind(this));
   }
 
-   populate () {
-
-    getTestSuites().then(now => {
-      console.log ({now})
-      this.setCache(now.Items);
+  populate () {
+    getTestSuites().then(req => { 
+      this.setState( { createdTests: req.Items });
     });
-     
   }
 
   render() {
@@ -213,13 +197,13 @@ class SocketSender extends React.Component {
       <em>associate-ui</em>
     ]
     const header = <>   
-        <Breadcrumbs separator="›" aria-label="breadcrumb">
+      <Breadcrumbs separator="›" aria-label="breadcrumb">
         {breadcrumbs}
       </Breadcrumbs>
       <Box><Typography variant="h4">associate-ui</Typography></Box>
       <Box pb={2}><Typography variant="subtitle1">This page lists all tests running on the Puppeteer Server</Typography></Box>
       <Divider sx={{mb: 2}} />
-      </>
+    </>
 
     const execRunning = !!progress && progress < 100;
     const execDisabled = !currentTest || execRunning
@@ -231,25 +215,17 @@ class SocketSender extends React.Component {
     const { showCode } = controlCodeDialog(dialogState, this.setState.bind(this))
 
     if (!createdTests) return <em>waiting...</em>
- 
+ console.log ({createdTests})
     const createdTestNames = createdTests.map(t => t.testName);
     const testList = createdTestNames;
     const createdTest = createdTests.find(f => f.testName === currentTest) ?? 
       {testName: null, steps: []}
 
-    const AddIcon = !!createdTest.steps.length ? Edit : Add;
-    // if (!tests?.length) {
-    //   return <Stack spacing={2}>
-    //     {header}
-    //     <Alert className="flex center" severity="error">
-    //     Could not connect to Puppeteer server. Go tell Milton to turn his laptop on!!!
-    //       <Button sx={{ml: 4}} variant="contained" color="error" onClick={() => window.location.reload()}>try again</Button>
-    //     </Alert>
-    //   </Stack>
-    // }
+    const AddIcon = !!createdTest.steps.length ? Edit : Add; 
+
     return (
       <>
-      {header}
+        {header}
 
         {/* toolbar */}
         <Card className="card-body flex center">
@@ -260,11 +236,11 @@ class SocketSender extends React.Component {
             onChange={e => this.setState({currentTest: e})}
             testList={testList}
           />
-         <Button sx={{mr: 1}}  onClick={() => this.sendCommand(currentTest)} disabled={execDisabled} 
-        variant="contained" color="error"
-         >Run <ButtonIcon className={buttonClass} sx={{ml: 1}} /></Button>
-        {!execDisabled &&( <IconButton onClick={() => this.setState({showJest: !showJest})} ><Settings/></IconButton>)}
-        <IconButton onClick={() => this.setState({showEdit: !showEdit})} sx={{mr: 3}} ><AddIcon/></IconButton>
+          <Button sx={{mr: 1}}  onClick={() => this.sendCommand(currentTest)} disabled={execDisabled} 
+            variant="contained" color="error"
+          >Run <ButtonIcon className={buttonClass} sx={{ml: 1}} /></Button>
+          {!execDisabled &&( <IconButton onClick={() => this.setState({showJest: !showJest})} ><Settings/></IconButton>)}
+          <IconButton onClick={() => this.setState({showEdit: !showEdit})} sx={{mr: 3}} ><AddIcon/></IconButton>
           <hr />
         </Card>
 
@@ -279,7 +255,7 @@ class SocketSender extends React.Component {
           </Card>
         </Collapse>
  
-        {/* jest import card */}
+        {/* test cms card */}
         <Collapse in={showEdit}>
           <Card className="card-body" sx={{p: 2}} >
             <PuppetLConfigForm 
@@ -296,24 +272,29 @@ class SocketSender extends React.Component {
 
         {/* test run panel */}
         <Card className="card-body" sx={{ minHeight: 300 }}>
-          <Grid container>
-          {!!currentTest &&(  <Grid item xs={12}>
-            <Stack>
-            <Typography sx={{mt: 1, ml: 2}} variant="h6">
-                Test: "{currentTest}"
-              </Typography>
-              
-            <Typography sx={{mb: 1, ml: 2}}  variant="subtitle1">
-                {execRunning ? 'Please wait while the test completes...' : 'Click Run to start the test'}
-              </Typography>
-              
-            </Stack>
-              </Grid>)}
+          <Grid container>  
+
+            {/* test panel - header */}
+            {!!currentTest && (  <Grid item xs={12}>
+              <Stack>
+                <Typography sx={{mt: 1, ml: 2}} variant="h6">
+                  Test: "{currentTest}"
+                </Typography>
+                
+                <Typography sx={{mb: 1, ml: 2}}  variant="subtitle1">
+                  {execRunning ? 'Please wait while the test completes...' : 'Click Run to start the test'}
+                </Typography> 
+              </Stack>
+            </Grid>
+            )}
+
+            {/* test panel - preview screen column */}
             <Grid
               item
               className="flex"
               xs={4} 
             >
+
               {!steps && (
                 <Box mt={6} ml={4}>
                   <Typography mt={4} variant="subtitle1">
@@ -321,13 +302,14 @@ class SocketSender extends React.Component {
                   </Typography>
                 </Box>
               )}
+
               {!!steps && !thumbnail && (
-                  <Box mt={6} ml={4}>
-                    <LinearProgress variant="indeterminate"   />
-                    <Typography mt={4} variant="subtitle1">
-                      Waiting for first image...
-                    </Typography>
-                  </Box>
+                <Box mt={6} ml={4}>
+                  <LinearProgress variant="indeterminate"   />
+                  <Typography mt={4} variant="subtitle1">
+                    Waiting for first image...
+                  </Typography>
+                </Box>
               )}
               {!!thumbnail && (
                 <Stack mt={6} ml={4} className="preview-stack">
@@ -349,6 +331,8 @@ class SocketSender extends React.Component {
                 </Stack>
               )}
             </Grid>
+
+            {/* test panel - progress stepper column  */}
             <Grid item pt={5} xs={4}>
               <Stepper mt={5} activeStep={activeStep} orientation="vertical">
                 {steps?.map((label, index) => (
@@ -358,23 +342,22 @@ class SocketSender extends React.Component {
                 ))}
               </Stepper>
             </Grid>
+
+            {/* test panel - progress bar column */}
             <Grid item p={5} xs={4}>
              <Stack mt={4} className="progress-stack">
               <Typography sx={{p: 1}} variant="subtitle1">{message || 'Ready.'}</Typography>
-
               {!!progress && (
                 <Box mt={2} mb={1}>
                   <LinearProgress variant="determinate" value={progress} />
                 </Box>
               )}
-             </Stack>
-              {!!actionText && execRunning &&
-                <fieldset className="code-block"><legend>Test Code</legend>
-               <Box className="code-block-inner"> <pre>{actionText}</pre> </Box>
-              </fieldset>
-            }
+             </Stack> 
             </Grid>
           </Grid>
+
+
+          {/* results panel opens when job is almost done */}
           {!!outcomes.length && (
             <Collapse in={progress > 95}>
               <Divider sx={{mt: 4, mb: 4}}>Test Results</Divider>
@@ -384,9 +367,11 @@ class SocketSender extends React.Component {
                   <SocketCard key={i} {...outcome} showCode={showCode}/>
                 ))}
               </Box>
+              
             </Collapse>
           )}
         </Card> 
+
         <CodeDialog {...dialogState}/>
       </>
     );
@@ -398,12 +383,11 @@ export default SocketSender;
 function TestSelect ({testList, value ,onChange}) {
   if (!testList?.length) return <i />
   return (<>
-  
   <FormControl sx={{ m: 1, minWidth: 120 }}>
     <InputLabel >Available Tests</InputLabel>
     <Select  
-    style={{minWidth: 240}}
-    size="small"
+      style={{minWidth: 240}}
+      size="small"
       value={value}
       label="Age"
       onChange={e => onChange(e.target.value)}
@@ -412,7 +396,6 @@ function TestSelect ({testList, value ,onChange}) {
         <em>None</em>
       </MenuItem>
       {testList.map(e => <MenuItem value={e} key={e}>{e}</MenuItem>)}
-      
     </Select> 
   </FormControl>
   </>)
@@ -422,13 +405,13 @@ function TestSelect ({testList, value ,onChange}) {
 function CodeDialog ({code, open, onClose}) {
   return <><Dialog  onClose={onClose} open={open}> 
   <DialogTitle>Test Code</DialogTitle>
- <Box p={3}>
- <fieldset className="code-block">
-    <legend>copy</legend>
-    <Box className="code-block-inner"> <pre>{code}</pre> </Box>
-  </fieldset>
- </Box>
-</Dialog></>
+    <Box p={3}>
+      <fieldset className="code-block">
+        <legend>copy</legend>
+        <Box className="code-block-inner"> <pre>{code}</pre> </Box>
+      </fieldset>
+    </Box>
+  </Dialog></>
 }
 
 // can't use a hook, so using a makeshift one
@@ -444,15 +427,4 @@ function controlCodeDialog(state, setState) {
   }
   return { state, showCode }
 }
-
-/**
- * click test-id [edit-button-function]
-Action:
-click test-id [edit-button-function]
-Action:
-click xpath [(//*[text()='Cancel'])]
-Action:
-click xpath [(//*[@data-index='7'])]
-Action:
-click xpath [(//*[text()='Update'])]
- */
+ 
