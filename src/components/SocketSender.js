@@ -110,11 +110,18 @@ class SocketSender extends React.Component {
     client.send(JSON.stringify(json));
   }
 
+  transformSteps (steps) {
+    return ((out) => {
+      steps.filter(f => !!f.action).map (s => out = out.concat(transform(s)))
+      return out;
+    })([])
+  }
+
   sendCommand(id) {
     const { puppetML, createdTests } = this.state;
     const puppetL = createdTests.find(f => f.testName === id);
     //console.log (JSON.stringify(puppetL, 0, 2))
-    puppetL.steps =  puppetL.steps.map (e => transform(e))  
+    puppetL.steps = this.transformSteps( puppetL.steps)   
      console.log (JSON.stringify(puppetL, 0, 2))
     this.sendMessage({
       action: 'exec',
