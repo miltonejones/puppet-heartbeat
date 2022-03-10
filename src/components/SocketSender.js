@@ -27,6 +27,7 @@ import SocketCard from './SocketCard';
 import { PlayCircle, Sync, Settings , Add, Edit }  from '@mui/icons-material';
 import JestCard from './JestCard';
 import PuppetLConfigForm, { transform } from './PuppetLConfigForm';
+import {saveTestSuite, deleteTestSuite, getTestSuite, getTestSuites} from '../connector/puppetConnector'
 // import StepContent from '@mui/material/StepContent';
 
 const SOCKET_URI =
@@ -44,9 +45,9 @@ class SocketSender extends React.Component {
       connected: false,
       ws: null,
       data: null,
-      showTextbox: true,
+      ready: false,
       outcomes: [],
-      createdTests: this.getCache() ,
+      createdTests: [] ,
       dialogState: {open: false}
     };
     this.openListener = this.openListener.bind(this);
@@ -145,17 +146,18 @@ class SocketSender extends React.Component {
     console.log('Disconnecting.');
     this.sendMessage({
       action: 'disconnect',
-    });
-    this.setCache(this.getCache() )
+    }); 
   }
 
-  mountClient() {
+  async mountClient() {
     client.addEventListener('open', this.openListener);
     client.addEventListener('message', this.messageListener);
-    client.addEventListener('close', this.closeListener);
+    client.addEventListener('close', this.closeListener); 
   }
-  componentDidMount() {
-     this.mountClient();
+  
+   componentDidMount() {
+      this.mountClient();
+      this.populate()
   }
 
   setCache(createdTests) {
@@ -163,8 +165,9 @@ class SocketSender extends React.Component {
     return localStorage.setItem(COOKIE_NAME, JSON.stringify(createdTests)) 
   }
 
-  getCache() {
-    return JSON.parse( localStorage.getItem(COOKIE_NAME)  || '[]');
+  async getCache() {
+    const now = await getTestSuites();
+    return now.Items;
   }
 
   addTest (test) { 
@@ -173,6 +176,15 @@ class SocketSender extends React.Component {
       .filter(m => m.testName !== test.testName)
       .concat({ ...test, markup: !0 });
     this.setCache(createdTests) 
+  }
+
+  async populate () {
+
+    getTestSuites().then(now => {
+      console.log ({now})
+      this.setCache(now.Items);
+    });
+     
   }
 
   render() {
@@ -190,7 +202,8 @@ class SocketSender extends React.Component {
       dialogState,
       showJest,
       showEdit,
-      createdTests
+      createdTests,
+      ready
     } = this.state;
     
     const breadcrumbs = [
@@ -215,8 +228,8 @@ class SocketSender extends React.Component {
     const buttonClass = execRunning ? 'spin' : '';
     const { showCode } = controlCodeDialog(dialogState, this.setState.bind(this))
 
-
-      
+    if (!createdTests) return <em>waiting...</em>
+ 
     const createdTestNames = createdTests.map(t => t.testName);
     const testList = [...tests, ...createdTestNames];
     const createdTest = createdTests.find(f => f.testName === currentTest) ?? 
