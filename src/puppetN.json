@@ -1,0 +1,87 @@
+{
+    "testName": "Log in to website",
+    "steps": [
+      [
+        {
+          "action": "navigate",
+          "URL": "https://associate-dev.theatlastango.com/Signin"
+        }
+      ],
+      [
+        {
+          "action": "lookup-by-selector",
+          "key": "input[name=email]"
+        },
+        {
+          "label": "change input[name=email] to miltonejonesthelessor@gmail.com",
+          "object": {
+            "key": "input[name=email]",
+            "value": "miltonejonesthelessor@gmail.com"
+          },
+          "action": "change",
+          "value": "miltonejonesthelessor@gmail.com",
+          "photo": true
+        }
+      ],
+      [
+        {
+          "action": "lookup-by-selector",
+          "key": "#outlined-adornment-password"
+        },
+        {
+          "label": "change #outlined-adornment-password to sFArvU8pmwUuz4K$",
+          "object": {
+            "key": "#outlined-adornment-password",
+            "value": "sFArvU8pmwUuz4K$"
+          },
+          "action": "change",
+          "value": "sFArvU8pmwUuz4K$",
+          "photo": true
+        }
+      ],
+      [
+        {
+          "action": "lookup-by-test-id",
+          "key": "sign_in_login_button"
+        },
+        {
+          "label": "click sign_in_login_button ",
+          "object": {
+            "key": "sign_in_login_button",
+            "value": ""
+          },
+          "action": "click",
+          "value": "",
+          "photo": true
+        }
+      ],
+      [
+        {
+          "action": "navigate",
+          "URL": "https://associate-dev.theatlastango.com/Profile/MyInformation"
+        }
+      ],
+      [
+        {
+          "action": "lookup-by-test-id",
+          "key": "edit-button-function"
+        },
+        {
+          "label": "click edit-button-function ",
+          "object": {
+            "key": "edit-button-function",
+            "value": ""
+          },
+          "action": "click",
+          "value": "",
+          "photo": true
+        }
+      ],
+      [
+        {
+          "edit": true
+        }
+      ]
+    ],
+    "markup": true
+  }

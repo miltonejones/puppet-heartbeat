@@ -53,7 +53,7 @@ export default function JestCard ({ onSave, onCancel }) {
     {Object.keys(puppetSteps).map(key => <>
 
       <Divider textAlign="left" style={{textTransform: 'capitalize', margin: 12}}>{key}</Divider>
-      <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+      <Tabs value={value} onChange={handleChange}  >
         <Tab label="Steps" />
         <Tab label="PuppetL" />
       </Tabs>

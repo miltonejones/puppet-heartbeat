@@ -24,14 +24,17 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Card from '@mui/material/Card';
 import SocketCard from './SocketCard';
-import { PlayCircle, Sync, Settings }  from '@mui/icons-material';
+import { PlayCircle, Sync, Settings , Add }  from '@mui/icons-material';
 import JestCard from './JestCard';
+import PuppetLConfigForm, { transform } from './PuppetLConfigForm';
 // import StepContent from '@mui/material/StepContent';
 
 const SOCKET_URI =
   'wss://2zoxhl25v2.execute-api.us-east-1.amazonaws.com/production';
 
 let client = new WebSocket(SOCKET_URI);
+
+const COOKIE_NAME = 'test-name-list'
 
 class SocketSender extends React.Component {
   constructor(props) {
@@ -43,6 +46,7 @@ class SocketSender extends React.Component {
       data: null,
       showTextbox: true,
       outcomes: [],
+      createdTests: this.getCache() ,
       dialogState: {open: false}
     };
     this.openListener = this.openListener.bind(this);
@@ -107,12 +111,16 @@ class SocketSender extends React.Component {
   }
 
   sendCommand(id) {
-    const { puppetL } = this.state;
+    const { puppetML, createdTests } = this.state;
+    const puppetL = createdTests.find(f => f.testName === id);
+    //console.log (JSON.stringify(puppetL, 0, 2))
+    puppetL.steps =  puppetL.steps.map (e => transform(e))  
+     console.log (JSON.stringify(puppetL, 0, 2))
     this.sendMessage({
       action: 'exec',
       data: {
         id,
-        puppetL
+        puppetL 
       },
     });
     this.setState({ actionText: !1, thumbnail: !1, progress: 0 });
@@ -131,6 +139,7 @@ class SocketSender extends React.Component {
     this.sendMessage({
       action: 'disconnect',
     });
+    this.setCache(this.getCache() )
   }
 
   mountClient() {
@@ -139,12 +148,27 @@ class SocketSender extends React.Component {
     client.addEventListener('close', this.closeListener);
   }
   componentDidMount() {
-    this.mountClient();
+    // this.mountClient();
+  }
+
+  setCache(createdTests) {
+    this.setState( { createdTests });
+    return localStorage.setItem(COOKIE_NAME, JSON.stringify(createdTests)) 
+  }
+
+  getCache() {
+    return JSON.parse( localStorage.getItem(COOKIE_NAME)  || '[]');
+  }
+
+  addTest (test) { 
+    const { createdTests: existingTests } = this.state;
+    const createdTests = existingTests.concat({ ...test, markup: !0 });
+    this.setCache(createdTests) 
   }
 
   render() {
     const {
-      tests,
+      tests = [],
       message,
       thumbnail,
       steps,
@@ -155,7 +179,9 @@ class SocketSender extends React.Component {
       currentTest,
       actionText,
       dialogState,
-      showJest
+      showJest,
+      showEdit,
+      createdTests
     } = this.state;
     
     const breadcrumbs = [
@@ -179,15 +205,20 @@ class SocketSender extends React.Component {
     const ButtonIcon = execRunning ? Sync : PlayCircle;
     const buttonClass = execRunning ? 'spin' : '';
     const { showCode } = controlCodeDialog(dialogState, this.setState.bind(this))
-    if (!tests?.length) {
-      return <Stack spacing={2}>
-        {header}
-        <Alert className="flex center" severity="error">
-        Could not connect to Puppeteer server. Go tell Milton to turn his laptop on!!!
-          <Button sx={{ml: 4}} variant="contained" color="error" onClick={() => window.location.reload()}>try again</Button>
-        </Alert>
-      </Stack>
-    }
+
+
+      console.log ({createdTests})
+    const createdTestNames = createdTests.map(t => t.testName);
+    const testList = [...tests, ...createdTestNames];
+    // if (!tests?.length) {
+    //   return <Stack spacing={2}>
+    //     {header}
+    //     <Alert className="flex center" severity="error">
+    //     Could not connect to Puppeteer server. Go tell Milton to turn his laptop on!!!
+    //       <Button sx={{ml: 4}} variant="contained" color="error" onClick={() => window.location.reload()}>try again</Button>
+    //     </Alert>
+    //   </Stack>
+    // }
     return (
       <>
       {header}
@@ -199,12 +230,13 @@ class SocketSender extends React.Component {
           <TestSelect
             value={currentTest}
             onChange={e => this.setState({currentTest: e})}
-            testList={tests}
+            testList={testList}
           />
          <Button sx={{mr: 1}}  onClick={() => this.sendCommand(currentTest)} disabled={execDisabled} 
         variant="contained" color="error"
          >Run <ButtonIcon className={buttonClass} sx={{ml: 1}} /></Button>
-        {!execDisabled &&( <IconButton onClick={() => this.setState({showJest: !showJest})} sx={{mr: 3}} ><Settings/></IconButton>)}
+        {!execDisabled &&( <IconButton onClick={() => this.setState({showJest: !showJest})} ><Settings/></IconButton>)}
+        <IconButton onClick={() => this.setState({showEdit: !showEdit})} sx={{mr: 3}} ><Add/></IconButton>
           <hr />
         </Card>
 
@@ -214,8 +246,19 @@ class SocketSender extends React.Component {
             <JestCard 
               onCancel={() => this.setState({showJest: !showJest}) }
               onSave={ puppetL => {
-                this.setState({ puppetL });
-                this.setState({showJest: !showJest});
+                this.setState({ puppetL, showJest: !showJest }); 
+              } }/>
+          </Card>
+        </Collapse>
+
+        {/* jest import card */}
+        <Collapse in={showEdit}>
+          <Card className="card-body" sx={{p: 2}} >
+            <PuppetLConfigForm 
+              onCancel={() => this.setState({showEdit: !showEdit}) }
+              onSave={ puppetML => {
+                this.addTest(puppetML)
+                this.setState({ puppetML, showEdit: !showEdit }); 
               } }/>
           </Card>
         </Collapse>
@@ -229,7 +272,7 @@ class SocketSender extends React.Component {
                 Test: "{currentTest}"
               </Typography>
               
-            <Typography sx={{mb: 1, ml: 2}}  variant="caption">
+            <Typography sx={{mb: 1, ml: 2}}  variant="subtitle1">
                 {execRunning ? 'Please wait while the test completes...' : 'Click Run to start the test'}
               </Typography>
               
@@ -322,7 +365,7 @@ class SocketSender extends React.Component {
 export default SocketSender;
 
 function TestSelect ({testList, value ,onChange}) {
-  if (!testList) return <i />
+  if (!testList?.length) return <i />
   return (<>
   
   <FormControl sx={{ m: 1, minWidth: 120 }}>
