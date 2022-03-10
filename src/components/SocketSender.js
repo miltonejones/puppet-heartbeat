@@ -171,14 +171,16 @@ class SocketSender extends React.Component {
   }
 
   addTest (test) { 
-    const { createdTests: existingTests } = this.state;
-    const createdTests = existingTests
-      .filter(m => m.testName !== test.testName)
-      .concat({ ...test, markup: !0 });
-    this.setCache(createdTests) 
+    // const { createdTests: existingTests } = this.state;
+    // const createdTests = existingTests
+    //   .filter(m => m.testName !== test.testName)
+    //   .concat({ ...test, markup: !0 });
+    // this.setCache(createdTests) 
+    alert (test.suiteID)
+    saveTestSuite(test).then (this.populate.bind(this));
   }
 
-  async populate () {
+   populate () {
 
     getTestSuites().then(now => {
       console.log ({now})
@@ -231,11 +233,11 @@ class SocketSender extends React.Component {
     if (!createdTests) return <em>waiting...</em>
  
     const createdTestNames = createdTests.map(t => t.testName);
-    const testList = [...tests, ...createdTestNames];
+    const testList = createdTestNames;
     const createdTest = createdTests.find(f => f.testName === currentTest) ?? 
       {testName: null, steps: []}
 
-    const AddIcon = !!createdTest.testName ? Edit : Add;
+    const AddIcon = !!createdTest.steps.length ? Edit : Add;
     // if (!tests?.length) {
     //   return <Stack spacing={2}>
     //     {header}
@@ -442,3 +444,15 @@ function controlCodeDialog(state, setState) {
   }
   return { state, showCode }
 }
+
+/**
+ * click test-id [edit-button-function]
+Action:
+click test-id [edit-button-function]
+Action:
+click xpath [(//*[text()='Cancel'])]
+Action:
+click xpath [(//*[@data-index='7'])]
+Action:
+click xpath [(//*[text()='Update'])]
+ */

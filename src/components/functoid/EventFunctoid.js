@@ -5,8 +5,8 @@ import ChipGroup from '../ChipGroup';
 const Events = ['click', 'change', 'blur']
 const Bys = ['selector', 'element-id', 'test-id', 'xpath']
 
-export default function EventFunctoid ({ edit, event, by, actionKey: key, onSave }) {
-    const [value, setValue] = React.useState('')
+export default function EventFunctoid ({ edit, event, by, value, actionKey: key, onSave }) {
+    const [eventValue, setValue] = React.useState(value)
     const [Event, setEvent] = React.useState(event)
     const [By, setBy] = React.useState(by)
     const [Key, setKey] = React.useState(key)
@@ -16,7 +16,7 @@ export default function EventFunctoid ({ edit, event, by, actionKey: key, onSave
             event: Event,
             by: By,
             actionKey: Key,
-            value
+            value: eventValue
         } 
         onSave(step)
     }
@@ -44,7 +44,7 @@ export default function EventFunctoid ({ edit, event, by, actionKey: key, onSave
             sx={{ml: 2}}
             placeholder={`Change value`} 
             onChange={e => setValue(e.target.value)} 
-            value={ value } />
+            value={ eventValue } />
     </Collapse>
 
 

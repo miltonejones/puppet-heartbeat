@@ -46,6 +46,7 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML, getSteps
 
   const onAdd = () => {
     const testObj = {
+      suiteID: puppetML?.suiteID,
       testName,
       steps
     }; 
@@ -89,9 +90,9 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML, getSteps
         Steps in  "{testName}"
       </Typography>
       
-    {/* <Typography sx={{mb: 1, ml: 2}}  variant="subtitle1">
-        {execRunning ? 'Please wait while the test completes...' : 'Click Run to start the test'}
-      </Typography> */}
+   {!!puppetML.suiteID &&( <Typography sx={{mb: 1, ml: 2}}  variant="caption">
+        <b>Test ID:</b> {puppetML.suiteID}
+      </Typography>)}
       
     </Stack>}
     <Divider sx={{mb: 2, mt: 2}}/>
@@ -124,7 +125,7 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML, getSteps
    {!!steps.length &&( <Box mb={12} className="flex">
       <Box sx={{flexGrow: 1}} />
      <Button sx={{mr: 1}} variant="outlined" onClick={onCancel}>cancel</Button>
-     <Button sx={{mr: 1}} variant="contained" onClick={onAdd}>add test</Button>
+     <Button sx={{mr: 1}} variant="contained" onClick={onAdd}>{!!puppetML?'save':'add'} test</Button>
     </Box>)}
           
 
