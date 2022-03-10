@@ -1,18 +1,25 @@
 import React from 'react'; 
 import { Functoid } from './functoid'
 import ChipGroup from './ChipGroup';
+import { ReallyButton, SimpleMenu } from './Control';
+import { DeleteForever, MoreVert }  from '@mui/icons-material';
 
 import { Box, Tab, Tabs,  TextField, Stack, Typography, Button, Divider } from '@mui/material';
 
-export default function PuppetLConfigForm ({onSave, onCancel, puppetML}) {
+const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
+
+export default function PuppetLConfigForm ({onSave, onCancel, puppetML, getSteps, existingTests}) {
   const [steps, setSteps] = React.useState(puppetML?.steps || [])
   const [testName, setTestName] = React.useState('')
   const [value, setValue] = React.useState(0);
 
   React.useEffect(() => {
-    !!puppetML && puppetML.testName !== testName && (() => {
+    !!puppetML?.testName && puppetML.testName !== testName && (() => {
       setTestName(puppetML.testName);
-      setSteps(puppetML.steps)
+      setSteps(puppetML.steps.map(s => {
+        s.ID = s.ID || uniqueId();
+        return s;
+      }))
     })()
   }, [puppetML, testName])
 
@@ -20,11 +27,23 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML}) {
     setValue(newValue);
   };
 
-	const addStep = () => 	setSteps(s => s.concat({edit: true}));
+	const addStep = () => 	setSteps(s => s.concat({edit: true, ID: uniqueId() }));
+
+  const onDelete = (i) => {
+    const out = [];
+    steps.map((f, k) => {
+      if (k !== i) {
+        out.push(f)
+      }
+    } ) ;
+    setSteps(out);
+  }
+
 	const onCreate = (step, i) => {
 		setSteps(s => s.map((e, k) => k == i ? step : e));
 		addStep()
 	}
+
   const onAdd = () => {
     const testObj = {
       testName,
@@ -41,11 +60,23 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML}) {
     {!steps.length && (<>
       <Stack spacing={2} sx={{maxWidth: 500}}>
       <Typography> Name your test:</Typography>
+
+
+      <Box className="flex center">
+
       <TextField autoFocus 
+        size="small"
         placeholder="Enter a name for your test" label="Test Name" 
         value={testName} 
         onChange={e => setTestName(e.target.value)} />
       
+      <SimpleMenu disabled={!testName} onClick={i => {
+        const spec = existingTests[i];
+        const tst = getSteps(spec);
+        setSteps(tst.slice(0)); 
+      }} options={existingTests} label={!testName?'':`Import test for ${testName}`} icon={<MoreVert />} />
+      </Box>
+
       <Box>
         <Button sx={{mr: 1}} variant="outlined" onClick={onCancel}>cancel</Button>
         <Button sx={{mr: 1}}  variant="contained" onClick={addStep}>create</Button>
@@ -55,7 +86,7 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML}) {
 
     {!!testName && !!steps.length && <Stack>
     <Typography sx={{mt: 1, ml: 2}} variant="h6">
-        Tests in  "{testName}"
+        Steps in  "{testName}"
       </Typography>
       
     {/* <Typography sx={{mb: 1, ml: 2}}  variant="subtitle1">
@@ -71,7 +102,7 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML}) {
       </Tabs>
 
       {value === 0 && <Box mb={1}>
-      {steps.map((step,o) => <StepEdit key={o} index={o} step={step} onSave={onCreate}/>)}
+      {steps.map((step, o) => <StepEdit onDelete={onDelete} key={step.ID} index={o} step={step} onSave={onCreate}/>)}
     </Box>}
 
     {value === 1 && <Box mb={1}>
@@ -107,7 +138,7 @@ const actions = [
 	'expect'
 ]
 
-function StepEdit ({ step, onSave, index }) {
+function StepEdit ({ step, onSave, index, onDelete }) {
 	const { edit, action } = step;
 	const [type, setType] = React.useState(action)
  
@@ -119,6 +150,7 @@ function StepEdit ({ step, onSave, index }) {
 
 	{!!Component && (<Box className="flex center">
 		<Icon sx={{mr: 1}}/>
+    <ReallyButton icon={<DeleteForever />} onYes={() => onDelete(index)} />
 		<Component {...step} onSave={ v => onSave(v, index) } />
 		</Box>)}
 		

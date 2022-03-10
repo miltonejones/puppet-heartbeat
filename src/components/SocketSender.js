@@ -169,7 +169,9 @@ class SocketSender extends React.Component {
 
   addTest (test) { 
     const { createdTests: existingTests } = this.state;
-    const createdTests = existingTests.concat({ ...test, markup: !0 });
+    const createdTests = existingTests
+      .filter(m => m.testName !== test.testName)
+      .concat({ ...test, markup: !0 });
     this.setCache(createdTests) 
   }
 
@@ -266,6 +268,8 @@ class SocketSender extends React.Component {
         <Collapse in={showEdit}>
           <Card className="card-body" sx={{p: 2}} >
             <PuppetLConfigForm 
+              existingTests={createdTestNames}
+              getSteps={ s => createdTests.find(f => f.testName === s).steps }
               puppetML={createdTest}
               onCancel={() => this.setState({showEdit: !showEdit}) }
               onSave={ puppetML => {
