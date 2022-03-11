@@ -1,35 +1,58 @@
 import React from 'react'; 
-import { Chip, Collapse, Box, IconButton, Typography } from '@mui/material';
-import { Close, Check }  from '@mui/icons-material';
+import { Chip, Card, Stack, Collapse, IconButton, Button, Typography, Box } from '@mui/material';
+import { Close, Check, ExpandMore }  from '@mui/icons-material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
 
+function Panel ({header, on, tools, children, ...props}) {
+  return <Collapse in={on}><Card sx={{mb: 1, mt: 1}} { ...props}>
+      <Stack className="panel-content">
+        <Flex className="panel-header" 
+        ><Typography sx={{ mt: 1, ml: 2, mb: 1}} variant="h6">
+        {header}</Typography><Spacer />{tools
+        ?.map((e,q) => (<Box mr={2} key={q}>{e}</Box>))} </Flex>
+        <Box className="panel-body" >{children}</Box>
+      </Stack>
+  </Card></Collapse>
+}
 
-function SimpleMenu ({icon, label, options, disabled, onClick}) {
+
+function ActionsMenu (props) {
+  const [up, setUp] = React.useState(false);
+  const className = up ? 'flip up' : 'flip';
+  return <SimpleMenu 
+    {...props} 
+    onClose={setUp}
+    button={Button} 
+    icon={<>Actions <ExpandMore className={className} /></>} />
+}
+
+
+function SimpleMenu ({ options, bin, disabled, onClick, onClose, label, icon, button, ...props }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
+    onClose && onClose(true);
   };
   const handleClose = () => {
     setAnchorEl(null);
+    onClose && onClose(false);
   };
 
+  const Control = button || IconButton;
 
   return <>
      <Box sx={{ml: 2}} className="flex center">
      {label}
-      <IconButton
-      disabled={disabled}
-        id="basic-button"
-        aria-controls={open ? 'basic-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
+      <Control
+        disabled={disabled} 
         onClick={handleClick}
+        variant="outlined"
       >
         {icon}
-      </IconButton>
+      </Control>
      </Box>
       <Menu
         id="basic-menu"
@@ -43,7 +66,7 @@ function SimpleMenu ({icon, label, options, disabled, onClick}) {
         {options.map ((opt, i) => <MenuItem key={i} onClick={() => {
           onClick(i)
           handleClose()
-        }}>{opt}</MenuItem>)}
+        }} disabled={!!(bin & Math.pow(2, i))}>{opt}</MenuItem>)}
          
       </Menu>
   </>
@@ -75,7 +98,51 @@ function ReallyButton ({ icon, onYes }) {
     </Box>
 }
 
+function Frame({ offset = 0, children, style, ...props }) {
+  const [height, setHeight] = React.useState(null);
+  const ref = React.createRef();
+  React.useEffect(() => {
+    const { offsetTop } = ref.current;
+    console.log ({offsetTop, height})
+    !!offsetTop && setHeight(`calc(100vh - ${offsetTop}px - ${offset}px)`);
+  }, [ref]);
+  return ( 
+      <Cw {...props} style={{ ...style,  height }} ref={ref}>
+        {children}
+      </Cw> 
+  );
+}
+
+const Flex = ({
+    align: alignItems = 'center', 
+    justify: justifyContent,
+    children, 
+    ...props}) => {
+  const style = {
+    display: 'flex',
+    alignItems ,
+    justifyContent,
+    ...props.style
+  }
+  return <Box style={style} {...props}>{children}</Box>
+} 
+const Spacer = () => <Box sx={{flexGrow: 1}} />
+
+const Cw = React.forwardRef(({ children, ...props }, ref) => (
+  <Box ref={ref} {...props}>
+    {children}
+  </Box>
+));
+
+
+
+
 export {
+  ActionsMenu,
+  Flex,
+  Frame,
+  Panel,
   ReallyButton,
-  SimpleMenu
+  SimpleMenu,
+  Spacer
 }

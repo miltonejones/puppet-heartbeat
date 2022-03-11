@@ -1,8 +1,12 @@
 body {
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande',
     'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+  --toolbar-background: #fafafa;
+  --toolbar-border: #eaeaea;
   background-color: rgba(0, 0, 0, 0.1);
-  padding: 0 48px;
+  margin: 0;
+  overflow: hidden;
 }
 
 .card-body {
@@ -41,6 +45,11 @@ body {
 
  .dot.gold {
   background-color: gold;
+}
+
+.link:hover {
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .preview-body {
@@ -87,6 +96,87 @@ body {
   border-color: rgba(0,0,0,0.4);
   background-color: rgba(0,0,0,0.2);
 }
+
+.application-footer,
+.application-header {
+  height: 48px;
+  padding: 0 24px;
+  background-color: rgb(51, 6, 15);
+  color: white;
+}
+
+.application-footer {
+  height: 32px;
+}
+
+.application-body {
+  padding: 0 24px;
+  overflow: auto;
+}
+
+.bold {
+  font-weight: 900;
+}
+
+.white {
+  color: white;
+}
+
+.logo-font {
+  font-family: 'Syne Mono', monospace;
+  font-size: 1.2rem;
+}
+
+.grid {
+  width: 100%;
+}
+
+.grid th {
+  text-align: left;
+  font-size: .8rem;
+  padding: 8px 24px;
+  color:rgba(0, 0, 0, 0.4);
+  border-bottom: solid 2px rgba(0, 0, 0, 0.2);
+  background-color: var(--toolbar-background);
+}
+
+.grid td {
+  padding: 4px 24px;
+  margin: 0; 
+  border-bottom: solid 1px rgba(0, 0, 0, 0.2);
+}
+
+.grid td.checked {
+  padding: 4px;
+  text-align: right;
+}
+
+.panel-header {
+  background-color: var(--toolbar-background);
+  border-bottom: solid 1px var(--toolbar-border);
+}
+
+.flip {
+  transition: transform 0.2s linear !important;
+}
+
+.flip.up {
+  transform:rotate(180deg) !important;
+}
+
+.input-label {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  color: white !important;
+}
+
+.input-label input::placeholder {
+  text-overflow: ellipsis !important;
+  color: lime !important;
+} 
+
 
 @keyframes spin {
   from {

@@ -59,7 +59,7 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML, getSteps
   return <>
 
     {!steps.length && (<>
-      <Stack spacing={2} sx={{maxWidth: 500}}>
+      <Stack spacing={2} sx={{maxWidth: 500, m: 2}}>
       <Typography> Name your test:</Typography>
 
 
@@ -85,25 +85,25 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML, getSteps
       </Stack>
     </>)}
 
-    {!!testName && !!steps.length && <Stack>
+    {!!testName && !!steps.length && <Stack sx={{m: 2}}>
     <Typography sx={{mt: 1, ml: 2}} variant="h6">
         Steps in  "{testName}"
       </Typography>
       
    {!!puppetML.suiteID &&( <Typography sx={{mb: 1, ml: 2}}  variant="caption">
-        <b>Test ID:</b> {puppetML.suiteID}
+        <b>Test ID:</b> {puppetML.suiteID}  
       </Typography>)}
       
     </Stack>}
     <Divider sx={{mb: 2, mt: 2}}/>
 
-    <Tabs value={value} onChange={handleChange}  >
+    <Tabs sx={{m: 2}} value={value} onChange={handleChange}  >
         <Tab label="Steps" />
         <Tab label="PuppetML" />
         <Tab label="PuppetL" />
       </Tabs>
 
-      {value === 0 && <Box mb={1}>
+      {value === 0 && <Box m={2}>
       {steps.map((step, o) => <StepEdit onDelete={onDelete} key={step.ID} index={o} step={step} onSave={onCreate}/>)}
     </Box>}
 

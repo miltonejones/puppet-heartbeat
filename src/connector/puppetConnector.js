@@ -4,13 +4,20 @@ const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).subs
 const API_ENDPOINT = "https://habprc9pj4.execute-api.us-east-1.amazonaws.com/tests";
 
 const saveTestSuite = async (suite) => {
+  const modified = new Date().toString()
+
+  const meta = {
+    suiteID: suite.suiteID || uniqueId(),
+    created: suite.created || modified,
+    modified
+  };
+
   const requestOptions = {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    
-    // every testSuite gets a suiteID
-    body: JSON.stringify({ ...suite, suiteID: suite.suiteID || uniqueId() }),
+    headers: { "Content-Type": "application/json" }, 
+    body: JSON.stringify({ ...suite, ...meta }),
   };
+  
   const response = await fetch(API_ENDPOINT, requestOptions);
   return await response.json();
 };
