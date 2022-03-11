@@ -99,6 +99,7 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML, getSteps
 
     <Tabs value={value} onChange={handleChange}  >
         <Tab label="Steps" />
+        <Tab label="PuppetML" />
         <Tab label="PuppetL" />
       </Tabs>
 
@@ -112,7 +113,11 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML, getSteps
       <pre>
         {JSON.stringify(steps, 0, 2)}
       </pre>
-    </fieldset>
+    </fieldset> 
+    </Box>}
+
+    {value === 2 && <Box mb={1}>
+            
     <fieldset>
       <legend>transformed</legend>
       <pre>
@@ -120,7 +125,6 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML, getSteps
       </pre>
     </fieldset>
     </Box>}
-
 
    {!!steps.length &&( <Box mb={12} className="flex">
       <Box sx={{flexGrow: 1}} />

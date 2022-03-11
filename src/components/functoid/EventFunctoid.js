@@ -31,6 +31,7 @@ export default function EventFunctoid ({ edit, event, by, value, actionKey: key,
     </Box>
     
     {!!Event && !!By && <TextField 
+        autoFocus
         size="small" 
         sx={{ml: 2}}
         placeholder={`Enter ${By}`} 
@@ -40,6 +41,7 @@ export default function EventFunctoid ({ edit, event, by, value, actionKey: key,
 
     <Collapse orientation="horizontal" in={Event==='change' && !!By && !!Key}>
         <TextField 
+            autoFocus
             size="small" 
             sx={{ml: 2}}
             placeholder={`Change value`} 

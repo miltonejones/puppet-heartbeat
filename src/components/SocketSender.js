@@ -193,29 +193,30 @@ class SocketSender extends React.Component {
     } = this.state;
     
     const breadcrumbs = [
-      <b>Puppet Heartbeat</b>,
+      <b>Puppeteer Studio</b>,
       <em>associate-ui</em>
-    ]
+    ];
+
     const header = <>   
       <Breadcrumbs separator="›" aria-label="breadcrumb">
         {breadcrumbs}
       </Breadcrumbs>
       <Box><Typography variant="h4">associate-ui</Typography></Box>
-      <Box pb={2}><Typography variant="subtitle1">This page lists all tests running on the Puppeteer Server</Typography></Box>
+      <Box pb={2}><Typography variant="subtitle2">This page lists all tests created by you and the community</Typography></Box>
       <Divider sx={{mb: 2}} />
     </>
 
     const execRunning = !!progress && progress < 100;
     const execDisabled = !currentTest || execRunning
     const headerText = !connected
-      ? 'Waiting to connect...'
-      : 'Select a test to run.';
+      ? 'Disconnected. Please start PuppetStudio on your computer.'
+      : <><Box className="dot green" /> Connected. Select a test to run.</>;
     const ButtonIcon = execRunning ? Sync : PlayCircle;
     const buttonClass = execRunning ? 'spin' : '';
     const { showCode } = controlCodeDialog(dialogState, this.setState.bind(this))
 
     if (!createdTests) return <em>waiting...</em>
- console.log ({createdTests})
+ 
     const createdTestNames = createdTests.map(t => t.testName);
     const testList = createdTestNames;
     const createdTest = createdTests.find(f => f.testName === currentTest) ?? 
@@ -229,7 +230,7 @@ class SocketSender extends React.Component {
 
         {/* toolbar */}
         <Card className="card-body flex center">
-          <Box ml={2}>{headerText}</Box>
+          <Box ml={2} className="flex center">{headerText}</Box>
           <Box sx={{ flexGrow: 1 }} />
           <TestSelect
             value={currentTest}
