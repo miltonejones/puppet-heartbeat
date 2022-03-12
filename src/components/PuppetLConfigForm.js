@@ -8,18 +8,21 @@ import { Box, Tab, Tabs,  TextField, Stack, Typography, Button, Divider } from '
 
 const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
-export default function PuppetLConfigForm ({onSave, onCancel, puppetML, getSteps, existingTests}) {
-  const [steps, setSteps] = React.useState(puppetML?.steps || [])
+export default function PuppetLConfigForm ({onSave: onFormSave, onCancel: cancelClick, puppetML, getSteps, existingTests}) {
+  const [steps, setSteps] = React.useState([])
   const [testName, setTestName] = React.useState('')
   const [value, setValue] = React.useState(0);
 
   React.useEffect(() => {
-    !!puppetML?.testName && puppetML.testName !== testName && (() => {
-      setTestName(puppetML.testName);
-      setSteps(puppetML.steps.map(s => {
-        s.ID = s.ID || uniqueId();
-        return s;
-      }))
+   
+    !!puppetML?.testName 
+      && puppetML.testName !== testName 
+      && (() => { 
+        setTestName(puppetML.testName);
+        setSteps(puppetML.steps.map(s => {
+          s.ID = s.ID || uniqueId();
+          return s;
+        }))
     })()
   }, [puppetML, testName])
 
@@ -50,7 +53,14 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML, getSteps
       testName,
       steps
     }; 
-    onSave (testObj)
+    setSteps([]);
+    setTestName(null);
+    onFormSave (testObj);
+  }
+  const onCancel = () => { 
+    setSteps([]);
+    setTestName(null);
+    cancelClick()
   }
   const transformed = ((out) => {
     steps.filter(f => !!f.action).map (s => out = out.concat(transform(s)))

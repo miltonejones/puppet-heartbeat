@@ -131,15 +131,16 @@ class SocketSender extends React.Component {
   sendCommand(id, puppetML = null) {
     const { createdTests } = this.state;
     const puppetL = puppetML || createdTests.find(f => f.testName === id); 
-
+    // send a clone so as not to mutate the original
+    const cloneL = { ...puppetL };
     // convert "puppetML" (used only in the browser) to "puppetL"
-    puppetL.steps = this.transformSteps(puppetL.steps);
+    cloneL.steps = this.transformSteps(cloneL.steps);
 
     this.sendMessage({
       action: 'exec',
       data: {
         id,
-        puppetL 
+        puppetL: cloneL
       },
     });
     this.setState({ currentTest: id, actionText: !1, thumbnail: !1, progress: 0, preview: !!puppetML });
@@ -250,8 +251,8 @@ class SocketSender extends React.Component {
  
     const createdTestNames = createdTests.map(t => t.testName);
     const testList = createdTestNames;
-    const createdTest = createdTests.find(f => f.testName === currentTest) ?? 
-      {testName: null, steps: []}
+    const emptyTest = {testName: null, steps: []};
+    const createdTest = createdTests.find(f => f.testName === currentTest) ?? emptyTest;
 
     const AddIcon = !!createdTest.steps.length ? Edit : Add; 
 
@@ -361,10 +362,10 @@ class SocketSender extends React.Component {
               existingTests={createdTestNames}
               getSteps={ s => createdTests.find(f => f.testName === s).steps }
               puppetML={createdTest}
-              onCancel={() => this.setState({showEdit: !showEdit}) }
+              onCancel={() => this.setState({showEdit: !showEdit, currentTest: null}) }
               onSave={ puppetML => {
                 this.addTest(puppetML)
-                this.setState({ puppetML, showEdit: !showEdit }); 
+                this.setState({ puppetML, showEdit: !showEdit, currentTest: null }); 
               } }/>
         </Panel>
 
