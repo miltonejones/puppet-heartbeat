@@ -1,9 +1,9 @@
 import React from 'react'; 
 import { Box, TextField, Stack, Typography, Button, Collapse } from '@mui/material';
 import ChipGroup from '../ChipGroup';
+import { queryTypes } from './functoidConstants';
 
-const Expectations = ['toBeInDocument', 'toEqual']
-const Bys = ['selector', 'element-id', 'test-id', 'xpath']
+const Expectations = ['toBeInDocument', 'toEqual'] 
 
 export default function ExpectFunctoid ({ edit, fact, by, actionKey: key, onSave }) {
     const [value, setValue] = React.useState('')
@@ -28,7 +28,7 @@ export default function ExpectFunctoid ({ edit, fact, by, actionKey: key, onSave
     }
 
     return (<> <Box className="flex center">
-        <ChipGroup label="lookup type" options={Bys} value={By} setValue={setBy} />
+        <ChipGroup label="lookup type" options={queryTypes} value={By} setValue={setBy} />
         {!!By && <ChipGroup label="expect" options={Expectations} value={Expectation} setValue={setExpectation} />}
     </Box>
     
@@ -55,14 +55,4 @@ export default function ExpectFunctoid ({ edit, fact, by, actionKey: key, onSave
     </>)
 }
 
-
-
-/**
- * {
- *    by: test-id | element-id | selector, 
- *    key
- *    options,
- *    icon -> Input
- *  },
- * 
- */
+ 

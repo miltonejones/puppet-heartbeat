@@ -25,10 +25,11 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Card from '@mui/material/Card';
 import SocketCard from './SocketCard';
-import { PlayCircle, Sync, Settings , Add, Edit }  from '@mui/icons-material';
+import { PlayCircle, Sync, Settings , Add, Edit, Close }  from '@mui/icons-material';
 import JestCard from './JestCard';
-import { Panel, Flex, Spacer, ActionsMenu } from './Control';
+import { Panel, Flex, Spacer, ActionsMenu, FileUploader } from './Control';
 import PuppetLConfigForm, { transform } from './PuppetLConfigForm';
+import PreviewCard from './PreviewCard';
 import {saveTestSuite, deleteTestSuite, getTestSuite, getTestSuites} from '../connector/puppetConnector'
 // import StepContent from '@mui/material/StepContent';
 
@@ -86,12 +87,14 @@ class SocketSender extends React.Component {
   }
 
   closeListener() {
+    const { setConnected } = this.props;
     console.log('You are disconnected.');
     this.setState({
       connected: false,
       ws: null,
       readyState: client.readyState,
     });
+    setConnected(false);
     if (this.state.logout) {
       return console.log('Reconnection will not be attempted');
     }
@@ -99,8 +102,10 @@ class SocketSender extends React.Component {
   }
 
   openListener() {
+    const { setConnected } = this.props;
     console.log('You are connected');
     this.setState({ ws: client, connected: true });
+    setConnected(true);
     this.sendMessage({
       action: 'introduce',
       data: {
@@ -123,9 +128,9 @@ class SocketSender extends React.Component {
     })([]);
   }
 
-  sendCommand(id) {
-    const { puppetML, createdTests } = this.state;
-    const puppetL = createdTests.find(f => f.testName === id); 
+  sendCommand(id, puppetML = null) {
+    const { createdTests } = this.state;
+    const puppetL = puppetML || createdTests.find(f => f.testName === id); 
 
     // convert "puppetML" (used only in the browser) to "puppetL"
     puppetL.steps = this.transformSteps(puppetL.steps);
@@ -137,7 +142,7 @@ class SocketSender extends React.Component {
         puppetL 
       },
     });
-    this.setState({ actionText: !1, thumbnail: !1, progress: 0 });
+    this.setState({ currentTest: id, actionText: !1, thumbnail: !1, progress: 0, preview: !!puppetML });
   }
 
   retryConnection() {
@@ -162,7 +167,7 @@ class SocketSender extends React.Component {
   }
   
    componentDidMount() {
-   //   this.mountClient();
+      this.mountClient();
       this.populate()
   } 
 
@@ -204,6 +209,7 @@ class SocketSender extends React.Component {
       showEdit,
       createdTests,
       selectedTests,
+      preview,
       ready
     } = this.state;
     
@@ -249,48 +255,45 @@ class SocketSender extends React.Component {
 
     const AddIcon = !!createdTest.steps.length ? Edit : Add; 
 
+    // menu stuff
+    const MenuBit = ((e) => {
+      ['EDIT', 'RUN', 'NEW', 'DELETE'].map((n, i) => e[n] = Math.pow(2, i));
+      return e;
+    })({});
     let disabledMenuItems = 0;
-    if (!selectedTests?.length) disabledMenuItems += 1;
-    if (selectedTests?.length !== 1) disabledMenuItems += 6;
-
+    if (!selectedTests?.length) disabledMenuItems += MenuBit.DELETE;
+    if (selectedTests?.length !== 1) disabledMenuItems += MenuBit.EDIT + MenuBit.RUN;
     const openTest = name => this.setState({ showEdit: !showEdit, currentTest: name })
-
     const menuActions = [
-      () => alert ('Deletes not supported yet'),
       () => openTest ( selectedTests[0] ),  
       () => this.sendCommand(selectedTests[0]),
       () => this.setState({ showEdit: !0, currentTest: null }),
-    ]
+      () => alert ('Deletes not supported yet'),
+    ];
 
     return (
       <>
         {header}
+ 
 
-        {/* toolbar 
-        <Card className="card-body flex center">
-          <Box ml={2} className="flex center">{headerText}</Box>
-          <Box sx={{ flexGrow: 1 }} />
-          <TestSelect
-            value={currentTest}
-            onChange={e => this.setState({currentTest: e})}
-            testList={testList}
-          />
-          <Button sx={{mr: 1}}  onClick={() => this.sendCommand(currentTest)} disabled={execDisabled} 
-            variant="contained" color="error"
-          >Run <ButtonIcon className={buttonClass} sx={{ml: 1}} /></Button>
-          {!execDisabled &&( <IconButton onClick={() => this.setState({showJest: !showJest})} ><Settings/></IconButton>)}
-          <IconButton onClick={() => this.setState({showEdit: !showEdit})} sx={{mr: 3}} ><AddIcon/></IconButton>
-          <hr /> 0000
-        </Card>*/} 
         <Panel 
-          on={!showEdit} 
+          on={!(showEdit || !!steps)} 
           tools={[
             <ActionsMenu onClick={i => {
-              const action = menuActions[i];
-              action();
-            }} bin={disabledMenuItems} options={['Delete', 'Edit', 'Run', 'New Test']} />
-          ]}
-          header={`Tests (${createdTests.length})`}>
+                const action = menuActions[i];
+                action();
+              }} 
+              disabledBits={ disabledMenuItems } 
+              options={[
+                  'Edit',  
+                  'Run', 
+                  'New Test',  
+                  <b style={{color: 'red'}}>Delete selected ({selectedTests.length})</b> 
+                ]} />
+              ]}
+              header={`Tests (${createdTests.length})`}>
+
+            {/* test datagrid */}
             <table className="grid" cellspacing="0"> 
             <thead>
               <tr>
@@ -335,6 +338,7 @@ class SocketSender extends React.Component {
         </Panel>
 
 
+
         {/* jest import card */}
         <Collapse in={showJest}>
           <Card className="card-body" sx={{p: 2}} >
@@ -349,7 +353,9 @@ class SocketSender extends React.Component {
         {/* test cms card */}
         <Panel header="Test Editor" tools={
           [<Button color="error" variant="outlined">delete</Button>,
-          <Button color="error" variant="contained">run <PlayCircle /></Button>]
+          <Button color="error" 
+            onClick={() => this.sendCommand(currentTest, createdTest)} 
+            variant="contained">run <PlayCircle /></Button>]
         } on={showEdit}>
           <PuppetLConfigForm 
               existingTests={createdTestNames}
@@ -362,7 +368,19 @@ class SocketSender extends React.Component {
               } }/>
         </Panel>
 
-        <Panel on={!!steps} header={`Test: ${currentTest}`}>
+       {!!steps && execRunning && ( <Box style={{position:'absolute', bottom: 40, right: 40}}>
+          <PreviewCard  
+           message={message}
+           thumbnail={thumbnail}
+           testName={currentTest}
+           progress={progress} />
+        </Box>)}
+
+        <Panel on={!!steps && !preview} header={`Test: ${currentTest}`}
+          tools={[
+            <IconButton onClick={() => this.setState({steps: null, outcomes: []})}><Close /></IconButton>
+          ]}
+        >
 
         
             <Grid container>

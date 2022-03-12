@@ -5,7 +5,7 @@ import { Search }  from '@mui/icons-material';
 
 
 
-export default function Layout ({ children, ...props}) {
+export default function Layout ({ children, connected, ...props}) {
     return (<>
     
     <Flex className="application-header">
@@ -30,9 +30,9 @@ export default function Layout ({ children, ...props}) {
             placeholder="Search for tests by name or ARN"
           
         />
-        <Flex sx={{minWidth: 200 , color: '#989898'}}>
-            <Box className="dot" />
-            disconnected
+        <Flex justify="end" sx={{minWidth: 200 , color: '#989898' }}>
+            <Box className={connected ? "dot green" : "dot"} />
+            {connected ? 'connected' : 'disconnected'}
         </Flex>
     </Flex>
     <Frame offset={32} className="application-body">

@@ -1,0 +1,1 @@
+export const queryTypes = ['selector', 'element-id', 'test-id', 'xpath', 'text'];

@@ -2,10 +2,11 @@
 import  NavigateFunctoid  from './NavigateFunctoid';
 import  EventFunctoid  from './EventFunctoid';
 import  ExpectFunctoid  from './ExpectFunctoid';
-import { Navigation, Input, Check}  from '@mui/icons-material';
+import  UploadFunctoid  from './UploadFunctoid';
+import { Navigation, Input, Check, Upload }  from '@mui/icons-material';
  
-const Functoid = {
-  Navigation: {
+export const Functoid = {
+  Navigation: { 
     action: 'navigate',
     Component: NavigateFunctoid,
     Icon: Navigation
@@ -21,9 +22,11 @@ const Functoid = {
     action: 'expect',
     Component: ExpectFunctoid,
     Icon: Check
-  }
-}
+  },
 
-export {
-  Functoid
-}
+  Upload: {
+    action: 'upload',
+    Component: UploadFunctoid,
+    Icon: Upload
+  }
+};

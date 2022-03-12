@@ -29,7 +29,7 @@ function ActionsMenu (props) {
 }
 
 
-function SimpleMenu ({ options, bin, disabled, onClick, onClose, label, icon, button, ...props }) {
+function SimpleMenu ({ options, disabledBits, disabled, onClick, onClose, label, icon, button, ...props }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -54,19 +54,15 @@ function SimpleMenu ({ options, bin, disabled, onClick, onClose, label, icon, bu
         {icon}
       </Control>
      </Box>
-      <Menu
-        id="basic-menu"
+      <Menu 
         anchorEl={anchorEl}
         open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
+        onClose={handleClose} 
       >
-        {options.map ((opt, i) => <MenuItem key={i} onClick={() => {
+        {options.map ((opt, i) => <MenuItem key={opt} onClick={() => {
           onClick(i)
           handleClose()
-        }} disabled={!!(bin & Math.pow(2, i))}>{opt}</MenuItem>)}
+        }} disabled={!!(disabledBits & Math.pow(2, i))}>{opt}</MenuItem>)}
          
       </Menu>
   </>
@@ -134,8 +130,60 @@ const Cw = React.forwardRef(({ children, ...props }, ref) => (
   </Box>
 ));
 
+const UPLOAD_URL = "https://habprc9pj4.execute-api.us-east-1.amazonaws.com/tests";
+
+const submitForm = (file) => {
+  const formData = new FormData(); 
+  formData.append("body", file);
+
+  return new Promise (yes => {
+    fetch(UPLOAD_URL, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'file-name': file.name 
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      yes(data)
+    })
+    .catch(error => {
+      yes(error)
+    })
+  })
 
 
+};
+
+
+const FileUploader = ({uploadComplete}) => {
+  const fileInput = React.useRef(null);
+  const [file, setFile] = React.useState(null)
+
+  const handleFileInput = async (e) => {
+      // handle validations
+      const res = await submitForm(e.target.files[0]);
+      uploadComplete && uploadComplete(res);
+      setFile(res);
+  }
+
+  if (file) {
+    return <u onClick={() => setFile(null)}>{file}</u>
+  }
+
+  return (
+      <div className="file-uploader">
+          <input ref={fileInput} type="file" style={{display: 'none'}} onChange={handleFileInput} />
+          <Button variant="contained" onClick={e => fileInput.current && fileInput.current.click()} 
+              className="btn btn-primary">upload file</Button>
+      </div>
+  )
+}
+
+
+
+// 
 
 export {
   ActionsMenu,
@@ -144,5 +192,6 @@ export {
   Panel,
   ReallyButton,
   SimpleMenu,
-  Spacer
+  Spacer,
+  FileUploader
 }

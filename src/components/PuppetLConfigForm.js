@@ -137,16 +137,13 @@ export default function PuppetLConfigForm ({onSave, onCancel, puppetML, getSteps
     </>
 }
 
-const actions = [
-  'navigate',
-	'event',
-	'expect'
-]
+ 
 
 function StepEdit ({ step, onSave, index, onDelete }) {
 	const { edit, action } = step;
 	const [type, setType] = React.useState(action)
  
+  const actions = Object.keys(Functoid).map(f => Functoid[f].action);
 	const Key = Object.keys(Functoid).find(f => Functoid[f].action === type);
 	const { Component, Icon } = Functoid[Key] ?? {};
 	return (<Box className="flex center underline" sx={{gap: '1rem', p: 1}}>

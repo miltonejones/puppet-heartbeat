@@ -14,7 +14,7 @@ const C = {
   const LOGIN_BUTTON_SELECTOR = "button[data-testid=sign_in_login_button]";
   const COMPONENT_SELECTOR = "div[data-testid=test-for-ApplicantInformation]";
   const SPLIT_PAGE_SELECTOR = "div[data-testid=test-for-SplitPage]"; 
-  
+
   
   const timeout = 1999;
   

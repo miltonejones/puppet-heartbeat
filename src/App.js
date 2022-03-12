@@ -5,5 +5,6 @@ import Box from '@mui/material/Box';
 import './style.css';
 
 export default function App() {
-  return <Layout><SocketSender /></Layout>;
+  const [connected, setConnected] = React.useState(false);
+  return <Layout connected={connected}><SocketSender setConnected={setConnected}/></Layout>;
 }
