@@ -29,7 +29,7 @@ export default function ExpectFunctoid ({ edit, fact, by, actionKey: key, onSave
     }
 
     return (<> <Box className="flex center">
-        <ChipGroup label="lookup type" options={queryTypes} value={By} setValue={setBy} />
+        <ChipGroup label="by" options={queryTypes} value={By} setValue={setBy} />
         {!!By && <ChipGroup label="expect" options={Expectations} value={Expectation} setValue={setExpectation} />}
     </Box>
     

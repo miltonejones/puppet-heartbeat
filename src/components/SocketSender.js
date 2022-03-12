@@ -28,7 +28,7 @@ import Card from '@mui/material/Card';
 import SocketCard from './SocketCard';
 import { PlayCircle, Sync, Settings , Add, Edit, Close }  from '@mui/icons-material';
 import JestCard from './JestCard';
-import { Panel, Flex, Spacer, ActionsMenu, FileUploader } from './Control';
+import { Panel, Flex, Spacer, PreviewBox } from './Control';
 import PuppetLConfigForm, { transform } from './PuppetLConfigForm';
 import PreviewCard from './PreviewCard';
 import {saveTestSuite, deleteTestSuite, getTestSuite, getTestSuites} from '../connector/puppetConnector'
@@ -334,50 +334,13 @@ class SocketSender extends React.Component {
         <Panel on={!showEdit && !preview && !!currentTest} header={`Test: ${currentTest}`}
           tools={runCardButtons}
         >        
-            <Grid container>
+          <Grid container>
 
             {/* test panel - preview screen column */}
-            <Grid
-              item
-              className="flex"
-              xs={4} 
-            >
-
-              {!steps && (
-                <Box mt={6} ml={4}>
-                  <Typography mt={4} variant="subtitle1">
-                    No test is loaded.
-                  </Typography>
-                </Box>
-              )}
-
-              {!!steps && !thumbnail && (
-                <Box mt={6} ml={4}>
-                  <LinearProgress variant="indeterminate"   />
-                  <Typography mt={4} variant="subtitle1">
-                    Waiting for first image...
-                  </Typography>
-                </Box>
-              )}
-              {!!thumbnail && (
-                <Stack mt={6} ml={4} className="preview-stack">
-                  <Box className="preview-head">
-                    <Box className="dot" />
-                    <Box className="dot gold" />
-                    <Box className="dot green" />
-                    <Typography ml={1} variant="caption">
-                      Test Preview
-                    </Typography>
-                  </Box>
-                  <Box className="preview-body">
-                    <img
-                      style={{ width: 320, height: 192 }}
-                      src={'data:image/png;base64,' + thumbnail}
-                      alt="thumb"
-                    />
-                  </Box>
-                </Stack>
-              )}
+            <Grid item  xs={4}  >
+              <Flex>
+                <PreviewBox animation={ !!steps ? 'wave' : false } thumbnail={thumbnail} />
+              </Flex>
             </Grid>
 
             {/* test panel - progress stepper column  */}
@@ -393,17 +356,17 @@ class SocketSender extends React.Component {
 
             {/* test panel - progress bar column */}
             <Grid item p={5} xs={4}>
-            <Stack mt={4} className="progress-stack">
-              <Typography sx={{p: 1}} variant="subtitle1">{message || 'Ready.'}</Typography>
-              {!!progress && (
-                <Box mt={2} mb={1}>
-                  <LinearProgress variant="determinate" value={progress} />
-                </Box>
-              )}
-            </Stack> 
+              <Stack mt={4} className="progress-stack">
+                <Typography sx={{p: 1}} variant="subtitle1">{message || 'Ready.'}</Typography>
+                {!!progress && (
+                  <Box mt={2} mb={1}>
+                    <LinearProgress variant="determinate" value={progress} />
+                  </Box>
+                )}
+              </Stack> 
             </Grid>
 
-            </Grid>
+          </Grid>
                 
   
         </Panel>

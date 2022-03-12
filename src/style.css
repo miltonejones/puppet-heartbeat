@@ -20,7 +20,7 @@ body {
   margin: 12px;
   border-radius: 4px;
   max-width: 348px;
-  max-height: 230px;
+  min-height: 230px;
 }
 .preview-head {
   background-color: rgba(0, 0, 0, 0.2);
@@ -54,6 +54,7 @@ body {
   background-color: gold;
 }
 
+a,
 .link {
   color: var(--link-color); 
 }

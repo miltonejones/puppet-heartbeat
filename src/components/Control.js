@@ -1,5 +1,5 @@
 import React from 'react'; 
-import { Chip, Card, Stack, Collapse, IconButton, Button, Typography, Box } from '@mui/material';
+import { Chip, Card, Stack, Collapse, Skeleton, IconButton, Button, Typography, Box } from '@mui/material';
 import { Close, Check, ExpandMore, Sync, Search, MoreVert }  from '@mui/icons-material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -197,7 +197,38 @@ const FileUploader = ({uploadComplete}) => {
 
 
 
-// 
+function PreviewBox ({ thumbnail, animation = false }) {
+  const args = {
+    style: { width: '320px', height: '192px' },
+    width: 320,
+    height: 192,
+    variant: 'rectangular',
+    src: 'data:image/png;base64,' + thumbnail,
+    alt: 'thumbnail',
+    animation 
+  }
+  const message = !!animation 
+    ? 'Waiting for first image...' 
+    : 'Click Run to execute test.';
+  const content = !!thumbnail ? <img {...args} /> : <Skeleton {...args} />
+  return (                
+  <Stack mt={6} ml={4} className="preview-stack">
+    <Box className="preview-head">
+      <Box className="dot" />
+      <Box className="dot gold" />
+      <Box className="dot green" />
+      <Typography ml={1} variant="caption">
+        Test Preview
+      </Typography>
+    </Box>
+    <Box className="preview-body">
+     {content}
+    </Box>
+    {!thumbnail && <Typography m={1} variant="caption">
+      {message}
+    </Typography>}
+  </Stack>)
+}
 
 export {
   ActionsMenu,
@@ -208,5 +239,6 @@ export {
   ReallyButton,
   SimpleMenu,
   Spacer,
+  PreviewBox,
   FileUploader
 }

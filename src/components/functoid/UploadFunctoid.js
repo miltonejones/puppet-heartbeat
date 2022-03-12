@@ -26,7 +26,7 @@ export default function UploadFunctoid ({ edit, path, by, actionKey: key, onSave
     }
 
     return (<> <Box className="flex center">
-        <ChipGroup label="lookup type" options={queryTypes} value={By} setValue={setBy} /> 
+        <ChipGroup label="by" options={queryTypes} value={By} setValue={setBy} /> 
     </Box>
     
     { !!By && <TextField 

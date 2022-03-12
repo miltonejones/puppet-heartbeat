@@ -8,19 +8,26 @@ import {
   Button,
   IconButton,
   Breadcrumbs,
+  Stack,
+  Pagination,
   Typography
 } from '@mui/material';
 import { Link } from "react-router-dom";
+
+const PAGE_SIZE = 10;
 
 /**
  * Render list of tests from the DB
  */
 export default function TestGrid () {
   const [state, setState] = React.useState({ selectedTests: [] })
-  const { createdTests, selectedTests, updateTime = -1}  = state;
+  const { createdTests, selectedTests, page = 1, updateTime = -1}  = state;
 
   const collectionAge = Math.round((new Date().getTime() - updateTime) / 1000);
-
+   
+  const handleChange = (event, value) => {
+    setState(s => ({...s, page: value}));
+  };
   const populate = React.useCallback (() => {
     getTestSuites()
       .then(res => setState(oldState => ({
@@ -104,15 +111,24 @@ export default function TestGrid () {
     <Button href="/test" variant="contained" color="warning">create test</Button> ,
   ]);
 
+  const pageCount = Math.ceil(createdTests?.length / PAGE_SIZE);
+  const firstPage = (page - 1) * PAGE_SIZE;
+  const pageItems = createdTests?.slice(firstPage, firstPage + PAGE_SIZE);
+
+  const panelHeader = <Stack spacing={2}>
+    <Typography variant="body1"><b style={{fontSize: '1.4rem'}}>Tests</b> ({createdTests?.length})</Typography>
+    <Pagination count={2} page={page} onChange={handleChange} />
+  </Stack>
+
 
     return <>
     
        {header}
-    
+ 
       <Panel 
         on={!!createdTests} 
         tools={panelButtons}
-        header={`Tests (${createdTests?.length})`}>
+        header={panelHeader}>
 
             {/* test datagrid */}
             <table className="grid" cellspacing="0"> 
@@ -142,7 +158,7 @@ export default function TestGrid () {
               </tr>
             </thead>
             <tbody>
-              {createdTests?.map((t) => (<tr key={t.suiteID}>
+              {pageItems?.map((t) => (<tr key={t.suiteID}>
                 <td className="checked" onClick={() => selectTest(t.testName)} >
                   <Checkbox/>
                 </td>

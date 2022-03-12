@@ -30,7 +30,7 @@ export default function EventFunctoid ({ edit, event, by, value, actionKey: key,
   
   <Flex>
     <ChipGroup label="event" options={Events} value={Event} setValue={setEvent} />
-    {!!Event && <ChipGroup label="lookup type" options={queryTypes} value={By} setValue={setBy} />}
+    {!!Event && <ChipGroup label="by" options={queryTypes} value={By} setValue={setBy} />}
   </Flex>
     
   {!!Event && !!By && <TextField 
