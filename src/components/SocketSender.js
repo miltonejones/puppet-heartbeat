@@ -12,6 +12,7 @@ import {
   IconButton,
   Checkbox
 } from '@mui/material';
+import { Link } from "react-router-dom";
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import InputLabel from '@mui/material/InputLabel';
@@ -51,7 +52,7 @@ class SocketSender extends React.Component {
       ready: false,
       outcomes: [],
       createdTests: [] ,
-      selectedTests: [],
+      // selectedTests: [],
       dialogState: {open: false}
     };
     this.openListener = this.openListener.bind(this);
@@ -143,7 +144,13 @@ class SocketSender extends React.Component {
         puppetL: cloneL
       },
     });
-    this.setState({ currentTest: id, actionText: !1, thumbnail: !1, progress: 0, preview: !!puppetML });
+
+    this.setState({ 
+      currentTest: id, 
+      actionText: !1, 
+      thumbnail: !1, 
+      progress: 0,  
+      preview: !!puppetML });
   }
 
   retryConnection() {
@@ -177,21 +184,28 @@ class SocketSender extends React.Component {
   }
 
   populate () {
+    const { suiteID } = this.props;
     getTestSuites().then(req => { 
-      this.setState( { createdTests: req.Items });
+      const createdTests = req.Items;
+      if (!!suiteID) {
+        const currentTest = createdTests.find(f => f.suiteID === suiteID).testName; 
+        this.setState( { createdTests, currentTest, showEdit: false });
+        return;
+      }
+      this.setState( { createdTests, showEdit: true });
     });
   }
   
-  selectTest (testName) { 
-    const { selectedTests: existingTests } = this.state;
-    const exists = existingTests.some(f => f === testName);
+  // selectTest (testName) { 
+  //   const { selectedTests: existingTests } = this.state;
+  //   const exists = existingTests.some(f => f === testName);
 
-    const selectedTests = exists
-      ? existingTests.filter(f => f !== testName)
-      : existingTests.concat(testName);
+  //   const selectedTests = exists
+  //     ? existingTests.filter(f => f !== testName)
+  //     : existingTests.concat(testName);
  
-    this.setState({ selectedTests })
-  }
+  //   this.setState({ selectedTests })
+  // }
 
   render() {
     const {
@@ -209,14 +223,16 @@ class SocketSender extends React.Component {
       showJest,
       showEdit,
       createdTests,
-      selectedTests,
+      // selectedTests,
       preview,
+      elements,
       ready
     } = this.state;
     
     const breadcrumbs = [
-      <b>Puppeteer Studio</b>,
-      <em>associate-ui</em>
+      <Link to="/">Puppeteer Studio</Link>,
+      <Link to="/">Tests</Link>,
+      <em>{currentTest || 'Create Test'}</em>
     ];
 
     const connectedText = !connected
@@ -228,12 +244,10 @@ class SocketSender extends React.Component {
           <Breadcrumbs separator="›" sx={{mt: 2, mb: 1}} aria-label="breadcrumb">
             {breadcrumbs}
           </Breadcrumbs>
-          <Box sx={{mb: 2}}><Typography variant="h4">associate-ui</Typography></Box>
+          {/* <Box sx={{mb: 2}}><Typography variant="h4">{currentTest}</Typography></Box> */}
         </Box>
       <Spacer />
-      <Button onClick={() => this.setState({showEdit: !showEdit})}
-        sx={{mb: 2}} disabled={showEdit}
-       variant="contained" color="warning">create new test</Button>
+     
     </Flex>
 
     const execRunning = !!progress && progress < 100;
@@ -257,112 +271,52 @@ class SocketSender extends React.Component {
     const AddIcon = !!createdTest.steps.length ? Edit : Add; 
 
     // menu stuff
-    const MenuBit = ((e) => {
-      ['EDIT', 'RUN', 'NEW', 'DELETE'].map((n, i) => e[n] = Math.pow(2, i));
-      return e;
-    })({});
-    let disabledMenuItems = 0;
-    if (!selectedTests?.length) disabledMenuItems += MenuBit.DELETE;
-    if (selectedTests?.length !== 1) disabledMenuItems += MenuBit.EDIT + MenuBit.RUN;
-    const openTest = name => this.setState({ showEdit: !showEdit, currentTest: name })
-    const menuActions = [
-      () => openTest ( selectedTests[0] ),  
-      () => this.sendCommand(selectedTests[0]),
-      () => this.setState({ showEdit: !0, currentTest: null }),
-      () => alert ('Deletes not supported yet'),
-    ];
+    // const MenuBit = ((e) => {
+    //   ['EDIT', 'RUN', 'NEW', 'DELETE'].map((n, i) => e[n] = Math.pow(2, i));
+    //   return e;
+    // })({});
+    // let disabledMenuItems = 0;
+    // if (!selectedTests?.length) disabledMenuItems += MenuBit.DELETE;
+    // if (selectedTests?.length !== 1) disabledMenuItems += MenuBit.EDIT + MenuBit.RUN;
+    // const openTest = name => this.setState({ showEdit: !showEdit, currentTest: name })
+    // const menuActions = [
+    //   () => openTest ( selectedTests[0] ),  
+    //   () => this.sendCommand(selectedTests[0]),
+    //   () => this.setState({ showEdit: !0, currentTest: null }),
+    //   () => alert ('Deletes not supported yet'),
+    // ];
+
+    const runCardButtons = [
+      <Button color="error" 
+      onClick={() => this.sendCommand(currentTest)} 
+      variant="contained">run <PlayCircle /></Button>,
+      <IconButton  
+      onClick={() => this.setState({showEdit:!showEdit})} 
+      > <Edit /></IconButton>,
+      <IconButton href="/"><Close /></IconButton>
+    ]
+
+    const testCardButtons = currentTest ? [<Button color="error" variant="outlined">delete</Button>,
+    <Button color="error" 
+      onClick={() => this.sendCommand(currentTest, createdTest)} 
+      variant="contained">run <PlayCircle /></Button>] : [];
 
     return (
       <>
         {header}
- 
-
-        <Panel 
-          on={!(showEdit || !!steps)} 
-          tools={[
-            <ActionsMenu onClick={i => {
-                const action = menuActions[i];
-                action();
-              }} 
-              disabledBits={ disabledMenuItems } 
-              options={[
-                  'Edit',  
-                  'Run', 
-                  'New Test',  
-                  <b style={{color: 'red'}}>Delete selected ({selectedTests.length})</b> 
-                ]} />
-              ]}
-              header={`Tests (${createdTests.length})`}>
-
-            {/* test datagrid */}
-            <table className="grid" cellspacing="0"> 
-            <thead>
-              <tr>
-                <th>
-                  &nbsp;
-                </th>
-                <th>
-                  Name
-                </th>
-                <th align="right">
-                  Steps
-                </th>
-                <th>
-                  Owner
-                </th>
-                <th>
-                  Created
-                </th>
-                <th>
-                  Modified
-                </th>
-                <th>
-                &nbsp;
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {createdTests?.map((t) => (<tr key={t.suiteID}>
-                <td className="checked" onClick={() => this.selectTest(t.testName)} >
-                  <Checkbox/>
-                </td>
-                <td onClick={e => openTest(t.testName)}
-                 className="link"> {t.testName}</td>
-                <td align="right">{t.steps.length} steps</td>
-                <td>community</td>
-                <td>{timed(t.created)}</td>
-                <td>{timed(t.modified)}</td>
-                <td>&nbsp;</td>
-              </tr>))}
-            </tbody>
-            </table>
-        </Panel>
-
-
-
-        {/* jest import card */}
-        <Collapse in={showJest}>
-          <Card className="card-body" sx={{p: 2}} >
-            <JestCard 
-              onCancel={() => this.setState({showJest: !showJest}) }
-              onSave={ puppetL => {
-                this.setState({ puppetL, showJest: !showJest }); 
-              } }/>
-          </Card>
-        </Collapse>
- 
+  
         {/* test cms card */}
-        <Panel header="Test Editor" tools={
-          [<Button color="error" variant="outlined">delete</Button>,
-          <Button color="error" 
-            onClick={() => this.sendCommand(currentTest, createdTest)} 
-            variant="contained">run <PlayCircle /></Button>]
-        } on={showEdit}>
+        <Panel header="Test Editor" tools={testCardButtons} on={showEdit}>
           <PuppetLConfigForm 
               existingTests={createdTestNames}
+              queryElements={elements}
+              previewTest={(name, items) => {
+                const queryTest = { testName: name, steps: items.concat({ action: 'query' }) };
+                this.sendCommand(name, queryTest)
+              }} 
               getSteps={ s => createdTests.find(f => f.testName === s).steps }
               puppetML={createdTest}
-              onCancel={() => this.setState({showEdit: !showEdit, currentTest: null}) }
+              onCancel={() => this.setState({showEdit: !showEdit }) }
               onSave={ puppetML => {
                 this.addTest(puppetML)
                 this.setState({ puppetML, showEdit: !showEdit, currentTest: null }); 
@@ -377,13 +331,9 @@ class SocketSender extends React.Component {
            progress={progress} />
         </Box>)}
 
-        <Panel on={!!steps && !preview} header={`Test: ${currentTest}`}
-          tools={[
-            <IconButton onClick={() => this.setState({steps: null, outcomes: []})}><Close /></IconButton>
-          ]}
-        >
-
-        
+        <Panel on={!showEdit && !preview && !!currentTest} header={`Test: ${currentTest}`}
+          tools={runCardButtons}
+        >        
             <Grid container>
 
             {/* test panel - preview screen column */}
@@ -457,7 +407,6 @@ class SocketSender extends React.Component {
                 
   
         </Panel>
-
 
         {/* results panel opens when job is almost done */}
         {/* test run panel */}  

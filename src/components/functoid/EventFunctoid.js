@@ -2,10 +2,11 @@ import React from 'react';
 import { Box, TextField, Stack, Typography, Button, Collapse } from '@mui/material';
 import ChipGroup from '../ChipGroup';
 import { queryTypes } from './functoidConstants';
+import { QueryMenu, Flex } from '../Control';
 
 const Events = ['click', 'change', 'blur']; 
 
-export default function EventFunctoid ({ edit, event, by, value, actionKey: key, onSave }) {
+export default function EventFunctoid ({ edit, event, by, value, actionKey: key, onSave, queryElements, previewTest }) {
   const [eventValue, setValue] = React.useState(value);
   const [Event, setEvent] = React.useState(event);
   const [By, setBy] = React.useState(by);
@@ -25,10 +26,12 @@ export default function EventFunctoid ({ edit, event, by, value, actionKey: key,
     return <Typography variant="subtitle1"><b>{event}</b> <em>{by}</em> [<b>{key}</b>] {!value ? '' : <>to "{value}"</>} </Typography>
   }
 
-  return (<> <Box className="flex center">
-      <ChipGroup label="event" options={Events} value={Event} setValue={setEvent} />
-      {!!Event && <ChipGroup label="lookup type" options={queryTypes} value={By} setValue={setBy} />}
-  </Box>
+  return (<> 
+  
+  <Flex>
+    <ChipGroup label="event" options={Events} value={Event} setValue={setEvent} />
+    {!!Event && <ChipGroup label="lookup type" options={queryTypes} value={By} setValue={setBy} />}
+  </Flex>
     
   {!!Event && !!By && <TextField 
       autoFocus
@@ -38,6 +41,8 @@ export default function EventFunctoid ({ edit, event, by, value, actionKey: key,
       onChange={e => setKey(e.target.value)} 
       value={ Key } />}
 
+
+  {!!By && <QueryMenu onClick={v => setKey(v)} queryElements={queryElements} previewTest={previewTest} />}
 
   <Collapse orientation="horizontal" in={Event==='change' && !!By && !!Key}>
       <TextField 

@@ -2,10 +2,11 @@ import React from 'react';
 import { Box, TextField, Stack, Typography, Button, Collapse } from '@mui/material';
 import ChipGroup from '../ChipGroup';
 import { queryTypes } from './functoidConstants';
+import { QueryMenu } from '../Control';
 
 const Expectations = ['toBeInDocument', 'toEqual'] 
 
-export default function ExpectFunctoid ({ edit, fact, by, actionKey: key, onSave }) {
+export default function ExpectFunctoid ({ edit, fact, by, actionKey: key, onSave, queryElements, previewTest }) {
     const [value, setValue] = React.useState('')
     const [Expectation, setExpectation] = React.useState(event)
     const [By, setBy] = React.useState(by)
@@ -37,8 +38,10 @@ export default function ExpectFunctoid ({ edit, fact, by, actionKey: key, onSave
         sx={{ml: 2}}
         placeholder={`Enter ${By}`} 
         onChange={e => setKey(e.target.value)} 
-        value={ Key } />}
+        value={ Key } 
+        />}
 
+  {!!By && <QueryMenu onClick={v => setKey(v)} queryElements={queryElements} previewTest={previewTest} />}
 
     <Collapse orientation="horizontal" in={Expectation==='toEqual' && !!By }>
       <TextField 

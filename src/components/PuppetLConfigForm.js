@@ -1,14 +1,22 @@
 import React from 'react'; 
 import { Functoid } from './functoid'
 import ChipGroup from './ChipGroup';
-import { ReallyButton, SimpleMenu } from './Control';
-import { DeleteForever, MoreVert }  from '@mui/icons-material';
+import { ReallyButton, SimpleMenu, Spacer, Flex } from './Control';
+import { DeleteForever, MoreVert, Add }  from '@mui/icons-material';
 
-import { Box, Tab, Tabs,  TextField, Stack, Typography, Button, Divider } from '@mui/material';
+import { Box, Tab, Tabs, TextField, Stack, Typography, Chip, Button, Divider } from '@mui/material';
 
 const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
-export default function PuppetLConfigForm ({onSave: onFormSave, onCancel: cancelClick, puppetML, getSteps, existingTests}) {
+export default function PuppetLConfigForm ({
+  onSave: onFormSave, 
+  onCancel: cancelClick, 
+  previewTest, 
+  puppetML, 
+  getSteps, 
+  existingTests,
+  queryElements
+}) {
   const [steps, setSteps] = React.useState([])
   const [testName, setTestName] = React.useState('')
   const [value, setValue] = React.useState(0);
@@ -30,7 +38,7 @@ export default function PuppetLConfigForm ({onSave: onFormSave, onCancel: cancel
     setValue(newValue);
   };
 
-	const addStep = () => 	setSteps(s => s.concat({edit: true, ID: uniqueId() }));
+	const addStep = () => 	setSteps(s => s.concat( {edit: true, ID: uniqueId() } ));
 
   const onDelete = (i) => {
     const out = [];
@@ -42,7 +50,15 @@ export default function PuppetLConfigForm ({onSave: onFormSave, onCancel: cancel
     setSteps(out);
   }
 
-	const onCreate = (step, i) => {
+	const onCreate = (step, i, imported) => {
+    if (imported) {
+      // alert (JSON.stringify(step, 0, 2))
+      setSteps(s => s
+        .concat(step.map(s => ({...s, imported})))
+        .filter(f => !f.edit));
+      addStep()
+      return 
+    }
 		setSteps(s => s.map((e, k) => k == i ? step : e));
 		addStep()
 	}
@@ -63,6 +79,7 @@ export default function PuppetLConfigForm ({onSave: onFormSave, onCancel: cancel
     cancelClick()
   }
   const transformed = ((out) => {
+    console.log ({steps})
     steps.filter(f => !!f.action).map (s => out = out.concat(transform(s)))
     return out;
   })([])
@@ -70,28 +87,26 @@ export default function PuppetLConfigForm ({onSave: onFormSave, onCancel: cancel
 
     {!steps.length && (<>
       <Stack spacing={2} sx={{maxWidth: 500, m: 2}}>
-      <Typography> Name your test:</Typography>
+        <Typography> Name your test:</Typography>
 
+        <Flex>
+          <TextField autoFocus 
+            size="small"
+            placeholder="Enter a name for your test" label="Test Name" 
+            value={testName} 
+            onChange={e => setTestName(e.target.value)} />
+          
+          <SimpleMenu disabled={!testName} onClick={i => {
+            const spec = existingTests[i];
+            const tst = getSteps(spec);
+            setSteps(tst.slice(0)); 
+          }} options={existingTests} label={!testName?'':`Import test for ${testName}`} icon={<MoreVert />} />
+        </Flex>
 
-      <Box className="flex center">
-
-      <TextField autoFocus 
-        size="small"
-        placeholder="Enter a name for your test" label="Test Name" 
-        value={testName} 
-        onChange={e => setTestName(e.target.value)} />
-      
-      <SimpleMenu disabled={!testName} onClick={i => {
-        const spec = existingTests[i];
-        const tst = getSteps(spec);
-        setSteps(tst.slice(0)); 
-      }} options={existingTests} label={!testName?'':`Import test for ${testName}`} icon={<MoreVert />} />
-      </Box>
-
-      <Box>
-        <Button sx={{mr: 1}} variant="outlined" onClick={onCancel}>cancel</Button>
-        <Button sx={{mr: 1}}  variant="contained" onClick={addStep}>create</Button>
-      </Box>
+        <Box>
+          <Button sx={{mr: 1}} variant="outlined" href="/">cancel</Button>
+          <Button sx={{mr: 1}}  variant="contained" onClick={addStep}>create</Button>
+        </Box>
       </Stack>
     </>)}
 
@@ -107,68 +122,90 @@ export default function PuppetLConfigForm ({onSave: onFormSave, onCancel: cancel
     </Stack>}
     <Divider sx={{mb: 2, mt: 2}}/>
 
-    <Tabs sx={{m: 2}} value={value} onChange={handleChange}  >
+     {!!steps.length &&  <Tabs sx={{m: 2}} value={value} onChange={handleChange}  >
         <Tab label="Steps" />
         <Tab label="PuppetML" />
         <Tab label="PuppetL" />
-      </Tabs>
+      </Tabs>}
 
       {value === 0 && <Box m={2}>
-      {steps.map((step, o) => <StepEdit onDelete={onDelete} key={step.ID} index={o} step={step} onSave={onCreate}/>)}
+      {steps.map((step, o) => <StepEdit 
+        queryElements={queryElements} 
+        previewTest={() => previewTest(testName, steps)}
+        onDelete={onDelete} 
+        key={step.ID} 
+        index={o} 
+        step={step} 
+        onSave={onCreate}/>)}
     </Box>}
 
-    {value === 1 && <Box mb={1}>
+    {value === 1 && <Box m={1}>
             <fieldset>
-      <legend>JSON</legend>
+      <legend>browser puppetML</legend>
       <pre>
         {JSON.stringify(steps, 0, 2)}
       </pre>
     </fieldset> 
     </Box>}
 
-    {value === 2 && <Box mb={1}>
+    {value === 2 && <Box m={1}>
             
     <fieldset>
-      <legend>transformed</legend>
+      <legend>primitive puppetL</legend>
       <pre>
         {JSON.stringify(transformed, 0, 2)}
       </pre>
     </fieldset>
     </Box>}
-
+    
    {!!steps.length &&( <Box mb={12} className="flex">
-      <Box sx={{flexGrow: 1}} />
-     <Button sx={{mr: 1}} variant="outlined" onClick={onCancel}>cancel</Button>
-     <Button sx={{mr: 1}} variant="contained" onClick={onAdd}>{!!puppetML?'save':'add'} test</Button>
+      <Spacer /> 
+      <Button sx={{mr: 1}} variant="outlined" onClick={onCancel}>cancel</Button>
+      <Button sx={{mr: 1}} variant="contained" onClick={onAdd}>{!!puppetML?'save':'add'} test</Button>
     </Box>)}
           
 
 
     </>
 }
-
  
-
-function StepEdit ({ step, onSave, index, onDelete }) {
-	const { edit, action } = step;
+function StepEdit ({ step, onSave, index, queryElements, previewTest, onDelete }) {
+	const { edit, action, imported } = step;
 	const [type, setType] = React.useState(action)
  
-  const actions = Object.keys(Functoid).map(f => Functoid[f].action);
-	const Key = Object.keys(Functoid).find(f => Functoid[f].action === type);
-	const { Component, Icon } = Functoid[Key] ?? {};
-	return (<Box className="flex center underline" sx={{gap: '1rem', p: 1}}>
+  const visibleFunctoids = Object.keys(Functoid)
+    .filter(f => !!Functoid[f].action);
 
-	<ChipGroup label={!type?'Select action':"Action"} options={actions} setValue={setType} value={type} />
+    const actions = visibleFunctoids
+      .map(f => Functoid[f].action);
+    const icons = visibleFunctoids
+      .map(f => {
+        const Ico = Functoid[f].Icon;
+        return <Ico sx={{pl: 1}} />
+      });
+
+	const Key = Object.keys(Functoid).find(f => Functoid[f].action === type);
+ 
+	const { Component, Icon, action: functoidAction } = Functoid[Key] ?? (!!imported ? Functoid.Imported : {});
+	return (<Stack><Box className="flex center underline" sx={{gap: '1rem', p: 1}}>
+
+	{!imported && <ChipGroup icons={icons} label={!type?'Select action':"Action"} options={actions} setValue={setType} value={type} />}
 
 	{!!Component && (<Box className="flex center">
-		<Icon sx={{mr: 1}}/>
-    <ReallyButton icon={<DeleteForever />} onYes={() => onDelete(index)} />
-		<Component {...step} onSave={ v => onSave(v, index) } />
+		{!imported && !!functoidAction && <>
+      <Icon sx={{mr: 1}}/> 
+      <ReallyButton icon={<DeleteForever />} onYes={() => onDelete(index)} />
+    </>}
+		<Component {...step} primitiveKey={step.key} previewTest={previewTest} queryElements={queryElements} onSave={ v => {
+      onSave(v, index, Key === 'Import') 
+    }} />
 		</Box>)}
 		
+   
 		
 		</Box>
-		
+    {/* { <small>{JSON.stringify(step)}</small>}[[{(!!Functoid[Key]).toString()}]] */}
+		</Stack>
 	)
 }
 

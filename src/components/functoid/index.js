@@ -3,7 +3,9 @@ import  NavigateFunctoid  from './NavigateFunctoid';
 import  EventFunctoid  from './EventFunctoid';
 import  ExpectFunctoid  from './ExpectFunctoid';
 import  UploadFunctoid  from './UploadFunctoid';
-import { Navigation, Input, Check, Upload }  from '@mui/icons-material';
+import  ImportFunctoid  from './ImportFunctoid';
+import  PuppetLFunctoid  from './PuppetLFunctoid';
+import { Navigation, Input, Check, Upload, Lock }  from '@mui/icons-material';
  
 export const Functoid = {
   Navigation: { 
@@ -28,5 +30,16 @@ export const Functoid = {
     action: 'upload',
     Component: UploadFunctoid,
     Icon: Upload
+  },
+
+  Import: {
+    action: 'import',
+    Component: ImportFunctoid,
+    Icon: Lock
+  },
+
+  Imported: { 
+    Component: PuppetLFunctoid,
+    Icon: Lock
   }
 };

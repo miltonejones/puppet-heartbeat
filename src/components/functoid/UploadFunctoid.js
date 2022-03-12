@@ -3,13 +3,14 @@ import { Box, TextField, Stack, Typography, Button, Collapse } from '@mui/materi
 import ChipGroup from '../ChipGroup';
 import { FileUploader } from '../Control';
 import { queryTypes } from './functoidConstants';
+import { QueryMenu } from '../Control';
 
 
-export default function UploadFunctoid ({ edit, path, by, actionKey: key, onSave }) {
+export default function UploadFunctoid ({ edit, path, by, actionKey: key, onSave, queryElements, previewTest }) {
     const [value, setValue] = React.useState('')
-    const [Path, setPath] = React.useState(path)
-    const [By, setBy] = React.useState(by)
-    const [Key, setKey] = React.useState(key)
+    const [Path, setPath] = React.useState(path);
+    const [By, setBy] = React.useState(by);
+    const [Key, setKey] = React.useState(key);
     const save = () => {
         const step = {
             action: 'upload', 
@@ -35,13 +36,13 @@ export default function UploadFunctoid ({ edit, path, by, actionKey: key, onSave
         onChange={e => setKey(e.target.value)} 
         value={ Key } />}
 
+  {!!By && <QueryMenu onClick={v => setKey(v)} queryElements={queryElements} previewTest={previewTest} />}
 
     <Collapse orientation="horizontal" in={!!Key && !!By}>
         <Box sx={{ml: 2}}>
             <FileUploader uploadComplete={setPath} />
         </Box>
     </Collapse>
-
 
     <Button variant="contained" sx={{ml: 2}} disabled={!(Path && By && Key)} onClick={save}>save</Button>
 

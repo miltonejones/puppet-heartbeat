@@ -1,6 +1,6 @@
 import React from 'react'; 
 import { Chip, Card, Stack, Collapse, IconButton, Button, Typography, Box } from '@mui/material';
-import { Close, Check, ExpandMore }  from '@mui/icons-material';
+import { Close, Check, ExpandMore, Sync, Search, MoreVert }  from '@mui/icons-material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -28,6 +28,20 @@ function ActionsMenu (props) {
     icon={<>Actions <ExpandMore className={className} /></>} />
 }
 
+function QueryMenu ({ queryElements, previewTest, onClick, ...props}) {
+  
+    if (!queryElements?.length) {
+      return <IconButton onClick={previewTest}>
+        <Search />
+      </IconButton>
+    }
+
+    return <SimpleMenu 
+      icon={<MoreVert />}
+      onClick={i => onClick(queryElements[i])}
+      options={queryElements}  />
+}
+
 
 function SimpleMenu ({ options, disabledBits, disabled, onClick, onClose, label, icon, button, ...props }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -44,7 +58,7 @@ function SimpleMenu ({ options, disabledBits, disabled, onClick, onClose, label,
   const Control = button || IconButton;
 
   return <>
-     <Box sx={{ml: 2}} className="flex center">
+     <Box className="flex center">
      {label}
       <Control
         disabled={disabled} 
@@ -190,6 +204,7 @@ export {
   Flex,
   Frame,
   Panel,
+  QueryMenu,
   ReallyButton,
   SimpleMenu,
   Spacer,
