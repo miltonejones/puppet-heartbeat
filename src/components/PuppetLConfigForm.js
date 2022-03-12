@@ -210,6 +210,20 @@ export const transform = step => {
         }
       ];
       break;
+    case 'upload':
+        label = `upload ${step.path} using ${step.actionKey}`;
+        return [
+          { 
+            "action": "lookup-by-" + step.by,
+            "key": step.actionKey, 
+          },
+          {
+            label,
+            action: 'upload',
+            path: step.path
+          }
+        ];
+        break;
     default:
       return [step]
   }
