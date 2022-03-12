@@ -220,7 +220,8 @@ export const transform = step => {
           {
             label,
             action: 'upload',
-            path: step.path
+            path: step.path,
+            key: step.actionKey, 
           }
         ];
         break;
