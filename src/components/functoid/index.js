@@ -5,7 +5,8 @@ import  ExpectFunctoid  from './ExpectFunctoid';
 import  UploadFunctoid  from './UploadFunctoid';
 import  ImportFunctoid  from './ImportFunctoid';
 import  PuppetLFunctoid  from './PuppetLFunctoid';
-import { Navigation, Input, Check, Upload, Lock }  from '@mui/icons-material';
+import  ScriptFunctoid  from './ScriptFunctoid';
+import { Navigation, Input, Check, Upload, Lock, Terminal }  from '@mui/icons-material';
  
 export const Functoid = {
   Navigation: { 
@@ -36,6 +37,12 @@ export const Functoid = {
     action: 'import',
     Component: ImportFunctoid,
     Icon: Lock
+  },
+
+  Scriptoid: {
+    action: 'script',
+    Component: ScriptFunctoid,
+    Icon: Terminal
   },
 
   Imported: { 

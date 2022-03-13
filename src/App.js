@@ -35,12 +35,4 @@ export default function App() {
       <Route path="/test/:suiteID" element={<TestPage {...args} pageIndex={1}   />} /> 
     </Routes>
 </BrowserRouter>
-}
-
-
-
-
-// export default function App() {
-//   const [connected, setConnected] = React.useState(false);
-//   return <Layout connected={connected}><SocketSender setConnected={setConnected}/></Layout>;
-// }
+} 

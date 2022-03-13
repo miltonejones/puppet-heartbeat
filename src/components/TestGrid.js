@@ -25,9 +25,10 @@ export default function TestGrid () {
 
   const collectionAge = Math.round((new Date().getTime() - updateTime) / 1000);
    
-  const handleChange = (event, value) => {
+  const pageChange = (event, value) => {
     setState(s => ({...s, page: value}));
   };
+
   const populate = React.useCallback (() => {
     getTestSuites()
       .then(res => setState(oldState => ({
@@ -117,7 +118,7 @@ export default function TestGrid () {
 
   const panelHeader = <Stack spacing={2}>
     <Typography variant="body1"><b style={{fontSize: '1.4rem'}}>Tests</b> ({createdTests?.length})</Typography>
-    <Pagination count={2} page={page} onChange={handleChange} />
+    <Pagination count={2} page={page} onChange={pageChange} />
   </Stack>
 
 

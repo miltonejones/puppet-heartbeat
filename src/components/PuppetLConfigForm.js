@@ -83,6 +83,11 @@ export default function PuppetLConfigForm ({
     steps.filter(f => !!f.action).map (s => out = out.concat(transform(s)))
     return out;
   })([])
+
+  const variables = steps
+      ?.filter(s => !!s.actionKey)
+      .map(s => s.actionKey);
+
   return <>
 
     {!steps.length && (<>
@@ -136,6 +141,7 @@ export default function PuppetLConfigForm ({
         key={step.ID} 
         index={o} 
         step={step} 
+        variables={variables}
         onSave={onCreate}/>)}
     </Box>}
 
@@ -163,49 +169,71 @@ export default function PuppetLConfigForm ({
       <Button sx={{mr: 1}} variant="outlined" onClick={onCancel}>cancel</Button>
       <Button sx={{mr: 1}} variant="contained" onClick={onAdd}>{!!puppetML?'save':'add'} test</Button>
     </Box>)}
-          
-
 
     </>
 }
  
-function StepEdit ({ step, onSave, index, queryElements, previewTest, onDelete }) {
+function StepEdit ({ 
+  // step object being evaluated
+  step, 
+  // method to call when step is saved
+  onSave, 
+  // ordinal of the step in the step array
+  index, 
+  // elements returned from the query service
+  queryElements, 
+  // method to call the query service
+  previewTest, 
+  // method to call when step is deleted
+  onDelete,
+  // any variables declared by previous steps
+  variables
+}) {
+
 	const { edit, action, imported } = step;
 	const [type, setType] = React.useState(action)
  
   const visibleFunctoids = Object.keys(Functoid)
     .filter(f => !!Functoid[f].action);
 
-    const actions = visibleFunctoids
-      .map(f => Functoid[f].action);
-    const icons = visibleFunctoids
-      .map(f => {
-        const Ico = Functoid[f].Icon;
-        return <Ico sx={{pl: 1}} />
-      });
+  const actions = visibleFunctoids
+    .map(f => Functoid[f].action);
+
+  const icons = visibleFunctoids
+    .map(f => {
+      const Ico = Functoid[f].Icon;
+      return <Ico sx={{pl: 1}} />
+    });
 
 	const Key = Object.keys(Functoid).find(f => Functoid[f].action === type);
  
 	const { Component, Icon, action: functoidAction } = Functoid[Key] ?? (!!imported ? Functoid.Imported : {});
-	return (<Stack><Box className="flex center underline" sx={{gap: '1rem', p: 1}}>
 
-	{!imported && <ChipGroup icons={icons} label={!type?'Select action':"Action"} options={actions} setValue={setType} value={type} />}
+  const componentProps = {
+    ...step,
+    variables,
+    previewTest,
+    primitiveKey: step.key,
+    queryElements,
+    onSave: q => onSave(q, index, Key === 'Import')
+  }
 
-	{!!Component && (<Box className="flex center">
-		{!imported && !!functoidAction && <>
-      <Icon sx={{mr: 1}}/> 
-      <ReallyButton icon={<DeleteForever />} onYes={() => onDelete(index)} />
-    </>}
-		<Component {...step} primitiveKey={step.key} previewTest={previewTest} queryElements={queryElements} onSave={ v => {
-      onSave(v, index, Key === 'Import') 
-    }} />
-		</Box>)}
-		
-   
-		
-		</Box>
-    {/* { <small>{JSON.stringify(step)}</small>}[[{(!!Functoid[Key]).toString()}]] */}
-		</Stack>
+	return (
+    <Stack>
+      <Box className="flex center underline" sx={{gap: '1rem', p: 1}}>
+
+        {!imported && <ChipGroup icons={icons} label={!type?'Select action':"Action"} options={actions} setValue={setType} value={type} />}
+
+        {!!Component && (
+        <Box className="flex center">
+          {!imported && !!functoidAction && <>
+            <Icon sx={{mr: 1}}/> 
+            <ReallyButton icon={<DeleteForever />} onYes={() => onDelete(index)} />
+          </>}
+          <Component {...componentProps}   />
+        </Box>)} 
+      </Box> 
+    </Stack>
 	)
 }
 

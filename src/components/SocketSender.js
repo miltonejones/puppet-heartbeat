@@ -194,18 +194,7 @@ class SocketSender extends React.Component {
       }
       this.setState( { createdTests, showEdit: true });
     });
-  }
-  
-  // selectTest (testName) { 
-  //   const { selectedTests: existingTests } = this.state;
-  //   const exists = existingTests.some(f => f === testName);
-
-  //   const selectedTests = exists
-  //     ? existingTests.filter(f => f !== testName)
-  //     : existingTests.concat(testName);
- 
-  //   this.setState({ selectedTests })
-  // }
+  } 
 
   render() {
     const {
@@ -222,8 +211,7 @@ class SocketSender extends React.Component {
       dialogState,
       showJest,
       showEdit,
-      createdTests,
-      // selectedTests,
+      createdTests, 
       preview,
       elements,
       ready
@@ -243,8 +231,7 @@ class SocketSender extends React.Component {
         <Box>
           <Breadcrumbs separator="›" sx={{mt: 2, mb: 1}} aria-label="breadcrumb">
             {breadcrumbs}
-          </Breadcrumbs>
-          {/* <Box sx={{mb: 2}}><Typography variant="h4">{currentTest}</Typography></Box> */}
+          </Breadcrumbs> 
         </Box>
       <Spacer />
      
@@ -268,23 +255,7 @@ class SocketSender extends React.Component {
     const emptyTest = {testName: null, steps: []};
     const createdTest = createdTests.find(f => f.testName === currentTest) ?? emptyTest;
 
-    const AddIcon = !!createdTest.steps.length ? Edit : Add; 
-
-    // menu stuff
-    // const MenuBit = ((e) => {
-    //   ['EDIT', 'RUN', 'NEW', 'DELETE'].map((n, i) => e[n] = Math.pow(2, i));
-    //   return e;
-    // })({});
-    // let disabledMenuItems = 0;
-    // if (!selectedTests?.length) disabledMenuItems += MenuBit.DELETE;
-    // if (selectedTests?.length !== 1) disabledMenuItems += MenuBit.EDIT + MenuBit.RUN;
-    // const openTest = name => this.setState({ showEdit: !showEdit, currentTest: name })
-    // const menuActions = [
-    //   () => openTest ( selectedTests[0] ),  
-    //   () => this.sendCommand(selectedTests[0]),
-    //   () => this.setState({ showEdit: !0, currentTest: null }),
-    //   () => alert ('Deletes not supported yet'),
-    // ];
+    const AddIcon = !!createdTest.steps.length ? Edit : Add;  
 
     const runCardButtons = [
       <Button color="error" 

@@ -10,6 +10,10 @@ body {
   overflow: hidden;
 }
 
+.coder {
+  font-family: monospace !important;
+}
+
 .card-body {
   margin: 12px 0;
   background-color: white;
