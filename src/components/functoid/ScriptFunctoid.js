@@ -1,7 +1,7 @@
 import React from 'react'; 
 import { Panel,  SimpleMenu, Flex, Spacer, ReallyButton } from '../Control';
-import { Box,TextField, Stack, Typography, Button, Grid, Alert } from '@mui/material';
-import { Add, DeleteForever }  from '@mui/icons-material';
+import { Box,TextField, Stack, Typography, Button, Grid, Alert, Chip } from '@mui/material';
+import { Add, DeleteForever, Terminal }  from '@mui/icons-material';
 
 
 const createSampleCode = args => {
@@ -73,7 +73,10 @@ export default function ScriptFunctoid ({
   }
 
   if (!edit) {
-    return <Typography variant="subtitle1"><b>execute script</b>  "{label}" </Typography>
+    return <Flex>
+      <Typography variant="subtitle1"><b>execute script</b>  "<u className="link" onClick={() => alert(value)}>{label}</u>" </Typography>
+      <Chip icon={<Terminal />} size="small" variant="contained" color="error" onClick={() => alert(value)} sx={{ml: 2}} label="View Script" />
+    </Flex>
 }
 
   return (<>

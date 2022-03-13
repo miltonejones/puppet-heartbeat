@@ -184,12 +184,13 @@ class SocketSender extends React.Component {
   }
 
   populate () {
-    const { suiteID } = this.props;
+    const { suiteID, setTitle } = this.props;
     getTestSuites().then(req => { 
       const createdTests = req.Items;
       if (!!suiteID) {
         const currentTest = createdTests.find(f => f.suiteID === suiteID).testName; 
         this.setState( { createdTests, currentTest, showEdit: false });
+        setTitle && setTitle(currentTest)
         return;
       }
       this.setState( { createdTests, showEdit: true });

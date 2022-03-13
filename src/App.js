@@ -10,29 +10,36 @@ import {
   useNavigate ,
   useParams
 } from "react-router-dom";
+import {Helmet} from "react-helmet";
 import './style.css';
 
 function GridPage ({ pageIndex  }) {
   return <Layout pageIndex={pageIndex}><TestGrid /></Layout>
 }
 
-function TestPage ({ connected, pageIndex, setConnected }) {
+function TestPage ({ connected, pageIndex, setConnected , setTitle}) {
   const { suiteID } = useParams();
-  return <Layout connected={connected} pageIndex={pageIndex}><SocketSender suiteID={suiteID} setConnected={setConnected}/></Layout>
+  return <Layout connected={connected} pageIndex={pageIndex}><SocketSender setTitle={setTitle} suiteID={suiteID} setConnected={setConnected}/></Layout>
 }
 
 
 export default function App() {
-  const [connected, setConnected] = React.useState(false);
+  const [state, setState] = React.useState({ connected: false, title: 'Puppeteer Studio' });
+  const { connected, title } = state;
   const args = {
-    setConnected,
+    setConnected: f => setState(s => ({...s, connected: f})),
+    setTitle: f =>  setState(s => ({...s, title: `Puppeteer Studio - ${f}`})),
     connected
   }
-  return <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<GridPage {...args} pageIndex={0}/>} />
-      <Route path="/test" element={<TestPage {...args} pageIndex={1}   />} /> 
-      <Route path="/test/:suiteID" element={<TestPage {...args} pageIndex={1}   />} /> 
-    </Routes>
-</BrowserRouter>
+  return <>
+   <Helmet>
+        <title>{title}</title>
+   </Helmet>
+  <BrowserRouter>
+  <Routes>
+    <Route path="/" element={<GridPage {...args} pageIndex={0}/>} />
+    <Route path="/test" element={<TestPage {...args} pageIndex={1}   />} /> 
+    <Route path="/test/:suiteID" element={<TestPage {...args} pageIndex={1}   />} /> 
+  </Routes>
+</BrowserRouter></>
 } 

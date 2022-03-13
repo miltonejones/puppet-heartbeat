@@ -2,9 +2,9 @@ import React from 'react';
 import { Functoid } from './functoid'
 import ChipGroup from './ChipGroup';
 import { ReallyButton, SimpleMenu, Spacer, Flex } from './Control';
-import { DeleteForever, MoreVert, Add }  from '@mui/icons-material';
+import { DeleteForever, MoreVert, Add, Edit }  from '@mui/icons-material';
 
-import { Box, Tab, Tabs, TextField, Stack, Typography, Chip, Button, Divider } from '@mui/material';
+import { Box, IconButton, Tab, Tabs, TextField, Stack, Typography, Chip, Button, Divider } from '@mui/material';
 
 const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
@@ -38,7 +38,7 @@ export default function PuppetLConfigForm ({
     setValue(newValue);
   };
 
-	const addStep = () => 	setSteps(s => s.concat( {edit: true, ID: uniqueId() } ));
+	const addStep = () => 	setSteps(s => s.filter(e => !e.edit).concat( {edit: true, ID: uniqueId() } ));
 
   const onDelete = (i) => {
     const out = [];
@@ -48,6 +48,10 @@ export default function PuppetLConfigForm ({
       }
     } ) ;
     setSteps(out);
+  }
+
+  const editStep = p => { 
+		setSteps(s => s.map((e, k) => k !== p ? e : {...e, edit: !e.edit}));
   }
 
 	const onCreate = (step, i, imported) => {
@@ -141,6 +145,7 @@ export default function PuppetLConfigForm ({
         key={step.ID} 
         index={o} 
         step={step} 
+        editStep={p => editStep(p)}
         variables={variables}
         onSave={onCreate}/>)}
     </Box>}
@@ -187,7 +192,8 @@ function StepEdit ({
   // method to call when step is deleted
   onDelete,
   // any variables declared by previous steps
-  variables
+  variables,
+  editStep
 }) {
 
 	const { edit, action, imported } = step;
@@ -225,13 +231,24 @@ function StepEdit ({
         {!imported && <ChipGroup icons={icons} label={!type?'Select action':"Action"} options={actions} setValue={setType} value={type} />}
 
         {!!Component && (
-        <Box className="flex center">
+        <Flex className="no-wrap" sx={{width: '100%'}}>
           {!imported && !!functoidAction && <>
             <Icon sx={{mr: 1}}/> 
             <ReallyButton icon={<DeleteForever />} onYes={() => onDelete(index)} />
+           {!step.edit && <IconButton  onClick={() => { 
+                editStep && editStep(index) 
+              }} >
+              <Edit />
+            </IconButton>}
           </>}
           <Component {...componentProps}   />
-        </Box>)} 
+          {/* <Spacer />
+          <IconButton  onClick={() => { 
+              editStep && editStep(index) 
+            }} >
+            <Edit />
+          </IconButton> */}
+        </Flex>)} 
       </Box> 
     </Stack>
 	)
