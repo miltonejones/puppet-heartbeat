@@ -28,11 +28,12 @@ import Card from '@mui/material/Card';
 import SocketCard from './SocketCard';
 import { PlayCircle, Sync, Settings , Add, Edit, Close }  from '@mui/icons-material';
 import JestCard from './JestCard';
-import { Panel, Flex, Spacer, PreviewBox } from './Control';
+import { Panel, Flex, Spacer, PreviewBox, ActionsMenu, LilBit } from './Control';
 import PuppetLConfigForm, { transform } from './PuppetLConfigForm';
 import PreviewCard from './PreviewCard';
-import {saveTestSuite, deleteTestSuite, getTestSuite, getTestSuites} from '../connector/puppetConnector'
-// import StepContent from '@mui/material/StepContent';
+import {saveTestSuite, deleteTestSuite, getTestSuite, getTestSuites, uniqueId} from '../connector/puppetConnector'
+ 
+
 
 const SOCKET_URI =
   'wss://2zoxhl25v2.execute-api.us-east-1.amazonaws.com/production';
@@ -51,6 +52,7 @@ class SocketSender extends React.Component {
       data: null,
       ready: false,
       outcomes: [],
+      sessionId: uniqueId(),
       createdTests: [] ,
       // selectedTests: [],
       dialogState: {open: false}
@@ -70,7 +72,7 @@ class SocketSender extends React.Component {
     const { actionText } = this.state;
     const json = JSON.parse(data); 
     const { available, steps, data: socketData } = json;
-    console.log ({msg})
+    // console.log ({msg})
     // process messages here
     !!json &&
       !!available &&
@@ -104,6 +106,7 @@ class SocketSender extends React.Component {
 
   openListener() {
     const { setConnected } = this.props;
+    const { sessionId } = this.state;
     console.log('You are connected');
     this.setState({ ws: client, connected: true });
     setConnected(true);
@@ -111,6 +114,7 @@ class SocketSender extends React.Component {
       action: 'introduce',
       data: {
         type: 'agent',
+        sessionId
       },
     });
   }
@@ -184,16 +188,19 @@ class SocketSender extends React.Component {
   }
 
   populate () {
-    const { suiteID, setTitle } = this.props;
+    const { suiteID, setTitle, runningTest, editingTest } = this.props;
     getTestSuites().then(req => { 
       const createdTests = req.Items;
       if (!!suiteID) {
         const currentTest = createdTests.find(f => f.suiteID === suiteID).testName; 
-        this.setState( { createdTests, currentTest, showEdit: false });
+        this.setState( { createdTests, currentTest, showEdit: editingTest });
         setTitle && setTitle(currentTest)
+        if (!!runningTest) {
+          this.sendCommand(currentTest);
+        }
         return;
       }
-      this.setState( { createdTests, showEdit: true });
+      this.setState( { createdTests, showEdit: editingTest });
     });
   } 
 
@@ -217,6 +224,8 @@ class SocketSender extends React.Component {
       elements,
       ready
     } = this.state;
+
+    const { editingTest, runningTest } = this.props;
     
     const breadcrumbs = [
       <Link to="/">Puppeteer Studio</Link>,
@@ -255,31 +264,39 @@ class SocketSender extends React.Component {
     const testList = createdTestNames;
     const emptyTest = {testName: null, steps: []};
     const createdTest = createdTests.find(f => f.testName === currentTest) ?? emptyTest;
-
+    const MenuBit = LilBit(['RUN', 'EDIT', 'EXPORT', 'CLONE', 'DELETE']);
     const AddIcon = !!createdTest.steps.length ? Edit : Add;  
-
+    const runCardActions = [
+      () => this.sendCommand(currentTest),
+      () => this.setState({showEdit: !showEdit}),
+      () => alert ('not supported'),
+      () => alert ('not supported'),
+      () => alert ('not supported')
+    ]
     const runCardButtons = [
-      <Button color="error" 
-      onClick={() => this.sendCommand(currentTest)} 
-      variant="contained">run <PlayCircle /></Button>,
-      <IconButton  
-      onClick={() => this.setState({showEdit:!showEdit})} 
-      > <Edit /></IconButton>,
+      <ActionsMenu 
+        disabledBits={MenuBit.EXPORT + MenuBit.DELETE + MenuBit.CLONE} 
+        onClick={i => runCardActions[i]()} 
+        options={['Run', 'Edit', 'Export', 'Clone', 'Delete Test']} />,
       <IconButton href="/"><Close /></IconButton>
     ]
 
-    const testCardButtons = currentTest ? [<Button color="error" variant="outlined">delete</Button>,
-    <Button color="error" 
-      onClick={() => this.sendCommand(currentTest, createdTest)} 
-      variant="contained">run <PlayCircle /></Button>] : [];
+    const testCardButtons = currentTest 
+      ? [<Button color="error" variant="outlined">delete</Button>,
+         <Button color="error" 
+          onClick={() => this.sendCommand(currentTest, createdTest)} 
+          variant="contained">run <PlayCircle /></Button>] 
+      : [];
 
     return (
       <>
         {header}
   
         {/* test cms card */}
-        <Panel header="Test Editor" tools={testCardButtons} on={showEdit}>
+       
           <PuppetLConfigForm 
+              showPanel={showEdit}
+              editingTest={editingTest || runningTest}
               existingTests={createdTestNames}
               queryElements={elements}
               previewTest={(name, items) => {
@@ -293,7 +310,7 @@ class SocketSender extends React.Component {
                 this.addTest(puppetML)
                 this.setState({ puppetML, showEdit: !showEdit, currentTest: null }); 
               } }/>
-        </Panel>
+     
 
        {!!steps && execRunning && ( <Box style={{position:'absolute', bottom: 40, right: 40}}>
           <PreviewCard  
@@ -303,7 +320,7 @@ class SocketSender extends React.Component {
            progress={progress} />
         </Box>)}
 
-        <Panel on={!showEdit && !preview && !!currentTest} header={`Test: ${currentTest}`}
+        <Panel on={!showEdit && !preview && !!currentTest}   header={`Test: ${currentTest}`}
           tools={runCardButtons}
         >        
           <Grid container>

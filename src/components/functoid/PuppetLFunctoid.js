@@ -3,7 +3,7 @@ import { Flex } from '../Control';
 import { Box, TextField, Stack, Typography, IconButton, Chip } from '@mui/material';
 import { Lock }  from '@mui/icons-material';
 
-export default function PuppetLFunctoid ({ action, fact, primitiveKey: key, object }) {
+export default function PuppetLFunctoid ({ action, fact, primitiveKey: key, object, value }) {
 
   if (!action) return <i />
   const args = {
@@ -35,10 +35,18 @@ export default function PuppetLFunctoid ({ action, fact, primitiveKey: key, obje
         <Typography variant="subtitle1"> [<b>{fact.key}</b>] {expecting}</Typography>
         </Flex>
   }
+  if  (action === 'equals') { 
+    const expecting = `to equal "${value}"` 
+    return <Flex>
+        {prefix}
+        <Chip {...args}   variant="outlined" label="expect" /> 
+        <Typography variant="subtitle1"> [<b>{fact}</b>] {expecting}</Typography>
+        </Flex>
+  }
   return <Flex> 
       {prefix} 
       <Chip  {...args}  variant="outlined" label={action} /> 
-      <Typography variant="subtitle1">{key || object.key}</Typography>
+      <Typography variant="subtitle1">{key || object?.key}</Typography>
       </Flex>
      
 

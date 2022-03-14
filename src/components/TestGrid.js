@@ -1,7 +1,9 @@
 import React from 'react';
-import {  getTestSuites } from '../connector/puppetConnector';
-import { Panel, Flex, Spacer, ActionsMenu, FileUploader } from './Control';
-import {  Sync  }  from '@mui/icons-material';
+import {  getTestSuites, deleteTestSuite} from '../connector/puppetConnector';
+import { Panel, Flex, Spacer, ActionsMenu, FileUploader, LilBit } from './Control';
+import SystemDialog, { useSystemDialog } from './SystemDialog';
+
+import {  Sync, Widgets, ExpandMore  }  from '@mui/icons-material';
 import { 
   Box,
   Checkbox,
@@ -10,18 +12,28 @@ import {
   Breadcrumbs,
   Stack,
   Pagination,
-  Typography
+  Typography,
+  TextField
 } from '@mui/material';
 import { Link } from "react-router-dom";
 
 const PAGE_SIZE = 10;
-
-/**
- * Render list of tests from the DB
+ 
+/** 
+ *  Render list of tests from the DB
  */
 export default function TestGrid () {
-  const [state, setState] = React.useState({ selectedTests: [] })
-  const { createdTests, selectedTests, page = 1, updateTime = -1}  = state;
+  const { systemDialogState, Prompt, Confirm } = useSystemDialog();
+  const [state, setState] = React.useState({ selectedTests: [] });
+  const { 
+    sortKey = 'testName',
+    sortOffset = 1,
+    createdTests, 
+    selectedTests, 
+    page = 1, 
+    updateTime = -1,
+    testFilter = ''
+  }  = state; 
 
   const collectionAge = Math.round((new Date().getTime() - updateTime) / 1000);
    
@@ -44,10 +56,7 @@ export default function TestGrid () {
 
   // menu stuff ---------------------------------------------------------/
   // create a set of bits to make things prettier
-  const MenuBit = ((e) => {
-    ['EDIT', 'RUN', 'DELETE'].map((n, i) => e[n] = Math.pow(2, i));
-    return e;
-  })({});
+  const MenuBit = LilBit(['EDIT', 'RUN', 'DELETE']); 
 
   // bitmap for disabled items in the menu
   let disabledMenuItems = 0;
@@ -57,10 +66,17 @@ export default function TestGrid () {
   // array of functions the menu calls
   const openTest = name => alert ('open ' + name + "!!")
   const menuActions = [
-    () => openTest ( selectedTests[0] ),  
-    () => openTest ( selectedTests[0] ),  
-    () => alert ('new test'),
-    () => alert ('Deletes not supported yet'),
+    () => window.location.replace(`/edit/${ createdTests.find(f => f.testName === selectedTests[0]).suiteID }`),   
+    () => window.location.replace(`/exec/${ createdTests.find(f => f.testName === selectedTests[0]).suiteID }`),   
+    async () => {
+      const answer = await Confirm ('Are you sure you want to delete the selected items?', 'Confirm Delete');
+      !!answer && Promise.all(
+        selectedTests
+          .map(s => deleteTestSuite( createdTests.find(f => f.testName === s).suiteID  ))
+        ).then(populate)
+
+     // alert (answer.toString());
+    },
   ];
 
   // add/remove test names from the test array
@@ -112,13 +128,28 @@ export default function TestGrid () {
     <Button href="/test" variant="contained" color="warning">create test</Button> ,
   ]);
 
-  const pageCount = Math.ceil(createdTests?.length / PAGE_SIZE);
+  if (!createdTests) return <i />
+
+  const filteredTests = createdTests.filter(f => !testFilter || f.testName.toLowerCase().indexOf(testFilter.toLowerCase()) > -1);
+  const pageCount = Math.ceil(filteredTests?.length / PAGE_SIZE);
   const firstPage = (page - 1) * PAGE_SIZE;
-  const pageItems = createdTests?.slice(firstPage, firstPage + PAGE_SIZE);
+  const pageItems = filteredTests
+      .map(f => ({...f, stepCount: f.steps.length}))
+      .sort((a, b) => (a[sortKey] > b[sortKey] ? 1 : -1) * sortOffset)
+      .slice(firstPage, firstPage + PAGE_SIZE);
+  const filterBox = <TextField 
+                      sx={{mr: 4, width: 400}}
+                      size="small"
+                      value={testFilter}
+                      onChange={e => setState(s => ({...s, testFilter: e.target.value}))}
+                      label="filter tests by name" />
 
   const panelHeader = <Stack spacing={2}>
-    <Typography variant="body1"><b style={{fontSize: '1.4rem'}}>Tests</b> ({createdTests?.length})</Typography>
-    <Pagination count={2} page={page} onChange={pageChange} />
+    <Typography variant="body1"><b style={{fontSize: '1.4rem'}}>Tests</b> ({filteredTests?.length})</Typography>
+    <Flex>
+      {filterBox}
+      {pageCount > 1 && <Pagination count={pageCount} page={page} onChange={pageChange} />}
+    </Flex>
   </Stack>
 
 
@@ -127,55 +158,80 @@ export default function TestGrid () {
        {header}
  
       <Panel 
+        wait
         on={!!createdTests} 
         tools={panelButtons}
         header={panelHeader}>
 
             {/* test datagrid */}
             <table className="grid" cellspacing="0"> 
-            <thead>
-              <tr>
-                <th>
-                  &nbsp;
-                </th>
-                <th>
-                  Name
-                </th>
-                <th align="right">
-                  Steps
-                </th>
-                <th>
-                  Owner
-                </th>
-                <th>
-                  Created
-                </th>
-                <th>
-                  Modified
-                </th>
-                <th>
-                &nbsp;
-                </th>
-              </tr>
-            </thead>
+            <TestHead setKey={(key) => setState(s => ({...s, sortOffset: -s.sortOffset, sortKey: key}))} sortKey={sortKey} />
             <tbody>
-              {pageItems?.map((t) => (<tr key={t.suiteID}>
-                <td className="checked" onClick={() => selectTest(t.testName)} >
-                  <Checkbox/>
-                </td>
-                <td className="link"> <Link to={`/test/${t.suiteID}`}>{t.testName}</Link></td>
-                <td align="right">{t.steps.length} steps</td>
-                <td>community</td>
-                <td>{timed(t.created)}</td>
-                <td>{timed(t.modified)}</td>
-                <td>&nbsp;</td>
-              </tr>))}
+              {pageItems?.map((t) => (<TestRow selectTest={selectTest} key={t.suiteID} testInstance={t} />))}
             </tbody>
             </table>
         </Panel>
 
-
+      <SystemDialog {...systemDialogState}  />
     </>
+}
+
+const TestHead = ({ setKey, sortKey}) => {
+  const fields = [
+    {
+      label: 'Name',
+      id: 'testName'
+    },
+    {
+      label: 'Steps',
+      id: 'stepCount'
+    },
+    {
+      label: 'Owner', 
+    },
+    {
+      label: 'Created',
+      id: 'created'
+    },
+    {
+      label: 'Modified',
+      id: 'modified'
+    }
+  ];
+
+  return <thead>
+      <tr>
+        <th>
+          &nbsp;
+        </th>
+       {fields.map(field => <th onClick={() => !!field.id && setKey(field.id)} key={field.label}>
+         <Flex> {field.label} {sortKey === field.id && <ExpandMore />}</Flex>
+        </th>)} 
+        <th>
+        &nbsp;
+        </th>
+      </tr>
+    </thead>
+}
+
+const TestRow = ({ testInstance, selectTest }) => {
+  const hasNavigationStep = testInstance.steps.some(f => f.action === 'navigate')
+  return <tr>
+    <td className="checked" onClick={() => selectTest(testInstance.testName)} >
+      <Checkbox/>
+    </td>
+    <td className="link"> 
+      <Flex>
+        {!hasNavigationStep && <Widgets sx={{mr: 1}} />}
+        <Link to={`/edit/${testInstance.suiteID}`}>{testInstance.testName}</Link>
+      </Flex>
+    </td>
+    <td align="right">{testInstance.steps.length} steps</td>
+    <td>community</td>
+    <td>{timed(testInstance.created)}</td>
+    <td>{timed(testInstance.modified)}</td>
+    <td>&nbsp;</td>
+  </tr>
 }
 
 

@@ -17,9 +17,16 @@ function GridPage ({ pageIndex  }) {
   return <Layout pageIndex={pageIndex}><TestGrid /></Layout>
 }
 
-function TestPage ({ connected, pageIndex, setConnected , setTitle}) {
+function TestPage ({ connected, pageIndex, setConnected , setTitle, editingTest, runningTest}) {
   const { suiteID } = useParams();
-  return <Layout connected={connected} pageIndex={pageIndex}><SocketSender setTitle={setTitle} suiteID={suiteID} setConnected={setConnected}/></Layout>
+  return <Layout connected={connected} pageIndex={pageIndex}
+    ><SocketSender 
+      runningTest={runningTest}
+      editingTest={editingTest} 
+      setTitle={setTitle}
+      suiteID={suiteID} 
+      setConnected={setConnected}
+      /></Layout>
 }
 
 
@@ -40,6 +47,8 @@ export default function App() {
     <Route path="/" element={<GridPage {...args} pageIndex={0}/>} />
     <Route path="/test" element={<TestPage {...args} pageIndex={1}   />} /> 
     <Route path="/test/:suiteID" element={<TestPage {...args} pageIndex={1}   />} /> 
+    <Route path="/edit/:suiteID" element={<TestPage editingTest {...args} pageIndex={1}   />} /> 
+    <Route path="/exec/:suiteID" element={<TestPage runningTest {...args} pageIndex={1}   />} /> 
   </Routes>
 </BrowserRouter></>
 } 

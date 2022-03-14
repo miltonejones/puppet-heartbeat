@@ -1,10 +1,11 @@
 import React from 'react'; 
 import { Functoid } from './functoid'
 import ChipGroup from './ChipGroup';
-import { ReallyButton, SimpleMenu, Spacer, Flex } from './Control';
-import { DeleteForever, MoreVert, Add, Edit }  from '@mui/icons-material';
+import CreateTestForm from './CreateTestForm';
+import { ReallyButton, SimpleMenu, Spacer, Flex, Panel } from './Control';
+import { DeleteForever, MoreVert, Add, Edit , Close }  from '@mui/icons-material';
 
-import { Box, IconButton, Tab, Tabs, TextField, Stack, Typography, Chip, Button, Divider } from '@mui/material';
+import { Box, IconButton, Tab, Tabs, TextField, Stack, Typography, Autocomplete, Button, Divider } from '@mui/material';
 
 const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
@@ -15,7 +16,9 @@ export default function PuppetLConfigForm ({
   puppetML, 
   getSteps, 
   existingTests,
-  queryElements
+  queryElements,
+  editingTest,
+  showPanel
 }) {
   const [steps, setSteps] = React.useState([])
   const [testName, setTestName] = React.useState('')
@@ -38,6 +41,7 @@ export default function PuppetLConfigForm ({
     setValue(newValue);
   };
 
+  // add a blank step to the end of the array
 	const addStep = () => 	setSteps(s => s.filter(e => !e.edit).concat( {edit: true, ID: uniqueId() } ));
 
   const onDelete = (i) => {
@@ -83,7 +87,6 @@ export default function PuppetLConfigForm ({
     cancelClick()
   }
   const transformed = ((out) => {
-    console.log ({steps})
     steps.filter(f => !!f.action).map (s => out = out.concat(transform(s)))
     return out;
   })([])
@@ -92,89 +95,104 @@ export default function PuppetLConfigForm ({
       ?.filter(s => !!s.actionKey)
       .map(s => s.actionKey);
 
-  return <>
+  const panelButtons = [
+    <IconButton  onClick={onCancel}><Close /></IconButton>
+  ]
 
-    {!steps.length && (<>
-      <Stack spacing={2} sx={{maxWidth: 500, m: 2}}>
-        <Typography> Name your test:</Typography>
+  const importTest = name => {
+    const addedSteps = getSteps(name);
+    setSteps (s => s.filter(e => !e.edit).concat(addedSteps))
+  }
 
-        <Flex>
-          <TextField autoFocus 
-            size="small"
-            placeholder="Enter a name for your test" label="Test Name" 
-            value={testName} 
-            onChange={e => setTestName(e.target.value)} />
-          
-          <SimpleMenu disabled={!testName} onClick={i => {
-            const spec = existingTests[i];
-            const tst = getSteps(spec);
-            setSteps(tst.slice(0)); 
-          }} options={existingTests} label={!testName?'':`Import test for ${testName}`} icon={<MoreVert />} />
-        </Flex>
+  const testList = existingTests.map(e => ({label: e}));
+  const autoComplete = <Autocomplete 
+        sx={{width: 500, mt: 1}}
+        size="small" 
+        disablePortal
+        onChange={(e, n) => importTest (n.label)}   
+        id="combo-box-demo"
+        options={testList} 
+        renderInput={(params) => <TextField {...params} label="Import steps from another test" />}
+        />
 
-        <Box>
-          <Button sx={{mr: 1}} variant="outlined" href="/">cancel</Button>
-          <Button sx={{mr: 1}}  variant="contained" onClick={addStep}>create</Button>
-        </Box>
-      </Stack>
-    </>)}
-
-    {!!testName && !!steps.length && <Stack sx={{m: 2}}>
-    <Typography sx={{mt: 1, ml: 2}} variant="h6">
+  const panelHeader = <>
+    <Stack>
+      <Typography variant="h6">
         Steps in  "{testName}"
       </Typography>
       
-   {!!puppetML.suiteID &&( <Typography sx={{mb: 1, ml: 2}}  variant="caption">
-        <b>Test ID:</b> {puppetML.suiteID}  
-      </Typography>)}
+      {autoComplete}
+    </Stack>
+  </>
+
+  const createFormProps = {
+    existingTests,
+    getSteps, 
+    setSteps,
+    testName,
+    setTestName,
+    addStep
+  }
+
+  return <>
+
+    {!steps.length && !editingTest && ( <CreateTestForm {...createFormProps} />)}
+
+
+    <Panel on={showPanel && !!testName}  header={panelHeader} tools={panelButtons}>
+      {!!steps.length && ( 
+        <Tabs sx={{m: 2}} value={value} onChange={handleChange}  >
+          <Tab label="Steps" />
+          <Tab label="PuppetML" />
+          <Tab label="PuppetL" />
+        </Tabs>)}
+
+        {value === 0 && (
+        <Box m={2}>
+          {steps.map((step, o) => <StepEdit 
+            queryElements={queryElements} 
+            previewTest={() => previewTest(testName, steps)}
+            onDelete={onDelete} 
+            key={step.ID} 
+            index={o} 
+            step={step} 
+            editStep={p => editStep(p)}
+            variables={variables}
+            onSave={onCreate}/>)}
+        </Box>)}
+
+        {value === 1 && (
+        <Box m={1}>
+          <fieldset>
+            <legend>browser puppetML</legend>
+            <pre>
+              {JSON.stringify(steps, 0, 2)}
+            </pre>
+          </fieldset> 
+        </Box>)}
+
+        {value === 2 && (
+        <Box m={1}>
+              
+        <fieldset>
+          <legend>primitive puppetL</legend>
+          <pre>
+            {JSON.stringify(transformed, 0, 2)}
+          </pre>
+        </fieldset>
+      </Box>)}
       
-    </Stack>}
-    <Divider sx={{mb: 2, mt: 2}}/>
+    {!!steps.length &&( <Box mb={12} className="flex">
+        <Spacer /> 
+        <Button sx={{mr: 1}} variant="outlined" onClick={onCancel}>cancel</Button>
+        <Button sx={{mr: 1}} variant="contained" onClick={onAdd}>{!!puppetML?'save':'add'} test</Button>
+      </Box>)}
 
-     {!!steps.length &&  <Tabs sx={{m: 2}} value={value} onChange={handleChange}  >
-        <Tab label="Steps" />
-        <Tab label="PuppetML" />
-        <Tab label="PuppetL" />
-      </Tabs>}
 
-      {value === 0 && <Box m={2}>
-      {steps.map((step, o) => <StepEdit 
-        queryElements={queryElements} 
-        previewTest={() => previewTest(testName, steps)}
-        onDelete={onDelete} 
-        key={step.ID} 
-        index={o} 
-        step={step} 
-        editStep={p => editStep(p)}
-        variables={variables}
-        onSave={onCreate}/>)}
-    </Box>}
+    </Panel>
 
-    {value === 1 && <Box m={1}>
-            <fieldset>
-      <legend>browser puppetML</legend>
-      <pre>
-        {JSON.stringify(steps, 0, 2)}
-      </pre>
-    </fieldset> 
-    </Box>}
-
-    {value === 2 && <Box m={1}>
-            
-    <fieldset>
-      <legend>primitive puppetL</legend>
-      <pre>
-        {JSON.stringify(transformed, 0, 2)}
-      </pre>
-    </fieldset>
-    </Box>}
-    
-   {!!steps.length &&( <Box mb={12} className="flex">
-      <Spacer /> 
-      <Button sx={{mr: 1}} variant="outlined" onClick={onCancel}>cancel</Button>
-      <Button sx={{mr: 1}} variant="contained" onClick={onAdd}>{!!puppetML?'save':'add'} test</Button>
-    </Box>)}
-
+ 
+      
     </>
 }
  

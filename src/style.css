@@ -126,7 +126,7 @@ a,
 }
 
 .application-body {
-  padding: 0 24px;
+  padding: 0 48px;
   overflow: auto;
 }
 
@@ -168,10 +168,17 @@ a,
   text-align: right;
 }
 
+.dialog-header ,
 .panel-header {
   background-color: var(--toolbar-background);
   border-bottom: solid 1px var(--toolbar-border);
 }
+
+.dialog-header { 
+  padding-bottom: 4px !important;
+  padding-top: 8px !important; 
+}
+
 
 .flip {
   transition: transform 0.2s linear !important;
@@ -194,6 +201,9 @@ a,
   color: lime !important;
 } 
 
+.MuiButton-root {
+  text-transform: capitalize !important;
+}
 
 @keyframes spin {
   from {

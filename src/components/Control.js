@@ -1,12 +1,16 @@
 import React from 'react'; 
-import { Chip, Card, Stack, Collapse, Skeleton, IconButton, Button, Typography, Box } from '@mui/material';
-import { Close, Check, ExpandMore, Sync, Search, MoreVert }  from '@mui/icons-material';
+import { Chip, Card, Stack, Collapse, LinearProgress, Skeleton, IconButton, Button, Typography, Box } from '@mui/material';
+import { Close, Check, ExpandMore, Sync, Search, MoreVert  }  from '@mui/icons-material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
 
-function Panel ({header, on, tools, children, ...props}) {
-  return <Collapse in={on}><Card sx={{mb: 1, mt: 1}} { ...props}>
+function Panel ({header, on, tools, children, wait = false, sx, ...props}) {
+  const style = {mb: 1, mt: 3, ...sx}
+  if (wait && !on) {
+    return <LinearProgress sx={style}  />
+  }
+  return <Collapse in={on}><Card sx={style} { ...props}>
       <Stack className="panel-content">
         <Flex className="panel-header" 
         ><Typography sx={{ mt: 1, ml: 2, mb: 1}} variant="h6">
@@ -16,6 +20,13 @@ function Panel ({header, on, tools, children, ...props}) {
       </Stack>
   </Card></Collapse>
 }
+
+
+// create an named bitwise object 
+const LilBit = (names) => ((e) => {
+  names.map((n, i) => e[n] = Math.pow(2, i));
+  return e;
+})({});
 
 
 function ActionsMenu (props) {
@@ -73,10 +84,14 @@ function SimpleMenu ({ options, disabledBits, disabled, onClick, onClose, label,
         open={open}
         onClose={handleClose} 
       >
-        {options.map ((opt, i) => <MenuItem key={opt} onClick={() => {
+        {options.map ((opt, i) => (
+        <MenuItem key={opt} onClick={() => {
           onClick(i)
           handleClose()
-        }} disabled={!!(disabledBits & Math.pow(2, i))}>{opt}</MenuItem>)}
+        }} 
+        disabled={!!(disabledBits & Math.pow(2, i))}>
+          {opt}
+        </MenuItem>))}
          
       </Menu>
   </>
@@ -88,7 +103,7 @@ function ReallyButton ({ icon, onYes }) {
     return <Box className="flex center">
         <Collapse orientation="horizontal" in={on}>
      <Box className="flex center">
-          really?
+        <Chip label="Really?" size="small" color="error" />
             <IconButton sx={{mr: 1}}  onClick={() => {
               setOn(!1);
               onYes()
@@ -112,8 +127,7 @@ function Frame({ offset = 0, children, style, ...props }) {
   const [height, setHeight] = React.useState(null);
   const ref = React.createRef();
   React.useEffect(() => {
-    const { offsetTop } = ref.current;
-    console.log ({offsetTop, height})
+    const { offsetTop } = ref.current; 
     !!offsetTop && setHeight(`calc(100vh - ${offsetTop}px - ${offset}px)`);
   }, [ref]);
   return ( 
@@ -240,5 +254,6 @@ export {
   SimpleMenu,
   Spacer,
   PreviewBox,
-  FileUploader
+  FileUploader,
+  LilBit
 }

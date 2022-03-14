@@ -1,5 +1,5 @@
 
-const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
+export const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
 const API_ENDPOINT = "https://habprc9pj4.execute-api.us-east-1.amazonaws.com/tests";
 
@@ -40,5 +40,6 @@ const getTestSuites = async () => {
   const response = await fetch(API_ENDPOINT);
   return await response.json();
 };
+ 
 
 export { saveTestSuite, deleteTestSuite, getTestSuite, getTestSuites };
