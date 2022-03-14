@@ -79,7 +79,7 @@ class SocketSender extends React.Component {
       this.setState({ ...json, tests: available?.split(',') });
     !!json &&
       !!steps &&
-      this.setState({ ...json, outcomes: [], steps: steps?.split(',') });
+      this.setState({ ...json, outcomes: [], steps });
     !!json && !!socketData?.message && this.setState({ ...socketData });
     !!socketData?.s3Location &&
       this.setState({
