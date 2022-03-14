@@ -366,7 +366,9 @@ class SocketSender extends React.Component {
               <Stepper mt={5} activeStep={activeStep} orientation="vertical">
                 {steps?.map((label, index) => {
                   const msg = messages[index];
-                  const opt = <Typography variant="caption" color={msg?.error?'error':'primary'}>{msg?.error || msg}</Typography>;
+                  const opt = <Typography 
+                                variant="caption" 
+                                color={ msg?.error ? 'error' : 'success' }>{ msg?.error || msg }</Typography>;
                   const arg = { error: !!msg?.error }
                   return  (
                     <Step key={label}>
