@@ -102,35 +102,37 @@ export default function PuppetLConfigForm ({
     () => previewTest(testName, steps),
     () => onCancel(),
     () => onCancel()
-  ]
+  ];
 
   const panelButtons = [
-    <ActionsMenu onClick={o => menuActions[o]()} options={['Run', 'Preview', 'Edit', 'Close']} disabledBits={ Menu.EDIT } />,
-    <IconButton  onClick={onCancel}><Close /></IconButton>
-  ]
+    <ActionsMenu 
+      onClick={o => menuActions[o]()} 
+      options={['Run', 'Preview', 'Edit', 'Close']} 
+      disabledBits={ Menu.EDIT } />,
+    <IconButton onClick={onCancel}><Close /></IconButton>
+  ];
 
   const importTest = name => {
     const addedSteps = getSteps(name);
     setSteps (s => s.filter(e => !e.edit).concat(addedSteps))
-  }
+  };
 
   const testList = existingTests.map(e => ({label: e}));
   const autoComplete = <Autocomplete 
-        sx={{width: 500, mt: 1}}
-        size="small" 
-        disablePortal
-        onChange={(e, n) => importTest (n.label)}   
-        id="combo-box-demo"
-        options={testList} 
-        renderInput={(params) => <TextField {...params} label="Import steps from another test" />}
-        />
+      sx={{ width: 500, mt: 1 }}
+      size="small" 
+      disablePortal
+      onChange={(e, n) => importTest (n.label)}   
+      id="combo-box-demo"
+      options={testList} 
+      renderInput={(params) => <TextField {...params} label="Import steps from another test" />}
+    />
 
   const panelHeader = <>
     <Stack>
       <Typography variant="h6">
         Steps in  "{testName}"
       </Typography>
-      
       {autoComplete}
     </Stack>
   </>
@@ -142,14 +144,15 @@ export default function PuppetLConfigForm ({
     testName,
     setTestName,
     addStep
-  }
+  };
 
   return <>
 
     {!steps.length && !editingTest && ( <CreateTestForm {...createFormProps} />)}
 
 
-    <Panel on={showPanel && !!testName}  header={panelHeader} tools={panelButtons}>
+    <Panel on={showPanel && !!testName} header={panelHeader} tools={panelButtons}>
+
       {!!steps.length && ( 
         <Tabs sx={{m: 2}} value={value} onChange={handleChange}  >
           <Tab label="Steps" />
@@ -182,28 +185,23 @@ export default function PuppetLConfigForm ({
         </Box>)}
 
         {value === 2 && (
-        <Box m={1}>
-              
-        <fieldset>
-          <legend>primitive puppetL</legend>
-          <pre>
-            {JSON.stringify(transformed, 0, 2)}
-          </pre>
-        </fieldset>
-      </Box>)}
+        <Box m={1}>   
+          <fieldset>
+            <legend>primitive puppetL</legend>
+            <pre>
+              {JSON.stringify(transformed, 0, 2)}
+            </pre>
+          </fieldset>
+        </Box>
+      )}
       
     {!!steps.length &&( <Box mb={12} className="flex">
         <Spacer /> 
         <Button sx={{mr: 1}} variant="outlined" onClick={onCancel}>cancel</Button>
         <Button sx={{mr: 1}} variant="contained" onClick={onAdd}>{!!puppetML?'save':'add'} test</Button>
       </Box>)}
-
-
     </Panel>
-
- 
-      
-    </>
+  </>
 }
  
 function StepEdit ({ 
@@ -269,13 +267,7 @@ function StepEdit ({
               <Edit />
             </IconButton>}
           </>}
-          <Component {...componentProps}   />
-          {/* <Spacer />
-          <IconButton  onClick={() => { 
-              editStep && editStep(index) 
-            }} >
-            <Edit />
-          </IconButton> */}
+          <Component {...componentProps}   /> 
         </Flex>)} 
       </Box> 
     </Stack>

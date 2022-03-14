@@ -29,7 +29,7 @@ export default function CreateTestForm ({
         basedOn: null, 
         startOn: true 
     });
-    const { basedOn, testBase, startOn, startURL } = state;
+    const { basedOn, testBase, startOn, startURL, description } = state;
     const testList = existingTests.map(e => ({label: e}))
     const sx = {width: '60vw', m: 2};
     
@@ -48,6 +48,7 @@ export default function CreateTestForm ({
 
       const test = {
         testName,
+        description,
         steps: addedSteps
         .filter(f => !f.edit)
         .concat({edit: true, ID: uniqueId() } )
@@ -60,7 +61,8 @@ export default function CreateTestForm ({
      <Panel on={true} header="Test Information" sx={{maxWidth: '60vw'}}>
 
      <Stack  sx={sx}>
-        <Typography variant="subtitle1">Name your test</Typography>
+       
+     <Typography variant="subtitle1">Name your test</Typography>
         <Typography variant="caption">Enter a name that describes the purpose of your test.</Typography>
        
         <Flex sx={{mt: 1, mb: 2}}>
@@ -74,9 +76,8 @@ export default function CreateTestForm ({
             value={testName} 
             onChange={e => setTestName(e.target.value)} />
         </Flex>
-
+  
         {/* start URL option */}
-        
         <Box sx={{ mb: 2}}>
           <Flex>
             <Switch
@@ -103,6 +104,23 @@ export default function CreateTestForm ({
         </Collapse>
         </Box>
 
+
+        <Typography variant="subtitle1">Description (optional)</Typography>
+        <Typography variant="caption">Add a short description to explain the test to your future self.</Typography>
+       
+        <Flex sx={{mt: 1, mb: 2}}>
+          <TextField 
+            sx={{width: 700}} 
+            multiline
+            rows={3}
+            size="small"
+            autoComplete="off"
+            placeholder="Enter a test description" 
+            label="describe me" 
+            value={description}  
+            onChange={e => setState(s => ({...s, description: e.target.checked}))}
+             />
+        </Flex>
 
 
         {/* import test option */}

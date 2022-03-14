@@ -50,12 +50,10 @@ class SocketSender extends React.Component {
     this.state = {
       connected: false,
       ws: null,
-      data: null,
-      ready: false,
+      data: null, 
       outcomes: [],
       sessionId: uniqueId(),
-      createdTests: [] ,
-      // selectedTests: [],
+      createdTests: [] , 
       exceptions: [],
       messages: [],
       dialogState: {open: false}
@@ -70,11 +68,10 @@ class SocketSender extends React.Component {
     alert('DONE!');
   }
 
-  logSocketMessage (socketData) {
+  storeMessage (socketData) {
     const { messages } = this.state;
     const { scriptMessage, activeStep} = socketData;
-    messages[activeStep] = scriptMessage;
-    console.log ({ socketData })
+    messages[activeStep] = scriptMessage; 
     this.setState({ ...socketData, messages })
   }
 
@@ -101,7 +98,7 @@ class SocketSender extends React.Component {
 
     // if the data node has a 'message' prop, add the
     // whole node to the state and parse it in the render
-    !!json && !!socketData?.message && this.logSocketMessage(socketData);
+    !!json && !!socketData?.message && this.storeMessage(socketData);
 
     // when messages have an "s3Location", add them to the 
     // outcomes array to display when the test is done
@@ -220,47 +217,69 @@ class SocketSender extends React.Component {
 
   populate () {
     const { suiteID, setTitle, runningTest, editingTest } = this.props;
+
+    // downloads the whole db since it's tiny
     getTestSuites().then(req => { 
       const createdTests = req.Items;
+
+      // load selected test 
       if (!!suiteID) {
         const currentTest = createdTests.find(f => f.suiteID === suiteID).testName; 
         this.setState( { createdTests, currentTest, showEdit: editingTest });
         setTitle && setTitle(currentTest)
+        
+        // run the test if called for
         if (!!runningTest) {
           this.sendCommand(currentTest);
         }
         return;
       }
+
+      // otherwise load the whole test list into state
+      // for dropdowns and menus
       this.setState( { createdTests, showEdit: editingTest });
     });
   } 
 
   render() {
-    const {
-      tests = [],
-      message,
-      thumbnail,
-      steps,
+    const { 
+      // ordinal of the current test step
       activeStep = 0,
-      progress,
-      outcomes,
-      connected,
-      currentTest,
+      // (deprecate?) script text of the current test step
       actionText,
-      dialogState,
-      showJest,
-      showEdit,
+      // state of the web socket
+      connected,
+      // array of tests from the db
       createdTests, 
-      preview,
+      // (string) name of the currently selected test
+      currentTest,
+      // props for page dialog
+      dialogState,
+      // element list returned from PS server
       elements,
+      // most recent step message from PS server
+      message,
+      // array of message received so far
       messages,
-      ready
+      // array of test steps with screen shots
+      outcomes,
+      // (bool) experimental preview mode
+      preview,
+      // (int) progress of the current step
+      progress, 
+      // (bool) show the edit window
+      showEdit, 
+      // array of step names in the current test
+      steps,
+      // base64 thumbnail showing outcome of the most recent step
+      thumbnail,
     } = this.state;
 
     const { editingTest, runningTest } = this.props;
     const {  systemDialogState, Prompt, Confirm } = componentSystemDialog(
       dialogState, state => this.setState({ dialogState: state })
     )
+
     const breadcrumbs = [
       <Link to="/">Puppeteer Studio</Link>,
       <Link to="/">Tests</Link>,
@@ -274,12 +293,13 @@ class SocketSender extends React.Component {
           </Breadcrumbs> 
         </Box>
       <Spacer />
-     
     </Flex>
 
     const execRunning = !!progress && progress < 100;
     const execDisabled = !currentTest || execRunning; 
 
+    // removed this for previous rev, need to find
+    // a place for it. user needs notifying when busy!
     const ButtonIcon = execRunning ? Sync : PlayCircle;
     const buttonClass = execRunning ? 'spin' : ''; 
 
@@ -287,10 +307,13 @@ class SocketSender extends React.Component {
  
     const createdTestNames = createdTests.map(t => t.testName);
  
-    const emptyTest = {testName: null, steps: []};
-    const createdTest = createdTests.find(f => f.testName === currentTest) ?? emptyTest;
+    const EMPTY_TEST = { testName: null, steps: [] };
+    
+    // currentTest based on testName, silly. change to base on suiteID
+    const createdTest = createdTests.find(f => f.testName === currentTest) ?? EMPTY_TEST;
+
+    // menu stuff
     const MenuBit = LilBit(['RUN', 'EDIT', 'EXPORT', 'CLONE', 'DELETE']);
-    const AddIcon = !!createdTest.steps.length ? Edit : Add;  
     const runCardActions = [
       () => this.sendCommand(currentTest),
       () => this.setState({showEdit: !showEdit}),
@@ -301,20 +324,15 @@ class SocketSender extends React.Component {
         alert (answer)
       }
     ]
+
+    // run card panel buttons
     const runCardButtons = [
       <ActionsMenu 
         disabledBits={MenuBit.EXPORT + MenuBit.CLONE} 
         onClick={i => runCardActions[i]()} 
         options={['Run', 'Edit', 'Export', 'Clone', 'Delete Test']} />,
       <IconButton href="/"><Close /></IconButton>
-    ]
-
-    const testCardButtons = currentTest 
-      ? [<Button color="error" variant="outlined">delete</Button>,
-         <Button color="error" 
-          onClick={() => this.sendCommand(currentTest, createdTest)} 
-          variant="contained">run <PlayCircle /></Button>] 
-      : [];
+    ]; 
 
     return (
       <>
@@ -327,8 +345,7 @@ class SocketSender extends React.Component {
               editingTest={editingTest || runningTest}
               existingTests={createdTestNames}
               queryElements={elements}
-              execTest={name => {
-                alert (name)
+              execTest={name => { 
                 this.setState({showEdit: !showEdit });
                 this.sendCommand(name);
               }}
