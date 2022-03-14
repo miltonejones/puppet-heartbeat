@@ -125,26 +125,19 @@
           "key": "check-field",
           "elementId": "check-field"
         },
-        {
-          "descriptionText": "has proper fields",
+        { 
           "label": "TEST: Does 'text-field-firstName' exist",
           "action": "exists",
           "exception": null,
-          "fact": {
-            "descriptionText": "has proper fields",
-            "key": "text-field-firstName",
-            "elementId": "text-field-firstName"
+          "fact": { 
+            "key": "text-field-firstName"
           }
         },
-        {
-          "descriptionText": "has proper fields",
+        { 
           "label": "TEST: Does 'text-field-lastName' exist",
-          "action": "exists",
-          "exception": null,
-          "fact": {
-            "descriptionText": "has proper fields",
-            "key": "text-field-lastName",
-            "elementId": "text-field-lastName"
+          "action": "exists", 
+          "fact": { 
+            "key": "text-field-lastName"
           }
         },
         {

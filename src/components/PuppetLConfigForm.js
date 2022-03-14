@@ -2,7 +2,7 @@ import React from 'react';
 import { Functoid } from './functoid'
 import ChipGroup from './ChipGroup';
 import CreateTestForm from './CreateTestForm';
-import { ReallyButton, SimpleMenu, Spacer, Flex, Panel } from './Control';
+import { ReallyButton, SimpleMenu, Spacer, Flex, Panel, ActionsMenu, LilBit } from './Control';
 import { DeleteForever, MoreVert, Add, Edit , Close }  from '@mui/icons-material';
 
 import { Box, IconButton, Tab, Tabs, TextField, Stack, Typography, Autocomplete, Button, Divider } from '@mui/material';
@@ -13,6 +13,7 @@ export default function PuppetLConfigForm ({
   onSave: onFormSave, 
   onCancel: cancelClick, 
   previewTest, 
+  execTest,
   puppetML, 
   getSteps, 
   existingTests,
@@ -95,7 +96,16 @@ export default function PuppetLConfigForm ({
       ?.filter(s => !!s.actionKey)
       .map(s => s.actionKey);
 
+  const Menu = LilBit(['RUN', 'PREVIEW', 'EDIT', 'CLOSE']);
+  const menuActions = [
+    () => execTest (),
+    () => previewTest(testName, steps),
+    () => onCancel(),
+    () => onCancel()
+  ]
+
   const panelButtons = [
+    <ActionsMenu onClick={o => menuActions[o]()} options={['Run', 'Preview', 'Edit', 'Close']} disabledBits={ Menu.EDIT } />,
     <IconButton  onClick={onCancel}><Close /></IconButton>
   ]
 
