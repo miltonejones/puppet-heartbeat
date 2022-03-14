@@ -17,6 +17,7 @@ export default function Layout ({ children, connected, ...props}) {
         <TextField
             sx={{mr: 2, ml: 2}}
             classes={{root: 'input-outer'}}
+            autoComplete="off"
               InputProps={{
               classes: {input: 'input-label'} ,
               startAdornment: (

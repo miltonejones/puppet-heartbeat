@@ -31,6 +31,7 @@ import JestCard from './JestCard';
 import { Panel, Flex, Spacer, PreviewBox, ActionsMenu, LilBit } from './Control';
 import PuppetLConfigForm, { transform } from './PuppetLConfigForm';
 import PreviewCard from './PreviewCard';
+import SystemDialog, { componentSystemDialog } from './SystemDialog';
 import {saveTestSuite, deleteTestSuite, getTestSuite, getTestSuites, uniqueId} from '../connector/puppetConnector'
  
 
@@ -55,6 +56,8 @@ class SocketSender extends React.Component {
       sessionId: uniqueId(),
       createdTests: [] ,
       // selectedTests: [],
+      exceptions: [],
+      messages: [],
       dialogState: {open: false}
     };
     this.openListener = this.openListener.bind(this);
@@ -67,25 +70,48 @@ class SocketSender extends React.Component {
     alert('DONE!');
   }
 
+  logSocketMessage (socketData) {
+    const { messages } = this.state;
+    const { scriptMessage, activeStep} = socketData;
+    messages[activeStep] = scriptMessage;
+    console.log ({ socketData })
+    this.setState({ ...socketData, messages })
+  }
+
   messageListener(msg) {
     const { data } = msg;
     const { actionText } = this.state;
     const json = JSON.parse(data); 
-    const { available, steps, data: socketData } = json;
-    // console.log ({msg})
-    // process messages here
-    !!json &&
-      !!available &&
-      this.setState({ ...json, tests: available?.split(',') });
+    const { steps, data: socketData } = json;
+  
+   
+    // when a test command is acknowledged, it includes
+    // the list of steps in the test. Store them here.
     !!json &&
       !!steps &&
-      this.setState({ ...json, outcomes: [], steps });
-    !!json && !!socketData?.message && this.setState({ ...socketData });
+      this.setState({ 
+        ...json, 
+        steps, 
+
+        // clear exceptions and messages
+        exceptions: [],
+        messages: [],
+        outcomes: []
+      });
+
+    // if the data node has a 'message' prop, add the
+    // whole node to the state and parse it in the render
+    !!json && !!socketData?.message && this.logSocketMessage(socketData);
+
+    // when messages have an "s3Location", add them to the 
+    // outcomes array to display when the test is done
     !!socketData?.s3Location &&
       this.setState({
         ...this.state,
         outcomes: this.state.outcomes.concat({...socketData, actionText}),
       });
+    
+    // not used now but useful later
     !!json.complete && this.onComplete();
   }
 
@@ -120,10 +146,15 @@ class SocketSender extends React.Component {
   }
 
   sendMessage(json) {
-    console.log('sending', json);
+    console.log('sending message');
     client.readyState === 1 && client.send(JSON.stringify(json));
   }
 
+  /**
+   * transform an array of browser "puppetML" steps to "puppetL" for the server
+   * @param {*} steps 
+   * @returns [puppetL] 
+   */
   transformSteps (steps) {
     return ((out) => {
       steps
@@ -222,20 +253,19 @@ class SocketSender extends React.Component {
       createdTests, 
       preview,
       elements,
+      messages,
       ready
     } = this.state;
 
     const { editingTest, runningTest } = this.props;
-    
+    const {  systemDialogState, Prompt, Confirm } = componentSystemDialog(
+      dialogState, state => this.setState({ dialogState: state })
+    )
     const breadcrumbs = [
       <Link to="/">Puppeteer Studio</Link>,
       <Link to="/">Tests</Link>,
       <em>{currentTest || 'Create Test'}</em>
-    ];
-
-    const connectedText = !connected
-      ? <Flex><Box className="dot" /> Disconnected </Flex>
-      : <Flex><Box className="dot green" /> Connected </Flex>;
+    ]; 
 
     const header = <Flex align="end">   
         <Box>
@@ -248,20 +278,15 @@ class SocketSender extends React.Component {
     </Flex>
 
     const execRunning = !!progress && progress < 100;
-    const execDisabled = !currentTest || execRunning
-
-    const headerText = !connected
-      ? 'Disconnected. Please start PuppetStudio on your computer.'
-      : <><Box className="dot green" /> Connected. Select a test to run.</>;
+    const execDisabled = !currentTest || execRunning; 
 
     const ButtonIcon = execRunning ? Sync : PlayCircle;
-    const buttonClass = execRunning ? 'spin' : '';
-    const { showCode } = controlCodeDialog(dialogState, this.setState.bind(this))
+    const buttonClass = execRunning ? 'spin' : ''; 
 
     if (!createdTests) return <em>waiting...</em>
  
     const createdTestNames = createdTests.map(t => t.testName);
-    const testList = createdTestNames;
+ 
     const emptyTest = {testName: null, steps: []};
     const createdTest = createdTests.find(f => f.testName === currentTest) ?? emptyTest;
     const MenuBit = LilBit(['RUN', 'EDIT', 'EXPORT', 'CLONE', 'DELETE']);
@@ -271,11 +296,14 @@ class SocketSender extends React.Component {
       () => this.setState({showEdit: !showEdit}),
       () => alert ('not supported'),
       () => alert ('not supported'),
-      () => alert ('not supported')
+      async () => {
+        const answer = await Confirm ('Are you sure you want to delete this item?');
+        alert (answer)
+      }
     ]
     const runCardButtons = [
       <ActionsMenu 
-        disabledBits={MenuBit.EXPORT + MenuBit.DELETE + MenuBit.CLONE} 
+        disabledBits={MenuBit.EXPORT + MenuBit.CLONE} 
         onClick={i => runCardActions[i]()} 
         options={['Run', 'Edit', 'Export', 'Clone', 'Delete Test']} />,
       <IconButton href="/"><Close /></IconButton>
@@ -336,11 +364,15 @@ class SocketSender extends React.Component {
             {/* test panel - progress stepper column  */}
             <Grid item pt={5} xs={4}>
               <Stepper mt={5} activeStep={activeStep} orientation="vertical">
-                {steps?.map((label, index) => (
-                  <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
-                  </Step>
-                ))}
+                {steps?.map((label, index) => {
+                  const msg = messages[index];
+                  const opt = <Typography variant="caption">{msg?.error || msg}</Typography>;
+                  return  (
+                    <Step key={label}>
+                      <StepLabel optional={opt}>{label}</StepLabel>
+                    </Step>
+                  )
+                })}
               </Stepper>
             </Grid>
 
@@ -370,69 +402,20 @@ class SocketSender extends React.Component {
 
               <Box className="auto-grid">
                 {outcomes.map((outcome, i) => (
-                  <SocketCard key={i} {...outcome} showCode={showCode}/>
+                  <SocketCard key={i} {...outcome} />
                 ))}
               </Box>
               
             </Collapse> 
           </Card>  
         )}
-
-        <CodeDialog {...dialogState}/>
+        <SystemDialog {...systemDialogState} />
       </>
     );
   }
 }
 
-export default SocketSender;
-
-function TestSelect ({testList, value ,onChange}) {
-  if (!testList?.length) return <i />
-  return (<>
-  <FormControl sx={{ m: 1, minWidth: 120 }}>
-    <InputLabel >Available Tests</InputLabel>
-    <Select  
-      style={{minWidth: 240}}
-      size="small"
-      value={value}
-      label="Age"
-      onChange={e => onChange(e.target.value)}
-    >
-      <MenuItem value="">
-        <em>None</em>
-      </MenuItem>
-      {testList.map(e => <MenuItem value={e} key={e}>{e}</MenuItem>)}
-    </Select> 
-  </FormControl>
-  </>)
-}
-
-
-function CodeDialog ({code, open, onClose}) {
-  return <><Dialog  onClose={onClose} open={open}> 
-  <DialogTitle>Test Code</DialogTitle>
-    <Box p={3}>
-      <fieldset className="code-block">
-        <legend>copy</legend>
-        <Box className="code-block-inner"> <pre>{code}</pre> </Box>
-      </fieldset>
-    </Box>
-  </Dialog></>
-}
-
-// can't use a hook, so using a makeshift one
-function controlCodeDialog(state, setState) { 
-  const showCode = code => {
-    setState({
-      dialogState:{ 
-        open:true,
-        code,
-        onClose: () => setState({dialogState: {open: false}})
-      }
-    })
-  }
-  return { state, showCode }
-}
- 
+export default SocketSender; 
+  
 
 const timed = d => new Date(d).toDateString()

@@ -83,6 +83,7 @@ export default function ScriptFunctoid ({
   <Grid container spacing={2}>
     <Grid item xs={shownProps.length ? 10 : 12}>
       <TextField
+        autoComplete="off"
         fullWidth 
         size="small"
         value={Label} 
@@ -109,8 +110,9 @@ export default function ScriptFunctoid ({
 
       <Grid item xs={12}>
         <TextField
-        classes={{input: 'coder', root: 'coder', outlined: 'coder'}}
+          classes={{input: 'coder', root: 'coder', outlined: 'coder'}}
           fullWidth 
+          autoComplete="off"
           multiline
           rows={5}
           size="small"

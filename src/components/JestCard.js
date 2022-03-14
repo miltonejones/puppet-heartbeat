@@ -95,7 +95,8 @@ function JestForm ( { onClick, onCancel } ) {
   <Stack mb={2}>
     <Typography mb={2}>Type or paste your Jest test code here:</Typography>
     <TextField
-    sx={{maxWidth: 580}}
+      autoComplete="off"
+      sx={{maxWidth: 580}}
       multiline 
       rows={10}
       value={value}

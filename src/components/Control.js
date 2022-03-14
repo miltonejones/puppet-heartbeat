@@ -1,8 +1,56 @@
 import React from 'react'; 
-import { Chip, Card, Stack, Collapse, LinearProgress, Skeleton, IconButton, Button, Typography, Box } from '@mui/material';
+import { 
+  Chip, 
+  Card, 
+  Stack, 
+  Collapse, 
+  LinearProgress, 
+  Skeleton, 
+  Dialog,
+  DialogTitle,
+  IconButton, 
+  Button, 
+  Typography, 
+  Box } from '@mui/material';
 import { Close, Check, ExpandMore, Sync, Search, MoreVert  }  from '@mui/icons-material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+
+
+
+
+function CodeDialog ({code, open, onClose}) {
+  return <><Dialog  onClose={onClose} open={open}> 
+  <DialogTitle>Test Code</DialogTitle>
+    <Box p={3}>
+      <fieldset className="code-block">
+        <legend>copy</legend>
+        <Box className="code-block-inner"> <pre>{code}</pre> </Box>
+      </fieldset>
+    </Box>
+  </Dialog></>
+}
+
+// component class version
+function controlCodeDialog(state, setState) { 
+  const showCode = code => {
+    setState({
+      dialogState:{ 
+        open:true,
+        code,
+        onClose: () => setState({dialogState: {open: false}})
+      }
+    })
+  }
+  return { state, showCode }
+}
+
+// component function version
+function useCodeDialog () {
+  const [codeDialogState, setCodeDialogState] = React.useState({ open: false});
+  return controlCodeDialog(codeDialogState, setCodeDialogState);
+}
+ 
 
 
 function Panel ({header, on, tools, children, wait = false, sx, ...props}) {
@@ -255,5 +303,8 @@ export {
   Spacer,
   PreviewBox,
   FileUploader,
-  LilBit
+  LilBit,
+  CodeDialog,
+  controlCodeDialog,
+  useCodeDialog
 }

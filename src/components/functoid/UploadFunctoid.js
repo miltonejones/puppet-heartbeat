@@ -30,6 +30,7 @@ export default function UploadFunctoid ({ edit, path, by, actionKey: key, onSave
     </Box>
     
     { !!By && <TextField 
+        autoComplete="off"
         size="small" 
         sx={{ml: 2}}
         placeholder={`Enter ${By}`} 

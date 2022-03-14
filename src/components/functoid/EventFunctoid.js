@@ -34,6 +34,7 @@ export default function EventFunctoid ({ edit, event, by, value, actionKey: key,
   </Flex>
     
   {!!Event && !!By && <TextField 
+      autoComplete="off"
       autoFocus
       size="small" 
       sx={{ml: 2}}
@@ -46,6 +47,7 @@ export default function EventFunctoid ({ edit, event, by, value, actionKey: key,
 
   <Collapse orientation="horizontal" in={Event==='change' && !!By && !!Key}>
       <TextField 
+          autoComplete="off"
           autoFocus
           size="small" 
           sx={{ml: 2}}

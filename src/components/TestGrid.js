@@ -139,6 +139,7 @@ export default function TestGrid () {
       .slice(firstPage, firstPage + PAGE_SIZE);
   const filterBox = <TextField 
                       sx={{mr: 4, width: 400}}
+                      autoComplete="off"
                       size="small"
                       value={testFilter}
                       onChange={e => setState(s => ({...s, testFilter: e.target.value}))}

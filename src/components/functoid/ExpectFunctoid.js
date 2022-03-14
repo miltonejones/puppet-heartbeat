@@ -34,6 +34,7 @@ export default function ExpectFunctoid ({ edit, fact, by, actionKey: key, onSave
     </Box>
     
     { !!By && <TextField 
+        autoComplete="off"
         size="small" 
         sx={{ml: 2}}
         placeholder={`Enter ${By}`} 
@@ -45,6 +46,7 @@ export default function ExpectFunctoid ({ edit, fact, by, actionKey: key, onSave
 
     <Collapse orientation="horizontal" in={Expectation==='toEqual' && !!By }>
       <TextField 
+          autoComplete="off"
           size="small" 
           sx={{ml: 2}}
           placeholder={`Change value`} 

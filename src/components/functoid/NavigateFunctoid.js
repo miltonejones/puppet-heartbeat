@@ -18,7 +18,8 @@ export default function NavigationFunctoid ({ URL, edit, onSave }) {
 
     return <Box sx={{gap: 1}} className="flex center">
         <Typography>Navigate to:</Typography>
-        <TextField size="small" onChange={e => setValue(e.target.value)} value={ value } />
+        <TextField size="small" 
+            autoComplete="off" onChange={e => setValue(e.target.value)} value={ value } />
         <Button variant="contained" sx={{ml: 1}} onClick={save}>save</Button>
     </Box>
 }
