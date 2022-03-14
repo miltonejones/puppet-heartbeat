@@ -327,7 +327,11 @@ class SocketSender extends React.Component {
               editingTest={editingTest || runningTest}
               existingTests={createdTestNames}
               queryElements={elements}
-              execTest={name => this.sendCommand(name)}
+              execTest={name => {
+                alert (name)
+                this.setState({showEdit: !showEdit });
+                this.sendCommand(name);
+              }}
               previewTest={(name, items) => {
                 const queryTest = { testName: name, steps: items.concat({ action: 'query' }) };
                 this.sendCommand(name, queryTest)

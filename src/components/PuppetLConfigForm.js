@@ -98,7 +98,7 @@ export default function PuppetLConfigForm ({
 
   const Menu = LilBit(['RUN', 'PREVIEW', 'EDIT', 'CLOSE']);
   const menuActions = [
-    () => execTest (),
+    () => execTest (testName),
     () => previewTest(testName, steps),
     () => onCancel(),
     () => onCancel()

@@ -6,7 +6,15 @@ import { queryTypes } from './functoidConstants';
 import { QueryMenu } from '../Control';
 
 
-export default function UploadFunctoid ({ edit, path, by, actionKey: key, onSave, queryElements, previewTest }) {
+export default function UploadFunctoid ({ 
+    edit, 
+    path, 
+    by, 
+    actionKey: key, 
+    onSave, 
+    queryElements, 
+    previewTest 
+}) {
     const [value, setValue] = React.useState('')
     const [Path, setPath] = React.useState(path);
     const [By, setBy] = React.useState(by);
