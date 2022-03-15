@@ -10,9 +10,13 @@ import {
   DialogTitle,
   IconButton, 
   Button, 
+  TextField,
   Typography, 
+  InputAdornment,
+  Tooltip,
   Box } from '@mui/material';
-import { Close, Check, ExpandMore, Sync, Search, MoreVert  }  from '@mui/icons-material';
+import { Close, Check, ExpandMore, Sync, Search, Save,
+  Edit, MoreVert, DriveFileRenameOutline  }  from '@mui/icons-material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -292,8 +296,51 @@ function PreviewBox ({ thumbnail, animation = false }) {
   </Stack>)
 }
 
+
+function VariableInput ({ onChange, value, name, ...props }) {
+  const [on, setOn] = React.useState(false);
+  const Icon = on ? Save : DriveFileRenameOutline;
+  const  InputProps={
+    endAdornment: <InputAdornment position="end">
+        <Tooltip title="Enter a friendly variable name">
+      <IconButton onClick={() => setOn(!on)}><Icon /></IconButton></Tooltip>
+    </InputAdornment>,
+  }
+
+  return <>
+    <Collapse orientation="horizontal" in={!on}>
+      <TextField 
+        {...textBoxProps}
+        {...props}
+        label="variable value"
+        value={value}
+        InputProps={InputProps}
+        onChange={e => onChange('Key', e.target.value)}
+      />
+    </Collapse>
+    <Collapse orientation="horizontal" in={on}>
+      <TextField 
+        {...textBoxProps}
+        {...props}
+        label="variable name"
+        placeholder="Variable name"
+        value={name}
+        InputProps={InputProps}
+        onChange={e => onChange('PropName', e.target.value)}
+      />
+    </Collapse>
+  </>
+}
+
+export const textBoxProps = {
+  autoComplete: "off", 
+  size: "small", 
+  sx: { ml: 2, mt: 0.75}
+}
+
 export {
   ActionsMenu,
+  VariableInput,
   Flex,
   Frame,
   Panel,

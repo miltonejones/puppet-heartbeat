@@ -3,9 +3,9 @@ import { Functoid } from './functoid'
 import ChipGroup from './ChipGroup';
 import CreateTestForm from './CreateTestForm';
 import { ReallyButton, SimpleMenu, Spacer, Flex, Panel, ActionsMenu, LilBit } from './Control';
-import { DeleteForever, MoreVert, Add, Edit , Close }  from '@mui/icons-material';
+import { DeleteForever, MoreVert, Add, Edit, Lock , Close }  from '@mui/icons-material';
 
-import { Box, IconButton, Tab, Tabs, TextField, Stack, Typography, Autocomplete, Button, Divider } from '@mui/material';
+import { Box, IconButton, Tab, Tabs, TextField, Stack, Typography, Autocomplete, Button, Chip } from '@mui/material';
 
 const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
@@ -48,7 +48,7 @@ export default function PuppetLConfigForm ({
   const onDelete = (i) => {
     const out = [];
     steps.map((f, k) => {
-      if (k !== i) {
+      if (f.ID !== i) {
         out.push(f)
       }
     } ) ;
@@ -56,7 +56,7 @@ export default function PuppetLConfigForm ({
   }
 
   const editStep = p => { 
-		setSteps(s => s.map((e, k) => k !== p ? e : {...e, edit: !e.edit}));
+		setSteps(s => s.map((e, k) => e.ID !== p ? e : {...e, edit: !e.edit}));
   }
 
 	const onCreate = (step, i, imported) => {
@@ -68,7 +68,7 @@ export default function PuppetLConfigForm ({
       addStep()
       return 
     }
-		setSteps(s => s.map((e, k) => k == i ? step : e));
+		setSteps(s => s.map((e, k) => e.ID === i ? step : e));
 		addStep()
 	}
 
@@ -113,8 +113,12 @@ export default function PuppetLConfigForm ({
   ];
 
   const importTest = name => {
-    const addedSteps = getSteps(name);
-    setSteps (s => s.filter(e => !e.edit).concat(addedSteps))
+    // give each added step its own ID
+    const addedSteps = getSteps(name)
+            .map(s => ({...s, ID: uniqueId()})); 
+    setSteps (s => s
+          .filter(e => !e.edit)
+          .concat(addedSteps))
   };
 
   const testList = existingTests.map(e => ({label: e}));
@@ -162,16 +166,19 @@ export default function PuppetLConfigForm ({
 
         {value === 0 && (
         <Box m={2}>
-          {steps.map((step, o) => <StepEdit 
+          {steps.map((step, o) => <StepRow 
             queryElements={queryElements} 
             previewTest={() => previewTest(testName, steps)}
             onDelete={onDelete} 
+            editStep={p => editStep(p)}
+            variables={variables}
+            onSave={onCreate}
+            
             key={step.ID} 
             index={o} 
             step={step} 
-            editStep={p => editStep(p)}
-            variables={variables}
-            onSave={onCreate}/>)}
+            
+            />)}
         </Box>)}
 
         {value === 1 && (
@@ -203,6 +210,38 @@ export default function PuppetLConfigForm ({
     </Panel>
   </>
 }
+
+
+function StepRow (props) {
+  const [edit, setEdit] = React.useState(false)
+  const { action, label, steps } = props.step;  
+  const args = {
+    sx: {ml: 1, mr: 1, minWidth: 96},
+    size: 'small',
+    color: 'info' ,
+    label: 'module'
+  }
+  const prefix = <>
+  <IconButton><Lock /></IconButton>
+  <Typography variant="caption">Import:</Typography> 
+</>
+  if (action === 'module') {
+    return <>
+    <Flex className="underline" sx={{ p: 1}}>
+      {prefix}
+      <Chip {...args} />
+      <Typography>{label}</Typography>
+      <Button variant="contained" onClick={() => setEdit(!edit)}>Customize</Button>
+    </Flex>
+    {edit && steps.map((step, o) => <StepEdit 
+            {...props}
+            key={step.ID} 
+            index={o} 
+            step={step}  />)}
+    </>
+  }
+  return <StepEdit {...props} />
+}
  
 function StepEdit ({ 
   // step object being evaluated
@@ -222,7 +261,7 @@ function StepEdit ({
   editStep
 }) {
 
-	const { edit, action, imported } = step;
+	const { edit, action, imported, ID } = step;
 	const [type, setType] = React.useState(action)
  
   const visibleFunctoids = Object.keys(Functoid)
@@ -247,7 +286,7 @@ function StepEdit ({
     previewTest,
     primitiveKey: step.key,
     queryElements,
-    onSave: q => onSave(q, index, Key === 'Import')
+    onSave: q => onSave(q, ID, Key === 'Import')
   }
 
 	return (
@@ -260,9 +299,9 @@ function StepEdit ({
         <Flex className="no-wrap" sx={{width: '100%'}}>
           {!imported && !!functoidAction && <>
             <Icon sx={{mr: 1}}/> 
-            <ReallyButton icon={<DeleteForever />} onYes={() => onDelete(index)} />
+            <ReallyButton icon={<DeleteForever />} onYes={() => onDelete(ID)} />
            {!step.edit && <IconButton  onClick={() => { 
-                editStep && editStep(index) 
+                editStep && editStep(ID) 
               }} >
               <Edit />
             </IconButton>}
@@ -282,8 +321,8 @@ export const transform = step => {
       break;
     case 'event':
       label = !step.value
-        ? `${step.event} ${step.actionKey} `
-        : `${step.event} ${step.actionKey} to ${step.value}`
+        ? `${step.event} ${step.propName || step.actionKey} `
+        : `${step.event} ${step.propName || step.actionKey} to ${step.value}`
       return [
         { 
           "action": "lookup-by-" + step.by,
@@ -303,8 +342,8 @@ export const transform = step => {
       break;
     case 'expect':
       label = !step.fact.value
-        ? `TEST: Is "${step.actionKey}" in the document `
-        : `TEST: Does "${step.actionKey}.value" equal ${value} `
+        ? `TEST: Is "${step.propName || step.actionKey}" in the document `
+        : `TEST: Does "${step.propName || step.actionKey}.value" equal ${value} `
       return [
         { 
           "action": "lookup-by-" + step.by,
@@ -323,7 +362,7 @@ export const transform = step => {
       ];
       break;
     case 'upload':
-        label = `upload ${step.path} using ${step.actionKey}`;
+        label = `upload ${step.path} using ${step.propName || step.actionKey}`;
         return [
           { 
             "action": "lookup-by-" + step.by,

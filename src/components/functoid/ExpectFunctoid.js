@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, TextField, Stack, Typography, Button, Collapse } from '@mui/material';
 import ChipGroup from '../ChipGroup';
 import { queryTypes } from './functoidConstants';
-import { QueryMenu } from '../Control';
+import { QueryMenu, textBoxProps } from '../Control';
 
 const Expectations = ['toBeInDocument', 'toEqual'] 
 
@@ -34,24 +34,20 @@ export default function ExpectFunctoid ({ edit, fact, by, actionKey: key, onSave
     </Box>
     
     { !!By && <TextField 
-        autoComplete="off"
-        size="small" 
-        sx={{ml: 2}}
+      {...textBoxProps}  
         placeholder={`Enter ${By}`} 
         onChange={e => setKey(e.target.value)} 
         value={ Key } 
         />}
 
-  {!!By && <QueryMenu onClick={v => setKey(v)} queryElements={queryElements} previewTest={previewTest} />}
+    {!!By && <QueryMenu onClick={v => setKey(v)} queryElements={queryElements} previewTest={previewTest} />}
 
     <Collapse orientation="horizontal" in={Expectation==='toEqual' && !!By }>
       <TextField 
-          autoComplete="off"
-          size="small" 
-          sx={{ml: 2}}
-          placeholder={`Change value`} 
-          onChange={e => setValue(e.target.value)} 
-          value={ value } />
+        {...textBoxProps} 
+        placeholder={`Change value`} 
+        onChange={e => setValue(e.target.value)} 
+        value={ value } />
     </Collapse>
 
 
