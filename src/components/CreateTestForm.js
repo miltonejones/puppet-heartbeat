@@ -2,19 +2,21 @@ import React from 'react';
 import { Functoid } from './functoid'
 import ChipGroup from './ChipGroup';
 import { ReallyButton, SimpleMenu, Spacer, Flex, Panel } from './Control';
-import { DeleteForever, MoreVert, Add, Edit , Close }  from '@mui/icons-material';
+import { DeleteForever, MoreVert, ExpandMore, Add, Edit , Close }  from '@mui/icons-material';
 import { saveTestSuite, uniqueId } from '../connector/puppetConnector'
 
 import { 
     Box, 
     Autocomplete, 
+    IconButton,
     TextField, 
     Stack, 
     Typography, 
     Collapse,
     Chip, 
     Button, 
-    Switch } from '@mui/material';
+    Switch,
+    Divider } from '@mui/material';
 
 
 export default function CreateTestForm ({  
@@ -31,7 +33,7 @@ export default function CreateTestForm ({
     });
     const { basedOn, testBase, startOn, startURL, description } = state;
     const testList = existingTests.map(e => ({label: e}))
-    const sx = {width: '60vw', m: 2};
+    const sx = {width: '58vw', m: 2};
     
     const  saveTest = async () => {
       let addedSteps = [];
@@ -58,7 +60,7 @@ export default function CreateTestForm ({
     }
 
     return <>
-     <Panel on={true} header="Test Information" sx={{maxWidth: '60vw'}}>
+     <Panel on={true} header="Test Information" sx={{maxWidth: '60vw', p: 0}}>
 
      <Stack  sx={sx}>
        
@@ -108,7 +110,7 @@ export default function CreateTestForm ({
         <Typography variant="subtitle1">Description (optional)</Typography>
         <Typography variant="caption">Add a short description to explain the test to your future self.</Typography>
        
-        <Flex sx={{mt: 1, mb: 2}}>
+        <Flex sx={{mt: 1, mb: 2}} >
           <TextField 
             sx={{width: 700}} 
             multiline
@@ -121,20 +123,27 @@ export default function CreateTestForm ({
             onChange={e => setState(s => ({...s, description: e.target.checked}))}
              />
         </Flex>
-
+ 
 
         {/* import test option */}
         <Flex>
-          <Switch
+          {/* <Switch
             disabled={startOn}
             checked={basedOn}
             onChange={e => setState(s => ({...s, basedOn: e.target.checked}))}
             inputProps={{ 'aria-label': 'controlled' }}
-            />
+            /> */}
+          <IconButton 
+            disabled={startOn}
+            onClick={e => setState(s => ({...s, basedOn: !s.basedOn}))}
+            >
+            <ExpandMore className={basedOn ? "flip" : "flip right"} />
+          </IconButton>
           <Typography variant="subtitle1">Import Steps</Typography>
         </Flex> 
-        <Typography variant="caption">Add steps from another test in the library.</Typography>
+
         <Collapse in={basedOn}>
+          <Typography variant="caption">Add steps from another test in the library.</Typography>
           <Flex sx={{mt: 1, mb: 2}}>
               <Autocomplete
                   disabled={startOn}

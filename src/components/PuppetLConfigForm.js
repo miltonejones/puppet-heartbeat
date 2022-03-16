@@ -19,6 +19,7 @@ export default function PuppetLConfigForm ({
   existingTests,
   queryElements,
   editingTest,
+  Prompt,
   showPanel
 }) {
   const [steps, setSteps] = React.useState([])
@@ -121,34 +122,78 @@ export default function PuppetLConfigForm ({
           .concat(addedSteps))
   };
 
-  const testList = existingTests.map(e => ({label: e}));
+  const testList = existingTests.map(e => ({
+      label: e.testName, 
+      length: e.steps.length,
+      module: !e.steps.find(f => f.action === 'navigate')
+    }));
+  const elementRender = (props, option) => (
+    <Stack sx={{pl:1}} className={option.head?"underline gray":"underline"}>
+      <Typography className={option.head?'bold':'link'}variant="subtitle1">{option.label}</Typography>
+      {!option.head && <Typography variant="caption">{option.length} steps {option.module && <em> - Module</em>}</Typography>}
+    </Stack>
+  );
   const autoComplete = <Autocomplete 
       sx={{ width: 500, mt: 1 }}
       size="small" 
       disablePortal
       onChange={(e, n) => importTest (n.label)}   
       id="combo-box-demo"
-      options={testList} 
+      options={[
+        { label: 'Modules', head: 1 },
+        ...testList.filter(f => f.module),
+        { label: 'Tests', head: 1 },
+        ...testList.filter(f => !f.module)
+      ]} 
+      renderOption={elementRender}
       renderInput={(params) => <TextField {...params} label="Import steps from another test" />}
     />
 
   const panelHeader = <>
     <Stack>
       <Typography variant="h6">
-        Steps in  "{testName}"
+        Steps in  <u className="link" onClick={async () => {
+          const name = await Prompt('Enter a new name for' + testName, testName, 'Change name')
+          setTestName(name || testName)
+        }}>"{testName}"</u>
       </Typography>
       {autoComplete}
     </Stack>
   </>
 
   const createFormProps = {
-    existingTests,
+    existingTests: existingTests.map(f => f.testName),
     getSteps, 
     setSteps,
     testName,
     setTestName,
     addStep
   };
+
+  const moveNode = (index, advance) => { 
+    const node = steps[index] 
+    setSteps([
+      ...steps.slice(0, index + advance).filter(o=>o.ID!==node.ID), 
+      node, 
+      ...steps.slice(index + advance).filter(o=>o.ID!==node.ID)
+    ]); 
+  }
+
+  const duplicateNode = (node, index) => {  
+    const dupeNode =  { 
+      ...node,  
+      edit: !0, 
+      ID: uniqueId(), 
+      propName: null, 
+      actionKey: null,
+      value: null  
+    };
+    setSteps([
+      ...steps.slice(0, index + 1), 
+     dupeNode, 
+      ...steps.slice(index + 1)
+    ]); 
+  }
 
   return <>
 
@@ -173,7 +218,9 @@ export default function PuppetLConfigForm ({
             editStep={p => editStep(p)}
             variables={variables}
             onSave={onCreate}
-            
+            duplicateNode={duplicateNode}
+            moveNode={moveNode}
+            lastStep={o > (steps.length - 3)}
             key={step.ID} 
             index={o} 
             step={step} 
@@ -258,7 +305,13 @@ function StepEdit ({
   onDelete,
   // any variables declared by previous steps
   variables,
-  editStep
+  // method to copy the current step
+  duplicateNode,
+  // method to move the current step
+  moveNode,
+  // method to toggle edit mode on current step
+  editStep,
+  lastStep
 }) {
 
 	const { edit, action, imported, ID } = step;
@@ -289,6 +342,17 @@ function StepEdit ({
     onSave: q => onSave(q, ID, Key === 'Import')
   }
 
+  // menu stuff
+  const Move = LilBit(['UP', 'DOWN']);
+  let moveDisabled = 0;
+  if (index < 1) moveDisabled += Move.UP;
+  if (lastStep) moveDisabled += Move.DOWN;
+  const options = ['move up', 'move down', 'duplicate'];
+  const methods = [
+    () => moveNode (index, -1),
+    () => moveNode (index, 2),
+    () => duplicateNode(step, index)
+  ]
 	return (
     <Stack>
       <Box className="flex center underline" sx={{gap: '1rem', p: 1}}>
@@ -307,6 +371,10 @@ function StepEdit ({
             </IconButton>}
           </>}
           <Component {...componentProps}   /> 
+          {!step.edit && <>
+            <Spacer />
+            <SimpleMenu disabledBits={moveDisabled} onClick={i => methods[i]()} options={options} icon={<MoreVert />} />
+          </>}
         </Flex>)} 
       </Box> 
     </Stack>

@@ -169,6 +169,7 @@ class SocketSender extends React.Component {
     // convert "puppetML" (used only in the browser) to "puppetL"
     cloneL.steps = this.transformSteps(cloneL.steps);
 
+    // send EXEC command
     this.sendMessage({
       action: 'exec',
       data: {
@@ -177,6 +178,7 @@ class SocketSender extends React.Component {
       },
     });
 
+    // prepare state for incoming messages
     this.setState({ 
       currentTest: id, 
       actionText: !1, 
@@ -339,27 +341,28 @@ class SocketSender extends React.Component {
         {header}
   
         {/* test cms card */}
-       
-          <PuppetLConfigForm 
-              showPanel={showEdit}
-              editingTest={editingTest || runningTest}
-              existingTests={createdTestNames}
-              queryElements={elements}
-              execTest={name => { 
-                this.setState({showEdit: !showEdit });
-                this.sendCommand(name);
-              }}
-              previewTest={(name, items) => {
-                const queryTest = { testName: name, steps: items.concat({ action: 'query' }) };
-                this.sendCommand(name, queryTest)
-              }} 
-              getSteps={ s => createdTests.find(f => f.testName === s).steps }
-              puppetML={createdTest}
-              onCancel={() => this.setState({showEdit: !showEdit }) }
-              onSave={ puppetML => {
-                this.addTest(puppetML)
-                this.setState({ puppetML, showEdit: !showEdit, currentTest: null }); 
-              } }/>
+      
+        <PuppetLConfigForm 
+          showPanel={showEdit}
+          editingTest={editingTest || runningTest}
+          existingTests={createdTests}
+          queryElements={elements}
+          Prompt={Prompt}
+          execTest={name => { 
+            this.setState({showEdit: !showEdit });
+            this.sendCommand(name);
+          }}
+          previewTest={(name, items) => {
+            const queryTest = { testName: name, steps: items.concat({ action: 'query' }) };
+            this.sendCommand(name, queryTest)
+          }} 
+          getSteps={ s => createdTests.find(f => f.testName === s).steps }
+          puppetML={createdTest}
+          onCancel={() => this.setState({showEdit: !showEdit }) }
+          onSave={ puppetML => {
+            this.addTest(puppetML)
+            this.setState({ puppetML, showEdit: !showEdit, currentTest: null }); 
+          } }/>
      
 
        {!!steps && execRunning && ( <Box style={{position:'absolute', bottom: 40, right: 40}}>
@@ -419,7 +422,7 @@ class SocketSender extends React.Component {
 
         {/* results panel opens when job is almost done */}
         {/* test run panel */}  
-         {!!outcomes.length && (
+        {!!outcomes.length && (
           <Card className="card-body" >
             <Collapse in={progress > 95}>
               <Divider sx={{mt: 4, mb: 4}}>Test Results</Divider>

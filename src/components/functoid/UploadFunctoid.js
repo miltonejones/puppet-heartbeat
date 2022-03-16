@@ -7,58 +7,57 @@ import { QueryMenu, textBoxProps } from '../Control';
 
 
 export default function UploadFunctoid ({ 
-    edit, 
-    path, 
-    by, 
-    actionKey: key, 
-    onSave, 
-    queryElements, 
-    previewTest ,
-    propName
+	edit, 
+	path, 
+	by, 
+	actionKey: key ,
+	propName, 
+	onSave, 
+	queryElements, 
+	previewTest
 }) {
-    const [value, setValue] = React.useState('')
-    const [Path, setPath] = React.useState(path);
-    const [By, setBy] = React.useState(by);
-    const [Key, setKey] = React.useState(key);
-    const [PropName, setPropName] = React.useState(propName);
-    const save = () => {
-        const step = {
-            action: 'upload', 
-            by: By,
-            actionKey: Key,
-            path: Path,
-            propName: PropName
-            
-        } 
-        onSave(step)
-    }
+	const [value, setValue] = React.useState('')
+	const [Path, setPath] = React.useState(path);
+	const [By, setBy] = React.useState(by);
+	const [Key, setKey] = React.useState(key);
+	const [PropName, setPropName] = React.useState(propName);
+	const save = () => {
+		const step = {
+			action: 'upload', 
+			by: By,
+			actionKey: Key,
+			path: Path,
+			propName: PropName
+		} 
+		onSave(step)
+	}
 
-    if (!edit) {
-        return <Typography variant="subtitle1"><b>upload</b> <u>{path}</u> using <em>{by}</em> [<b>{propName || key}</b>] </Typography>
-    }
+	if (!edit) {
+		return <Typography variant="subtitle1"><b>upload</b> <u>{path}</u> using <em>{by}</em> [<b>{propName || key}</b>] </Typography>
+	}
 
-    return (<> <Box className="flex center">
-        <ChipGroup label="by" options={queryTypes} value={By} setValue={setBy} /> 
+  return (<> 
+		<Box className="flex center">
+      <ChipGroup label="by" options={queryTypes} value={By} setValue={setBy} /> 
     </Box>
     
-    { !!By && <VariableInput 
-      {...textBoxProps} 
+    {!!By && <VariableInput  
       placeholder={`Enter ${By}`} 
       onChange={(n, v) => {
-          if (n === 'Key') return setKey(v)
-          setPropName(v)
+				if (n === 'Key') return setKey(v)
+				setPropName(v)
       }} 
       name={ PropName }
       value={ Key } />}
 
-  {!!By && <QueryMenu onClick={v => setKey(v)} queryElements={queryElements} previewTest={previewTest} />}
+   	{!!By && <QueryMenu onClick={v => setKey(v)} queryElements={queryElements} previewTest={previewTest} />}
 
-  <Collapse orientation="horizontal" in={!!Key && !!By}>
-    <Box sx={{ml: 2}}>
-        <FileUploader uploadComplete={setPath} />
-    </Box>
-  </Collapse>
+		<Collapse orientation="horizontal" in={!!Key && !!By}>
+			<Box sx={{ml: 2}}>
+					<FileUploader uploadComplete={setPath} />
+			</Box>
+		</Collapse>
 
-  <Button variant="contained" sx={{ml: 2}} disabled={!(Path && By && Key)} onClick={save}>save</Button>
+ 	 	<Button variant="contained" sx={{ml: 2}} disabled={!(Path && By && Key)} onClick={save}>save</Button>
 </>)
 }

@@ -312,6 +312,7 @@ function VariableInput ({ onChange, value, name, ...props }) {
       <TextField 
         {...textBoxProps}
         {...props}
+        autoFocus
         label="variable value"
         value={value}
         InputProps={InputProps}
@@ -324,6 +325,7 @@ function VariableInput ({ onChange, value, name, ...props }) {
         {...props}
         label="variable name"
         placeholder="Variable name"
+        autoFocus
         value={name}
         InputProps={InputProps}
         onChange={e => onChange('PropName', e.target.value)}
@@ -331,6 +333,25 @@ function VariableInput ({ onChange, value, name, ...props }) {
     </Collapse>
   </>
 }
+
+
+
+export const TextBox = ({onChange, onEnter, ...props}) => {
+  const [value, setValue] = React.useState(props.value);
+  const change = e => {
+    setValue(e.target.value);
+    onChange(e.target.value);
+  }
+  return (<TextField   
+    size="small"
+    autoFocus
+    {...props} 
+    value={value}
+    onKeyUp={(e) => e.keyCode === 13 && onEnter(value)}
+    onChange={change}
+    />)
+}
+
 
 export const textBoxProps = {
   autoComplete: "off", 
@@ -352,6 +373,6 @@ export {
   FileUploader,
   LilBit,
   CodeDialog,
-  controlCodeDialog,
+  controlCodeDialog, 
   useCodeDialog
 }

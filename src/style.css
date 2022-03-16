@@ -134,6 +134,12 @@ a,
   font-weight: 900;
 }
 
+.gray {
+  color: #222;
+  background-color: rgba(90, 90, 90, 0.1);
+}
+
+
 .white {
   color: white;
 }
@@ -182,6 +188,10 @@ a,
 
 .flip {
   transition: transform 0.2s linear !important;
+}
+
+.flip.right {
+  transform:rotate(270deg) !important;
 }
 
 .flip.up {

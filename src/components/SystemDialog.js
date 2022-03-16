@@ -11,9 +11,11 @@ import {
   DialogTitle
 } from '@mui/material';
 
+import { TextBox } from './Control';
 
-const SystemDialog = ({open, title, onYes, onNo, onClose, message, prompt}) => {
-    const [value, setValue] = React.useState('');
+
+const SystemDialog = ({open, title, onYes, onNo, onClose, defaultValue='', message, prompt}) => {
+    const [value, setValue] = React.useState(defaultValue);
     const whenYes = () => {
       if (prompt) {
         return onYes(value) 
@@ -35,7 +37,7 @@ const SystemDialog = ({open, title, onYes, onNo, onClose, message, prompt}) => {
           <DialogContentText sx={{mb: 1}} id="alert-dialog-description">
           {message}
           </DialogContentText>
-          {!!prompt && <TextBox onEnter={onYes} onChange={setValue} />}
+          {!!prompt && <TextBox value={value} onEnter={onYes} onChange={setValue} />}
         </Stack>
       </DialogContent>
       <DialogActions>

@@ -28,9 +28,11 @@ export default function ExpectFunctoid ({ edit, fact, by, actionKey: key, onSave
         return <Typography variant="subtitle1"><b>expect</b> that <em>{by}</em> [<b>{key}</b>] {!value ? 'is in the document' : `equals ${value}`} </Typography>
     }
 
-    return (<> <Box className="flex center">
-        <ChipGroup label="by" options={queryTypes} value={By} setValue={setBy} />
-        {!!By && <ChipGroup label="expect" options={Expectations} value={Expectation} setValue={setExpectation} />}
+    return (<> 
+    
+    <Box className="flex center">
+      <ChipGroup label="by" options={queryTypes} value={By} setValue={setBy} />
+      {!!By && <ChipGroup label="expect" options={Expectations} value={Expectation} setValue={setExpectation} />}
     </Box>
     
     { !!By && <TextField 
