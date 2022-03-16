@@ -128,7 +128,7 @@ export default function PuppetLConfigForm ({
       module: !e.steps.find(f => f.action === 'navigate')
     })).sort((a,b)=>a.label>b.label?1:-1);
   const elementRender = (props, option) => (
-    <Stack sx={{pl:1}} className={option.head?"underline gray":"underline menu-item"}>
+    <Stack {...props} sx={{pl:1}} className={option.head?"underline gray":"underline menu-item"}>
       <Typography className={option.head?'bold':''}variant="subtitle1">{option.label}</Typography>
       {!option.head && <Typography variant="caption">{option.length} steps {option.module && <em> - Module</em>}</Typography>}
     </Stack>

@@ -10,7 +10,9 @@ import {
   Breadcrumbs,
   Alert,
   IconButton,
-  Checkbox
+  FormControlLabel,
+  Checkbox,
+  Switch
 } from '@mui/material';
 import { Link } from "react-router-dom";
 import DialogTitle from '@mui/material/DialogTitle';
@@ -75,12 +77,12 @@ class SocketSender extends React.Component {
   }
 
   storeMessage (socketData) {
-    const { messages } = this.state;
+    const { messages, narrate } = this.state;
     const { scriptMessage, activeStep } = socketData;
     const message = scriptMessage.error || scriptMessage;
     messages[activeStep] = scriptMessage; 
     this.setState({ ...socketData, messages });
-    !!message && say(message);
+    !!message && !!narrate && say(message);
   }
 
   messageListener(msg) {
@@ -271,6 +273,8 @@ class SocketSender extends React.Component {
       message,
       // array of message received so far
       messages,
+      // use voice narrator
+      narrate,
       // array of test steps with screen shots
       outcomes,
       // (bool) experimental preview mode
@@ -421,6 +425,12 @@ class SocketSender extends React.Component {
                   </Box>
                 )}
               </Stack> 
+                <Flex>
+                <FormControlLabel 
+                  control={ <Switch checked={!!narrate} onChange={() => this.setState({narrate: !narrate})}/>} 
+                  label="Enable test narrator" />
+                 
+                </Flex>
             </Grid>
 
           </Grid>
