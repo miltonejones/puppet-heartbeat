@@ -35,6 +35,12 @@ import SystemDialog, { componentSystemDialog } from './SystemDialog';
 import {saveTestSuite, deleteTestSuite, getTestSuite, getTestSuites, uniqueId} from '../connector/puppetConnector'
  
 
+const say = (text) => {
+  var msg = new SpeechSynthesisUtterance();
+  msg.text = text;
+  window.speechSynthesis.speak(msg);
+}
+
 
 const SOCKET_URI =
   'wss://2zoxhl25v2.execute-api.us-east-1.amazonaws.com/production';
@@ -70,9 +76,11 @@ class SocketSender extends React.Component {
 
   storeMessage (socketData) {
     const { messages } = this.state;
-    const { scriptMessage, activeStep} = socketData;
+    const { scriptMessage, activeStep } = socketData;
+    const message = scriptMessage.error || scriptMessage;
     messages[activeStep] = scriptMessage; 
-    this.setState({ ...socketData, messages })
+    this.setState({ ...socketData, messages });
+    !!message && say(message);
   }
 
   messageListener(msg) {

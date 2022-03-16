@@ -139,6 +139,11 @@ a,
   background-color: rgba(90, 90, 90, 0.1);
 }
 
+.menu-item:hover {
+  cursor: pointer;
+  background-color: rgba(190, 190, 190, 0.1);
+}
+
 
 .white {
   color: white;
