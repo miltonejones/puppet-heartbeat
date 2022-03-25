@@ -280,6 +280,8 @@ function StepRow (props) {
       <Typography>{label}</Typography>
       <Button variant="contained" onClick={() => setEdit(!edit)}>Customize</Button>
     </Flex>
+
+    {/* trying to add step-modules, not working so good */}
     {edit && steps.map((step, o) => <StepEdit 
             {...props}
             key={step.ID} 

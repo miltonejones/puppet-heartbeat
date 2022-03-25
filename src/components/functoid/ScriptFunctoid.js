@@ -1,6 +1,15 @@
 import React from 'react'; 
 import { Panel,  SimpleMenu, Flex, Spacer, ReallyButton } from '../Control';
-import { Box,TextField, Stack, Typography, Button, Grid, Alert, Chip } from '@mui/material';
+import { Box, 
+  FormControlLabel,
+  TextField,  
+  Typography, 
+  Button, 
+  Grid, 
+  Alert, 
+  Chip, 
+  Switch 
+} from '@mui/material';
 import { Add, DeleteForever, Terminal }  from '@mui/icons-material';
 
 
@@ -15,27 +24,42 @@ const createSampleCode = args => {
 }`;
 }; 
 
+const createCypressCode = args => {
+  const argNames = [];
+  for (let i=0; i++ < args ; argNames.push(`arg${i}`));
+  const suffix = !!argNames.length ? `, ${argNames.join(', ')}` : ''
+  const action = !!argNames.length ? `\n  cy.get(arg1).click();` : ''
+  return `(cy${suffix}) => {
+  // TODO: overwrite sample code
+  cy.wait(100);${action}
+}`;
+}; 
+
 
 export default function ScriptFunctoid ({ 
   variables, 
   value = createSampleCode(0), 
   label = 'Execute this suave new script', 
   properties = [], 
+  cyscript, 
   edit, 
   onSave 
 }) {
   const [state, setState] = React.useState({
     Value:  value, 
     Label: label, 
+    cypressJS: false,
+    Cyscript: cyscript,
     Properties: properties
   });
   
-  const { Label, Properties, Value, error } = state;
+  const { Label, Properties, Value, error, cypressJS, Cyscript } = state;
 
   const save = () => {
     const step = {
         action: 'script',
         value: Value,
+        cyscript: Cyscript,
         properties: Properties,
         label: Label
     }
@@ -64,8 +88,9 @@ export default function ScriptFunctoid ({
           .filter(v => Properties.every(x => x !== v));
 
   const setCode = v => {
+    const field = cypressJS ? 'Cyscript' : 'Value';
     try {
-      setState(s => ({...s, Value: v, error: null}))
+      setState(s => ({...s, [field]: v, error: null}))
       eval(v);
     } catch (error) {
       setState(s => ({...s, error: error.message}))
@@ -73,15 +98,35 @@ export default function ScriptFunctoid ({
   }
 
   if (!edit) {
+    const puppetProps = {
+      icon: <Terminal />,
+      size: 'small',
+      variant: 'contained',
+      color: 'error',
+      sx: {ml: 2},
+      label: 'Puppeteer',
+      onClick: () => alert(value)
+    }
+    const cypressProps = {
+      ...puppetProps,
+      label: 'Cypress',
+      color: 'info',
+      onClick: () => alert(cyscript)
+    }
     return <Flex>
       <Typography variant="subtitle1"><b>execute script</b>  "<u className="link" onClick={() => alert(value)}>{label}</u>" </Typography>
-      <Chip icon={<Terminal />} size="small" variant="contained" color="error" onClick={() => alert(value)} sx={{ml: 2}} label="View Script" />
+      <Chip {...puppetProps} />
+      {!!cyscript && <Chip {...cypressProps} />}
     </Flex>
-}
+  }
+
+  const cypressSwitch = <Switch 
+    checked={cypressJS}  
+    onChange={e => setState(s => ({...s, cypressJS: !cypressJS, Cyscript: s.Cyscript || createCypressCode(0) })) } />;
 
   return (<>
   <Grid container spacing={2}>
-    <Grid item xs={shownProps.length ? 10 : 12}>
+    <Grid item xs={8}>
       <TextField
         autoComplete="off"
         fullWidth 
@@ -90,9 +135,12 @@ export default function ScriptFunctoid ({
         onChange={e => setState(s => ({...s, Label: e.target.value})) }
         />
     </Grid>
-   {!!shownProps.length && <Grid item xs={2}>
-      <SimpleMenu options={shownProps} onClick={i => addProp(shownProps[i])} icon={<Add />} />
-    </Grid>}
+     <Grid item xs={4}>
+       <Flex>
+         <FormControlLabel control={cypressSwitch} label="Cypress" />
+         {!!shownProps.length &&  <SimpleMenu options={shownProps} onClick={i => addProp(shownProps[i])} icon={<Add />} /> }
+       </Flex>
+    </Grid>
 
 
     {Properties.map(arg => (<Grid key={arg} item xs={12}>
@@ -116,7 +164,7 @@ export default function ScriptFunctoid ({
           multiline
           rows={5}
           size="small"
-          value={Value} 
+          value={cypressJS ? Cyscript : Value} 
           onChange={e => setCode(e.target.value) }
           />
       </Grid>
