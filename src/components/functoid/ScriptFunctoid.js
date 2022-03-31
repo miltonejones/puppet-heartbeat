@@ -8,7 +8,8 @@ import { Box,
   Grid, 
   Alert, 
   Chip, 
-  Switch 
+  Switch ,
+  Divider
 } from '@mui/material';
 import { Add, DeleteForever, Terminal }  from '@mui/icons-material';
 
@@ -141,10 +142,9 @@ export default function ScriptFunctoid ({
          {!!shownProps.length &&  <SimpleMenu options={shownProps} onClick={i => addProp(shownProps[i])} icon={<Add />} /> }
        </Flex>
     </Grid>
-
-
+    <Panel on={Properties.length} sx={{minWidth: 600, ml: 2}} header="Arguments">
     {Properties.map(arg => (<Grid key={arg} item xs={12}>
-      <Flex className="underline" sx={{ pb: 1}}>
+      <Flex className="underline" sx={{ p: 1}}>
           
           <Typography variant="caption" sx={{mr: 2}}>argument:</Typography>
 
@@ -155,6 +155,11 @@ export default function ScriptFunctoid ({
           <ReallyButton icon={<DeleteForever />} onYes={() => dropProp(arg)} />
           </Flex>
       </Grid>))}
+
+    </Panel>
+   
+
+
 
       <Grid item xs={12}>
         <TextField

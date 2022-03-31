@@ -328,13 +328,18 @@ function VariableInput ({ onChange, value, name, ...props }) {
         autoFocus
         value={name}
         InputProps={InputProps}
+        onBlur={() => onChange('PropName', camelize(name))}
         onChange={e => onChange('PropName', e.target.value)}
       />
     </Collapse>
   </>
 }
 
-
+function camelize(str) {
+  return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
+    return index === 0 ? word.toLowerCase() : word.toUpperCase();
+  }).replace(/\s+/g, '');
+}
 
 export const TextBox = ({onChange, onEnter, ...props}) => {
   const [value, setValue] = React.useState(props.value);

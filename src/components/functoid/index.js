@@ -6,7 +6,8 @@ import  UploadFunctoid  from './UploadFunctoid';
 import  ImportFunctoid  from './ImportFunctoid';
 import  PuppetLFunctoid  from './PuppetLFunctoid';
 import  ScriptFunctoid  from './ScriptFunctoid';
-import { Navigation, Input, Check, Upload, Lock, Terminal }  from '@mui/icons-material';
+import  RequestFunctoid  from './RequestFunctoid';
+import { Navigation, Input, Check, Upload, Lock, Terminal, Language }  from '@mui/icons-material';
  
 export const Functoid = {
   Navigation: { 
@@ -37,6 +38,12 @@ export const Functoid = {
     action: 'import',
     Component: ImportFunctoid,
     Icon: Lock
+  },
+
+  Request: {
+    action: 'request',
+    Component: RequestFunctoid,
+    Icon: Language
   },
 
   Scriptoid: {

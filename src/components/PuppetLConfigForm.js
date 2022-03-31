@@ -95,7 +95,7 @@ export default function PuppetLConfigForm ({
 
   const variables = steps
       ?.filter(s => !!s.actionKey)
-      .map(s => s.actionKey);
+      .map(s => s.propName || s.actionKey);
 
   const Menu = LilBit(['RUN', 'PREVIEW', 'EDIT', 'CLOSE']);
   const menuActions = [
