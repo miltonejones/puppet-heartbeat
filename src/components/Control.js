@@ -81,14 +81,14 @@ const LilBit = (names) => ((e) => {
 })({});
 
 
-function ActionsMenu (props) {
+function ActionsMenu ({label = 'Actions', ...props}) {
   const [up, setUp] = React.useState(false);
   const className = up ? 'flip up' : 'flip';
   return <SimpleMenu 
     {...props} 
     onClose={setUp}
     button={Button} 
-    icon={<>Actions <ExpandMore className={className} /></>} />
+    icon={<>{label} <ExpandMore className={className} /></>} />
 }
 
 function QueryMenu ({ queryElements, previewTest, onClick, ...props}) {

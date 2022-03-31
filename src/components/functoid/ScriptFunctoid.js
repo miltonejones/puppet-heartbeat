@@ -1,5 +1,5 @@
 import React from 'react'; 
-import { Panel,  SimpleMenu, Flex, Spacer, ReallyButton } from '../Control';
+import { Panel, ActionsMenu, SimpleMenu, Flex, Spacer, ReallyButton } from '../Control';
 import { Box, 
   FormControlLabel,
   TextField,  
@@ -138,8 +138,8 @@ export default function ScriptFunctoid ({
     </Grid>
      <Grid item xs={4}>
        <Flex>
-         <FormControlLabel control={cypressSwitch} label="Cypress" />
-         {!!shownProps.length &&  <SimpleMenu options={shownProps} onClick={i => addProp(shownProps[i])} icon={<Add />} /> }
+           {!!shownProps.length &&  <ActionsMenu label="arguments" options={shownProps} onClick={i => addProp(shownProps[i])} icon={<Add />} /> }
+       <FormControlLabel sx={{ ml: 1}} control={cypressSwitch} label="Cypress" />
        </Flex>
     </Grid>
     <Panel on={Properties.length} sx={{minWidth: 600, ml: 2}} header="Arguments">
