@@ -357,6 +357,11 @@ export const TextBox = ({onChange, onEnter, ...props}) => {
     />)
 }
 
+export const SaveCancel = ({ save, cancel, disabled }) => <Flex>
+  <IconButton sx={{ml: 1}} disabled={disabled} onClick={save} ><Save /></IconButton>
+  <IconButton sx={{ml: 1}} disabled={disabled} onClick={cancel}><Close /></IconButton>
+</Flex>
+
 
 export const textBoxProps = {
   autoComplete: "off", 

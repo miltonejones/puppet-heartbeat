@@ -1,6 +1,6 @@
 import React from 'react'; 
 import { Box, TextField, Stack, Typography, Button, Divider, IconButton } from '@mui/material';
-import { Flex, textBoxProps, VariableInput, Panel, ReallyButton } from '../Control';
+import { Flex, textBoxProps, VariableInput, Panel, ReallyButton, SaveCancel } from '../Control';
 import { Add, DeleteForever, ExpandMore }  from '@mui/icons-material';
 import ChipGroup from '../ChipGroup';
 
@@ -13,7 +13,8 @@ export default function RequestFunctoid ({
     headers = [],
     propName,
     edit, 
-    onSave 
+    onSave ,
+    onCancel
   }) {
     const [state, setState] = React.useState({
         Key: key,
@@ -25,7 +26,6 @@ export default function RequestFunctoid ({
     });
     const { Key, Body, Method, PropName, Headers = [], showHeaders} = state;
     const saveState = (n, v) => setState(s => ({...s, [n]: v})); 
- 
     const save = () => {
         const step = {
             action: 'request',
@@ -39,7 +39,6 @@ export default function RequestFunctoid ({
     }
 
     const dropHeader = i => {
-
       saveState('Headers', Headers.filter(header => header.index !== i))
     }
 
@@ -78,11 +77,14 @@ export default function RequestFunctoid ({
 
         {canSave && <Button sx={{ml: 1}} variant="outlined" onClick={() => saveState('showHeaders', !showHeaders)}
          >Headers <ExpandMore className={className} /></Button>}
- 
-        <Button disabled={!canSave} variant="contained" sx={{ml: 1}} onClick={save}>save</Button>
+        <SaveCancel disabled={!canSave} save={save} cancel={ onCancel }/> 
     </Flex>
 
-    <Panel header="Request body" on={canSave && ['post', 'put'].find(f => Method === f)}>
+    <Panel header="Request Headers" tools={[<IconButton onClick={addHeader}><Add /></IconButton>]} on={showHeaders || Headers?.length}>
+      {Headers.map ((header, o) => <HeaderRow key={o} {...header} save={saveHeader} remove={dropHeader} />)}
+    </Panel>
+    
+    <Panel header="Request Body" on={canSave && ['post', 'put'].find(f => Method === f)}>
       <TextField 
         {...textBoxProps}
          placeholder="Payload"
@@ -91,10 +93,6 @@ export default function RequestFunctoid ({
         sx={{m: 1, minWidth: 600}}
         onChange={e => saveState('Body', e.target.value)}
       />
-    </Panel>
-    
-    <Panel header="Headers" tools={[<IconButton onClick={addHeader}><Add /></IconButton>]} on={showHeaders || Headers?.length}>
-      {Headers.map ((header, o) => <HeaderRow key={o} {...header} save={saveHeader} remove={dropHeader} />)}
     </Panel>
     
     </Stack>

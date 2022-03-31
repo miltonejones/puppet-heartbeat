@@ -1,8 +1,9 @@
 import React from 'react'; 
 import { Box, TextField, Stack, Typography, Button, Divider } from '@mui/material';
+import { SaveCancel } from '../Control';
 
 
-export default function NavigationFunctoid ({ URL, edit, onSave }) {
+export default function NavigationFunctoid ({ URL, edit, onSave, onCancel }) {
     const [value, setValue] = React.useState(URL)
     const save = () => {
         const step = {
@@ -20,7 +21,8 @@ export default function NavigationFunctoid ({ URL, edit, onSave }) {
         <Typography>Navigate to:</Typography>
         <TextField size="small" 
             autoComplete="off" onChange={e => setValue(e.target.value)} value={ value } />
-        <Button variant="contained" sx={{ml: 1}} onClick={save}>save</Button>
+   
+      <SaveCancel disabled={!URL} save={save} cancel={onCancel}/>
     </Box>
 }
 

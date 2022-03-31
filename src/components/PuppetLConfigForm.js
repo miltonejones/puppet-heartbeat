@@ -341,7 +341,8 @@ function StepEdit ({
     previewTest,
     primitiveKey: step.key,
     queryElements,
-    onSave: q => onSave(q, ID, Key === 'Import')
+    onSave: q => onSave(q, ID, Key === 'Import'),
+    onCancel: _ => editStep(ID)
   }
 
   // menu stuff
@@ -366,7 +367,7 @@ function StepEdit ({
           {!imported && !!functoidAction && <>
             <Icon sx={{mr: 1}}/> 
             <ReallyButton icon={<DeleteForever />} onYes={() => onDelete(ID)} />
-           {!step.edit && <IconButton  onClick={() => { 
+             {!step.edit && <IconButton  onClick={() => { 
                 editStep && editStep(ID) 
               }} >
               <Edit />

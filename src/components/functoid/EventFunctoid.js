@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, TextField, Stack, Typography, Button, Collapse } from '@mui/material';
 import ChipGroup from '../ChipGroup';
 import { queryTypes } from './functoidConstants';
-import { QueryMenu, Flex, textBoxProps, VariableInput } from '../Control';
+import { QueryMenu, Flex, textBoxProps, VariableInput, SaveCancel } from '../Control';
 
 const Events = ['click', 'change', 'blur', 'focus']; 
 
@@ -14,6 +14,7 @@ export default function EventFunctoid ({
   propName,
   actionKey: key, 
   onSave, 
+  onCancel,
   queryElements, 
   previewTest 
 }) {
@@ -67,7 +68,7 @@ export default function EventFunctoid ({
         onChange={e => saveState('eventValue', e.target.value)} 
         value={ eventValue } />
     </Collapse>
-
-    <Button variant="contained" sx={{ml: 2}} disabled={!(Event && By && Key)} onClick={save}>save</Button>
+      <SaveCancel disabled={!(Event && By && Key)} save={save} cancel={onCancel}/>
+   
   </>)
 }

@@ -44,7 +44,8 @@ export default function ScriptFunctoid ({
   properties = [], 
   cyscript, 
   edit, 
-  onSave 
+  onSave  ,
+  onCancel
 }) {
   const [state, setState] = React.useState({
     Value:  value, 
@@ -179,6 +180,7 @@ export default function ScriptFunctoid ({
 
         <Grid item xs={12}>
           <Button disabled={!!error} onClick={save} variant="contained">save script</Button>
+        <Button disabled={!!error} sx={{ml: 1}} variant="outlined" onClick={onCancel}>Cancel</Button>
         </Grid>
 
   </Grid>
