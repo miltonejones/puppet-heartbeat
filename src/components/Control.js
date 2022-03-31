@@ -297,7 +297,7 @@ function PreviewBox ({ thumbnail, animation = false }) {
 }
 
 
-function VariableInput ({ onChange, value, name, ...props }) {
+function VariableInput ({ onChange, value, name, noCode, ...props }) {
   const [on, setOn] = React.useState(false);
   const Icon = on ? Save : DriveFileRenameOutline;
   const  InputProps={
@@ -328,7 +328,7 @@ function VariableInput ({ onChange, value, name, ...props }) {
         autoFocus
         value={name}
         InputProps={InputProps}
-        onBlur={() => onChange('PropName', camelize(name))}
+        onBlur={() => !noCode && onChange('PropName', camelize(name))}
         onChange={e => onChange('PropName', e.target.value)}
       />
     </Collapse>

@@ -9,6 +9,7 @@ const Methods = ['get', 'post', 'put', 'delete']
 export default function RequestFunctoid ({ 
     actionKey: key, 
     method,
+    body,
     headers = [],
     propName,
     edit, 
@@ -18,10 +19,11 @@ export default function RequestFunctoid ({
         Key: key,
         Method: method,
         PropName: propName,
+        Body: body,
         Headers: headers,
         showHeaders: false
     });
-    const { Key, Method, PropName, Headers = [], showHeaders} = state;
+    const { Key, Body, Method, PropName, Headers = [], showHeaders} = state;
     const saveState = (n, v) => setState(s => ({...s, [n]: v})); 
  
     const save = () => {
@@ -29,6 +31,7 @@ export default function RequestFunctoid ({
             action: 'request',
             actionKey: Key,
             method: Method,
+            body: Body,
             headers: Headers,
             propName: PropName
         }
@@ -78,7 +81,18 @@ export default function RequestFunctoid ({
  
         <Button disabled={!canSave} variant="contained" sx={{ml: 1}} onClick={save}>save</Button>
     </Flex>
-    {/* [{JSON.stringify(Headers)}] */}
+
+    <Panel header="Request body" on={canSave && ['post', 'put'].find(f => Method === f)}>
+      <TextField 
+        {...textBoxProps}
+         placeholder="Payload"
+        multiline
+        rows={6}
+        sx={{m: 1, minWidth: 600}}
+        onChange={e => saveState('Body', e.target.value)}
+      />
+    </Panel>
+    
     <Panel header="Headers" tools={[<IconButton onClick={addHeader}><Add /></IconButton>]} on={showHeaders || Headers?.length}>
       {Headers.map ((header, o) => <HeaderRow key={o} {...header} save={saveHeader} remove={dropHeader} />)}
     </Panel>
@@ -96,6 +110,7 @@ const HeaderRow = ({
   return <Flex sx={{gap: 1, m: 1}}>
     <VariableInput  
   autoFocus
+  noCode
   placeholder={`Add header`} 
   onChange={(n, value) => save(n, {value, index})} 
   value={ Key } 
