@@ -447,6 +447,6 @@ export const transform = step => {
         ];
         break;
     default:
-      return [step]
+      return [{...step, key: step.key || step.actionKey}]
   }
 }
