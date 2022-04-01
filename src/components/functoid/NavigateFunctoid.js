@@ -22,7 +22,7 @@ export default function NavigationFunctoid ({ URL, edit, onSave, onCancel }) {
         <TextField size="small" 
             autoComplete="off" onChange={e => setValue(e.target.value)} value={ value } />
    
-      <SaveCancel disabled={!URL} save={save} cancel={onCancel}/>
+      <SaveCancel disabled={!value} save={save} cancel={onCancel}/>
     </Box>
 }
 
