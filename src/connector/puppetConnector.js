@@ -1,7 +1,8 @@
 
 export const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
-
-const API_ENDPOINT = "https://habprc9pj4.execute-api.us-east-1.amazonaws.com/tests";
+ 
+ 
+const API_ENDPOINT = "https://api.puppeteerstudio.com/tests";
 
 const saveTestSuite = async (suite) => {
   const modified = new Date().toString()

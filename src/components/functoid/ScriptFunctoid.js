@@ -1,5 +1,5 @@
 import React from 'react'; 
-import { Panel, ActionsMenu, SimpleMenu, Flex, Spacer, ReallyButton } from '../Control';
+import { Panel, ActionsMenu, Flex, Spacer, ReallyButton } from '../Control';
 import { Box, 
   FormControlLabel,
   TextField,  
