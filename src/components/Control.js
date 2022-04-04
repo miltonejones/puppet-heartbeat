@@ -360,10 +360,17 @@ export const TextBox = ({onChange, onEnter, ...props}) => {
     />)
 }
 
-export const SaveCancel = ({ save, cancel, disabled }) => <Flex>
-  <IconButton sx={{ml: 1}} disabled={disabled} onClick={save} ><Save /></IconButton>
-  <IconButton sx={{ml: 1}} disabled={disabled} onClick={cancel}><Close /></IconButton>
-</Flex>
+export const SaveCancel = ({ children, save, cancel, disabled, button }) => {
+  if (button) {
+    return (<Flex>
+      <Button sx={{ml: 1}} variant="outlined" disabled={disabled} onClick={cancel}>cancel</Button>
+      <Button sx={{ml: 1}} variant="contained" disabled={disabled} onClick={save} >{children || 'save'}</Button>
+    </Flex>)
+  }
+  return (<Flex>
+    <IconButton sx={{ml: 1}} disabled={disabled} onClick={cancel}><Close /></IconButton>
+    <IconButton sx={{ml: 1}} disabled={disabled} onClick={save} ><Save /></IconButton>
+</Flex>)}
 
 
 export const textBoxProps = {

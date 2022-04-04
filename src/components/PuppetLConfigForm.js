@@ -5,7 +5,7 @@ import CreateTestForm from './CreateTestForm';
 import { ReallyButton, SimpleMenu, Spacer, Flex, Panel, ActionsMenu, LilBit } from './Control';
 import { DeleteForever, MoreVert, Add, Edit, Lock , Close }  from '@mui/icons-material';
 import JsonContent from './JsonColor';
-import { Box, IconButton, Tab, Tabs, TextField, Stack, Typography, Autocomplete, Button, Chip } from '@mui/material';
+import { Alert, Box, IconButton, Tab, Tabs, TextField, Stack, Typography, Autocomplete, Button, Chip } from '@mui/material';
 
 const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
 
@@ -22,13 +22,13 @@ export default function PuppetLConfigForm ({
   Prompt,
   showPanel
 }) {
+  const [dirty, setDirty] = React.useState(false)
   const [steps, setSteps] = React.useState([])
   const [testName, setTestName] = React.useState('')
   const [value, setValue] = React.useState(0);
   const [editMode, setEditMode] = React.useState(0);
 
   React.useEffect(() => {
-   
     !!puppetML?.testName 
       && puppetML.testName !== testName 
       && (() => { 
@@ -45,7 +45,10 @@ export default function PuppetLConfigForm ({
   };
 
   // add a blank step to the end of the array
-	const addStep = () => 	setSteps(s => s.filter(e => !e.edit).concat( {edit: true, ID: uniqueId() } ));
+	const addStep = () => {	
+    setSteps(s => s.filter(e => !e.edit).concat( {edit: true, ID: uniqueId() } ))
+    setDirty(true);
+  };
 
   const onDelete = (i) => {
     const out = [];
@@ -54,6 +57,8 @@ export default function PuppetLConfigForm ({
         out.push(f)
       }
     } ) ;
+
+    setDirty(true);
     setSteps(out);
   }
 
@@ -82,6 +87,7 @@ export default function PuppetLConfigForm ({
     }; 
     setSteps([]);
     setTestName(null);
+    setDirty(false);
     onFormSave (testObj);
   }
   const onCancel = () => { 
@@ -202,7 +208,7 @@ export default function PuppetLConfigForm ({
 
 
     <Panel on={showPanel && !!testName} header={panelHeader} tools={panelButtons}>
-
+      {!!dirty && <Alert severity="warning">You must click Save for your changes to take effect.</Alert>}
       {!!steps.length && ( 
         <Tabs sx={{m: 2}} value={value} onChange={handleChange}  >
           <Tab label="Steps" />
@@ -215,12 +221,14 @@ export default function PuppetLConfigForm ({
           {steps.map((step, o) => <StepRow 
             queryElements={queryElements} 
             previewTest={() => previewTest(testName, steps)}
-            onDelete={onDelete} 
             editStep={p => editStep(p)}
             variables={variables}
+
+            onDelete={onDelete} 
             onSave={onCreate}
             duplicateNode={duplicateNode}
             moveNode={moveNode}
+
             lastStep={o > (steps.length - 3)}
             key={step.ID} 
             index={o} 

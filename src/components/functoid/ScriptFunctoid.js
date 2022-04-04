@@ -1,5 +1,5 @@
 import React from 'react'; 
-import { Panel, ActionsMenu, Flex, Spacer, ReallyButton } from '../Control';
+import { Panel, ActionsMenu, Flex, Spacer, SaveCancel, ReallyButton } from '../Control';
 import { Box, 
   FormControlLabel,
   TextField,  
@@ -168,7 +168,8 @@ export default function ScriptFunctoid ({
           fullWidth 
           autoComplete="off"
           multiline
-          rows={5}
+          classes={{ root: 'code-field' }}
+          rows={8}
           size="small"
           value={cypressJS ? Cyscript : Value} 
           onChange={e => setCode(e.target.value) }
@@ -179,8 +180,8 @@ export default function ScriptFunctoid ({
         </Grid>}
 
         <Grid item xs={12}>
-          <Button disabled={!!error} onClick={save} variant="contained">save script</Button>
-        <Button disabled={!!error} sx={{ml: 1}} variant="outlined" onClick={onCancel}>Cancel</Button>
+
+          <SaveCancel button disabled={!!error} save={save} cancel={onCancel} variant="contained">save script</SaveCancel> 
         </Grid>
 
   </Grid>

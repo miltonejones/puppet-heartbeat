@@ -71,7 +71,7 @@ export default function RequestFunctoid ({
     const menuAction = [() => addHeader('content-type', 'application/json'),  () => addHeader('', '') ];
     const disabledOn = Headers.find(f => f.Value === 'application/json') ? 1 : 0;
     const headerMenu = <SimpleMenu onClick={(i) => menuAction[i]()} disabledBits={disabledOn} icon={<Add />} options={['application/json', 'Add header']}  />
-
+    const showBody = canSave && ['post', 'put'].find(f => Method === f);
     const variableMenu = !Key ? <i/> : <ActionsMenu 
       label="variables" 
       options={shownProps} 
@@ -104,17 +104,20 @@ export default function RequestFunctoid ({
       {Headers.map ((header, o) => <HeaderRow key={o} {...header} save={saveHeader} remove={dropHeader} shownProps={shownProps} />)}
     </Panel>
     
-    <Panel header="Request Body" tools={[variableMenu]} on={canSave && ['post', 'put'].find(f => Method === f)}>
+    <Panel header="Request Body" tools={[variableMenu]} on={showBody}>
       <TextField 
         {...textBoxProps}
          placeholder="Payload"
         multiline
-        rows={6}
+        rows={8}
+        classes={{ root: 'code-field' }}
         value={Body}
         sx={{m: 1, minWidth: 600}}
         onChange={e => saveState('Body', e.target.value)}
       />
     </Panel>  
+
+    {showBody && <SaveCancel button disabled={!canSave} save={save} cancel={ onCancel }>save request</SaveCancel> }
   </Stack>
 }
 
