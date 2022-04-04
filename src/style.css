@@ -10,6 +10,13 @@ body {
   overflow: hidden;
 }
 
+.code-field .MuiOutlinedInput-root {
+  font-family: "monospace";
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+
 .coder {
   font-family: monospace !important;
 }
@@ -227,4 +234,18 @@ a,
   to {
       transform:rotate(360deg);
   }
+}
+.stringCode {
+  color: green;
+}
+ 
+.numberCode {
+  color: orange;
+}
+.booleanCode {
+  color: blue;
+  font-weight: 600;
+}
+.keyCode {
+  color: firebrick;
 }

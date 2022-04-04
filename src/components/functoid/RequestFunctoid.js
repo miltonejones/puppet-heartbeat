@@ -63,10 +63,10 @@ export default function RequestFunctoid ({
     const canSave = !!Method && !!Key && !!PropName;
     const className = showHeaders ? 'flip up' : 'flip';
     const shownProps =  Array.from(new Set(variables))
-    
+    const truncated = key?.length > 50 ? `${key.substr(0, 50)}...` : key
 
     if (!edit) {
-        return <Typography variant="subtitle1"><b>{method?.toUpperCase()}</b> <a href={key} target="_blank">{key}</a> as [<b>{propName}</b>]</Typography>
+        return <Typography variant="subtitle1"><b>{method?.toUpperCase()}</b> <a href={key} target="_blank">{truncated}</a> as [<b>{propName}</b>]</Typography>
     }
     const menuAction = [() => addHeader('content-type', 'application/json'),  () => addHeader('', '') ];
     const disabledOn = Headers.find(f => f.Value === 'application/json') ? 1 : 0;

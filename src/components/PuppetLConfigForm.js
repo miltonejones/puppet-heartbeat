@@ -4,7 +4,7 @@ import ChipGroup from './ChipGroup';
 import CreateTestForm from './CreateTestForm';
 import { ReallyButton, SimpleMenu, Spacer, Flex, Panel, ActionsMenu, LilBit } from './Control';
 import { DeleteForever, MoreVert, Add, Edit, Lock , Close }  from '@mui/icons-material';
-
+import JsonContent from './JsonColor';
 import { Box, IconButton, Tab, Tabs, TextField, Stack, Typography, Autocomplete, Button, Chip } from '@mui/material';
 
 const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
@@ -25,6 +25,7 @@ export default function PuppetLConfigForm ({
   const [steps, setSteps] = React.useState([])
   const [testName, setTestName] = React.useState('')
   const [value, setValue] = React.useState(0);
+  const [editMode, setEditMode] = React.useState(0);
 
   React.useEffect(() => {
    
@@ -231,10 +232,13 @@ export default function PuppetLConfigForm ({
         {value === 1 && (
         <Box m={1}>
           <fieldset>
-            <legend>browser puppetML</legend>
-            <pre>
+            <legend>browser puppetML <IconButton onClick={() => setEditMode(!editMode)}><Edit /></IconButton></legend>
+            <JsonContent setValue={v => {
+              setSteps(v);
+              setEditMode(false);
+            }} editMode={editMode} >
               {JSON.stringify(steps, 0, 2)}
-            </pre>
+            </JsonContent>
           </fieldset> 
         </Box>)}
 
