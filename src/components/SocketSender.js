@@ -79,7 +79,7 @@ class SocketSender extends React.Component {
   storeMessage (socketData) {
     const { messages, narrate } = this.state;
     const { scriptMessage, activeStep } = socketData;
-    const message = scriptMessage.error || scriptMessage;
+    const message = scriptMessage?.error || scriptMessage;
     messages[activeStep] = scriptMessage; 
     this.setState({ ...socketData, messages });
     !!message && !!narrate && say(message);

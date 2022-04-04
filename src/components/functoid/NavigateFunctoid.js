@@ -30,7 +30,7 @@ export default function NavigationFunctoid ({ URL, variables, edit, onSave, onCa
         <TextField size="small" sx={{minWidth: 500}}
             autoComplete="off" onChange={e => setValue(e.target.value)} value={ value } />
         {variableMenu}
-      <SaveCancel disabled={!URL} save={save} cancel={onCancel}/>
+      <SaveCancel disabled={!value} save={save} cancel={onCancel}/>
     </Box>
 }
 
