@@ -228,14 +228,10 @@ class SocketSender extends React.Component {
   }
 
   populate () {
-    const { suiteID, setTitle, runningTest, editingTest } = this.props;
-    const { createdTests: Items } = this.state;
-
-    const promise = !Items?.length ? getTestSuites() : Promise.resolve({Items})
+    const { suiteID, setTitle, runningTest, editingTest } = this.props; 
 
     // downloads the whole db since it's tiny
-    promise.then(req => { 
-      console.log ({ req, suiteID })
+    getTestSuites().then(req => {  
       const createdTests = req.Items;
 
       // load selected test 
@@ -357,8 +353,7 @@ class SocketSender extends React.Component {
         {header}
   
         {/* test cms card */}
-      
-<>showEdit: {showEdit?.toString()}</>
+       
 
         <PuppetLConfigForm 
           showPanel={showEdit}

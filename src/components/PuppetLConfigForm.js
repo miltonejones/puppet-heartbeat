@@ -208,8 +208,7 @@ export default function PuppetLConfigForm ({
   return <>
 
     {!steps.length && !editingTest && ( <CreateTestForm {...createFormProps} />)}
- 
-[{testName}]
+  
     <Panel on={showPanel && !!testName} header={panelHeader} tools={panelButtons}>
       {!!dirty && <Alert severity="warning">You must click <u onClick={onAdd} className="link">Save</u> for your changes to take effect.</Alert>}
       {!!steps.length && ( 
