@@ -229,9 +229,13 @@ class SocketSender extends React.Component {
 
   populate () {
     const { suiteID, setTitle, runningTest, editingTest } = this.props;
+    const { createdTests: Items } = this.state;
+
+    const promise = !Items?.length ? getTestSuites() : Promise.resolve({Items})
 
     // downloads the whole db since it's tiny
-    getTestSuites().then(req => { 
+    promise.then(req => { 
+      console.log ({ req, suiteID })
       const createdTests = req.Items;
 
       // load selected test 
@@ -239,7 +243,7 @@ class SocketSender extends React.Component {
         const currentTest = createdTests.find(f => f.suiteID === suiteID).testName; 
         this.setState( { createdTests, currentTest, showEdit: editingTest });
         setTitle && setTitle(currentTest)
-        
+        console.log ({ currentTest })
         // run the test if called for
         if (!!runningTest) {
           this.sendCommand(currentTest);
@@ -354,6 +358,8 @@ class SocketSender extends React.Component {
   
         {/* test cms card */}
       
+<>showEdit: {showEdit?.toString()}</>
+
         <PuppetLConfigForm 
           showPanel={showEdit}
           editingTest={editingTest || runningTest}
@@ -384,7 +390,6 @@ class SocketSender extends React.Component {
            testName={currentTest}
            progress={progress} />
         </Box>)}
-
         <Panel on={!showEdit && !preview && !!currentTest}   header={`Test: ${currentTest}`}
           tools={runCardButtons}
         >        

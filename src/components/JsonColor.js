@@ -1,5 +1,6 @@
 
 import {  TextField, Stack, Button  } from '@mui/material';
+import { Flex, Spacer } from './Control';
 import React from 'react'; 
 
 
@@ -40,33 +41,38 @@ export function JsonColor(json, classes, spacing = 2) {
     );
    }
     
-  export default function JsonContent ({editMode, children, rows=56, setValue, ...props}) {
+export default function JsonContent ({ editMode, children, rows = 56, setValue, ...props }) {
     const [markup, setMarkup] = React.useState(children);
-    const classes = {}
+    const classes = {};
+
     if (!!editMode) {
-      return <Stack><TextField
-        classes={{ root: 'code-field' }}
-        fullWidth
-        value={markup}
-        multiline
-        rows={rows}
-        onChange={(e) => setMarkup(e.target.value)}
+      return <Stack>
+        <TextField
+          classes={{ root: 'code-field' }}
+          fullWidth
+          value={markup}
+          multiline
+          rows={rows}
+          onChange={(e) => setMarkup(e.target.value)}
         />
-        <Button onClick={() => {
-          try {
-            const json = JSON.parse(markup);
-            setValue && setValue(json)
-          } catch (e) {
-            alert ('Cannot save invalid JSON')
-          }
-        }}>save</Button>
-        </Stack>
+        <Flex>
+          <Spacer />
+          <Button sx={{m: 1}} variant="contained" onClick={() => {
+              try {
+                const json = JSON.parse(markup);
+                setValue && setValue(json);
+              } catch (e) {
+                alert ('Cannot save invalid JSON')
+              }
+            }}>save</Button>
+        </Flex>
+      </Stack>
     }
 
     return  <pre 
       dangerouslySetInnerHTML={{
         __html: JsonColor(children, classes),
       }}
-  />
+    />
 
   }

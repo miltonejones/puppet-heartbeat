@@ -33,6 +33,7 @@ export default function PuppetLConfigForm ({
     !!puppetML?.suiteID 
       && puppetML.suiteID !== suiteID 
       && (() => { 
+        console.log ({ name: puppetML.testName })
         setTestName(puppetML.testName);
         setSuiteID(puppetML.suiteID);
         setSteps(puppetML.steps.map(s => {
@@ -88,13 +89,13 @@ export default function PuppetLConfigForm ({
       steps
     }; 
     setSteps([]);
-    setTestName(null);
+    setSuiteID(null);
     setDirty(false);
     onFormSave (testObj);
   }
   const onCancel = () => { 
     setSteps([]);
-    setTestName(null);
+    setSuiteID(null);
     cancelClick()
   }
   const transformed = ((out) => {
@@ -207,8 +208,8 @@ export default function PuppetLConfigForm ({
   return <>
 
     {!steps.length && !editingTest && ( <CreateTestForm {...createFormProps} />)}
-
-
+ 
+[{testName}]
     <Panel on={showPanel && !!testName} header={panelHeader} tools={panelButtons}>
       {!!dirty && <Alert severity="warning">You must click <u onClick={onAdd} className="link">Save</u> for your changes to take effect.</Alert>}
       {!!steps.length && ( 
@@ -242,7 +243,7 @@ export default function PuppetLConfigForm ({
         {value === 1 && (
         <Box m={1}>
           <fieldset>
-            <legend>browser puppetML <IconButton onClick={() => setEditMode(!editMode)}><Edit /></IconButton></legend>
+            <legend className="button" onClick={() => setEditMode(!editMode)}>puppetML <IconButton><Edit /></IconButton></legend>
             <JsonContent setValue={v => {
               setSteps(v);
               setEditMode(false);
@@ -255,10 +256,10 @@ export default function PuppetLConfigForm ({
         {value === 2 && (
         <Box m={1}>   
           <fieldset>
-            <legend>primitive puppetL</legend>
-            <pre>
+            <legend>puppetL</legend>
+            <JsonContent>
               {JSON.stringify(transformed, 0, 2)}
-            </pre>
+            </JsonContent>
           </fieldset>
         </Box>
       )}
@@ -460,7 +461,8 @@ export const transform = step => {
           }
         ];
         break;
-    default:
-      return [{...step, key: step.key || step.actionKey}]
+    default: 
+      const { actionKey, key, ...rest} = step;
+      return [{...rest, key: key || actionKey}]
   }
 }
