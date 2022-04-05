@@ -14,6 +14,7 @@ body {
   font-family: "monospace";
   font-size: 0.8rem;
   line-height: 1;
+  border-radius: 0 !important;
 }
 
 
@@ -225,6 +226,7 @@ a,
 
 .MuiButton-root {
   text-transform: capitalize !important;
+  border-radius: 0 !important;
 }
 
 @keyframes spin {

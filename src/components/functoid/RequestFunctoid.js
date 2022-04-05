@@ -123,8 +123,11 @@ export default function RequestFunctoid ({
         onChange={e => saveState('Body', e.target.value)}
       />
     </Panel>  
-
-    {showBody && <SaveCancel button disabled={!canSave} save={save} cancel={ onCancel }>save request</SaveCancel> }
+    <hr style={{width: '100%'}} />
+    {showBody && <Flex>
+      <Spacer />
+      <SaveCancel button disabled={!canSave} save={save} cancel={ onCancel }>save request</SaveCancel>
+    </Flex> }
   </Stack>
 }
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Functoid } from './functoid'
 import ChipGroup from './ChipGroup';
 import CreateTestForm from './CreateTestForm';
-import { ReallyButton, SimpleMenu, Spacer, Flex, Panel, ActionsMenu, LilBit } from './Control';
+import { ReallyButton, SimpleMenu, SaveCancel, Spacer, Flex, Panel, ActionsMenu, LilBit } from './Control';
 import { DeleteForever, MoreVert, Add, Edit, Lock , Close }  from '@mui/icons-material';
 import JsonContent from './JsonColor';
 import { Alert, Box, IconButton, Tab, Tabs, TextField, Stack, Typography, Autocomplete, Button, Chip } from '@mui/material';
@@ -263,10 +263,9 @@ export default function PuppetLConfigForm ({
         </Box>
       )}
       
-    {!!steps.length &&( <Box mb={12} className="flex">
+    {!!steps.length &&( <Box mb={12} mr={2} className="flex">
         <Spacer /> 
-        <Button sx={{mr: 1}} variant="outlined" onClick={onCancel}>cancel</Button>
-        <Button sx={{mr: 1}} variant="contained" onClick={onAdd}>{!!puppetML?'save':'add'} test</Button>
+        <SaveCancel button save={onAdd} cancel={onCancel}>{!!puppetML?'save':'add'} test</SaveCancel> 
       </Box>)}
     </Panel>
   </>
