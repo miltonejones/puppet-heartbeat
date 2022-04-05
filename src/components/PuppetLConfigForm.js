@@ -25,14 +25,16 @@ export default function PuppetLConfigForm ({
   const [dirty, setDirty] = React.useState(false)
   const [steps, setSteps] = React.useState([])
   const [testName, setTestName] = React.useState('')
+  const [suiteID, setSuiteID] = React.useState('')
   const [value, setValue] = React.useState(0);
   const [editMode, setEditMode] = React.useState(0);
 
   React.useEffect(() => {
-    !!puppetML?.testName 
-      && puppetML.testName !== testName 
+    !!puppetML?.suiteID 
+      && puppetML.suiteID !== suiteID 
       && (() => { 
         setTestName(puppetML.testName);
+        setSuiteID(puppetML.suiteID);
         setSteps(puppetML.steps.map(s => {
           s.ID = s.ID || uniqueId();
           return s;
@@ -370,7 +372,7 @@ function StepEdit ({
   ]
 	return (
     <Stack>
-      <Box className="flex center underline" sx={{gap: '1rem', p: 1}}>
+      <Flex className="underline" sx={{gap: '1rem', p: 1}}>
 
         {!imported && <ChipGroup icons={icons} label={!type?'Select action':"Action"} options={actions} setValue={setType} value={type} />}
 
@@ -391,7 +393,7 @@ function StepEdit ({
             <SimpleMenu disabledBits={moveDisabled} onClick={i => methods[i]()} options={options} icon={<MoreVert />} />
           </>}
         </Flex>)} 
-      </Box> 
+      </Flex> 
     </Stack>
 	)
 }

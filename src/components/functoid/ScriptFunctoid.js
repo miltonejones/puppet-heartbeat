@@ -169,7 +169,7 @@ export default function ScriptFunctoid ({
           autoComplete="off"
           multiline
           classes={{ root: 'code-field' }}
-          rows={8}
+          rows={18}
           size="small"
           value={cypressJS ? Cyscript : Value} 
           onChange={e => setCode(e.target.value) }

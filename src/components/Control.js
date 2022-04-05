@@ -307,19 +307,17 @@ function VariableInput ({ onChange, value, name, noCode, onSave, ...props }) {
     </InputAdornment>,
   }
 
-  return <>
-    <Collapse orientation="horizontal" in={!on}>
-      <TextField 
+  return <> 
+     {!on && <TextField 
         {...textBoxProps}
-        {...props}
+        {...props} 
         autoFocus
         label="variable value"
         value={value}
         InputProps={InputProps}
         onChange={e => onChange('Key', e.target.value)}
-      />
-    </Collapse>
-    <Collapse orientation="horizontal" in={on}>
+      />}
+    <Collapse orientation="horizontal" in={on} sx={{m: 0}}>
       <TextField 
         {...textBoxProps}
         {...props}

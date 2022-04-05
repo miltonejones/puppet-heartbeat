@@ -15,7 +15,7 @@ import { TextBox } from './Control';
 
 
 const SystemDialog = ({open, title, onYes, onNo, onClose, defaultValue='', message, prompt}) => {
-    const [value, setValue] = React.useState(defaultValue);
+    const [value, setValue] = React.useState(null);
     const whenYes = () => {
       if (prompt) {
         return onYes(value) 
@@ -37,7 +37,7 @@ const SystemDialog = ({open, title, onYes, onNo, onClose, defaultValue='', messa
           <DialogContentText sx={{mb: 1}} id="alert-dialog-description">
           {message}
           </DialogContentText>
-          {!!prompt && <TextBox value={value} onEnter={onYes} onChange={setValue} />}
+          {!!prompt && <TextBox value={value || defaultValue} onEnter={onYes} onChange={setValue} />}
         </Stack>
       </DialogContent>
       <DialogActions>
