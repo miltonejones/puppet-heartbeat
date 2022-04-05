@@ -40,7 +40,7 @@ export function JsonColor(json, classes, spacing = 2) {
     );
    }
     
-  export default function JsonContent ({editMode, children, setValue, ...props}) {
+  export default function JsonContent ({editMode, children, rows=56, setValue, ...props}) {
     const [markup, setMarkup] = React.useState(children);
     const classes = {}
     if (!!editMode) {
@@ -49,7 +49,7 @@ export function JsonColor(json, classes, spacing = 2) {
         fullWidth
         value={markup}
         multiline
-        rows={56}
+        rows={rows}
         onChange={(e) => setMarkup(e.target.value)}
         />
         <Button onClick={() => {
