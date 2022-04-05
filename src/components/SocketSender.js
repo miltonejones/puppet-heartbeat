@@ -224,7 +224,17 @@ class SocketSender extends React.Component {
   } 
 
   addTest (test) {  
-    saveTestSuite(test).then (this.populate.bind(this));
+    saveTestSuite(test).then (this.repopulate.bind(this));
+  }
+
+  repopulate () {
+    const { suiteID  } = this.props; 
+    getTestSuite(suiteID)
+      .then(suite => {
+        const { Item } = suite;
+        const currentTest = Item.testName;
+        this.setState( { currentTest, showEdit: !0 }); 
+      })
   }
 
   populate () {
