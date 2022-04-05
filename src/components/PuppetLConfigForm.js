@@ -210,7 +210,7 @@ export default function PuppetLConfigForm ({
 
 
     <Panel on={showPanel && !!testName} header={panelHeader} tools={panelButtons}>
-      {!!dirty && <Alert severity="warning">You must click Save for your changes to take effect.</Alert>}
+      {!!dirty && <Alert severity="warning">You must click <u onClick={onAdd} className="link">Save</u> for your changes to take effect.</Alert>}
       {!!steps.length && ( 
         <Tabs sx={{m: 2}} value={value} onChange={handleChange}  >
           <Tab label="Steps" />

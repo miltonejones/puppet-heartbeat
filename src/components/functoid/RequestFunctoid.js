@@ -86,13 +86,14 @@ export default function RequestFunctoid ({
 
       {!!Method && <VariableInput  
           autoFocus
+          style={!Headers.length ? {} : {minWidth: 450}}
           placeholder={`Enter URL`} 
           onChange={(n, v) => saveState(n, v)} 
           value={ Key } 
           name={ PropName } 
       />} 
 
-      {canSave && <Button 
+      {canSave && !Headers.length && <Button 
         sx={{ml: 1}} 
         variant="outlined" 
         onClick={() => saveState('showHeaders', !showHeaders)}
