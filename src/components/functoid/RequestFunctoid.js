@@ -1,5 +1,5 @@
 import React from 'react'; 
-import { Collapse, TextField, Stack, Typography, Button, Tooltip, IconButton } from '@mui/material';
+import { Collapse, Divider, Tab, Tabs, TextField, Stack, Typography, Button, Tooltip, IconButton } from '@mui/material';
 import { Flex, textBoxProps, ActionsMenu, SimpleMenu, VariableInput, Panel, ReallyButton, Spacer, SaveCancel } from '../Control';
 import { Add, DeleteForever, ExpandMore , Edit, Close}  from '@mui/icons-material';
 import ChipGroup from '../ChipGroup';
@@ -24,10 +24,11 @@ export default function RequestFunctoid ({
       PropName: propName,
       Body: body,
       Headers: headers,
-      showHeaders: false
+      showHeaders: false,
+      tabIndex: 0
     });
 
-    const { Key, Body, Method, PropName, Headers = [], showHeaders} = state;
+    const { Key, Body, Method, PropName, Headers = [], tabIndex, showHeaders} = state;
     const saveState = (n, v) => setState(s => ({...s, [n]: v})); 
 
     const save = () => {
@@ -53,11 +54,12 @@ export default function RequestFunctoid ({
     }
 
     const addHeader = (Key, Value) => {
-      saveState('Headers', Headers.concat([{ Key, Value, index: Headers.length }]))
+      saveState('Headers', Headers.concat([{ Key, Value, index: Headers.length }]));
+      saveState('tabIndex', 1);
     }
 
     const addBlankHeader = () => {
-      addHeader('', '')
+      addHeader('', '');
     }
 
     const canSave = !!Method && !!Key && !!PropName;
@@ -96,13 +98,23 @@ export default function RequestFunctoid ({
       {canSave && !Headers.length && <Button 
         sx={{ml: 1}} 
         variant="outlined" 
-        onClick={() => saveState('showHeaders', !showHeaders)}
+        onClick={() => {
+          saveState('showHeaders', !showHeaders);
+          saveState('tabIndex', 1);
+        }}
       >Headers <ExpandMore className={className} /></Button>}
 
       <SaveCancel disabled={!canSave} save={save} cancel={ onCancel }/> 
     </Flex>
 
-    <Panel header="Request Headers" tools={[headerMenu]} on={showHeaders || Headers?.length}>
+<Flex align="start">
+  
+    {showBody && (<Tabs orientation="vertical"   sx={{ mr: 1 }} value={tabIndex} onChange={(e,v) => saveState('tabIndex', v)}  >
+        <Tab label="Body" /> 
+        <Tab disabled={!Headers.length} label="Headers" />
+       </Tabs>)}
+
+    <Panel sx={{minWidth: 640}} orientation="horizontal" header="Request Headers" tools={[headerMenu]} on={(showHeaders || Headers?.length) && tabIndex === 1}>
       <Flex sx={{gap: 1, p: 1}} className="underline panel-header">
       <IconButton disabled ><Edit /></IconButton>
         <Typography variant="subtitle2" sx={{ml: 1}} className="half bold">Key</Typography>
@@ -111,21 +123,29 @@ export default function RequestFunctoid ({
       {Headers.map ((header, o) => <HeaderRow key={o} {...header} save={saveHeader} remove={dropHeader} shownProps={shownProps} />)}
     </Panel>
     
-    <Panel header="Request Body" tools={[variableMenu]} on={showBody}>
+    <Panel orientation="horizontal" header="Request Body" tools={[variableMenu]} on={showBody && tabIndex === 0}>
       <TextField 
         {...textBoxProps}
          placeholder="Payload"
         multiline
         rows={8}
-        classes={{ root: 'code-field' }}
+        classes={{ root: 'code-field mono' }}
         value={Body}
         sx={{m: 1, minWidth: 600}}
         onChange={e => saveState('Body', e.target.value)}
       />
     </Panel>  
-   
-    {showBody && <SaveCancel button disabled={!canSave} save={save} cancel={ onCancel }>save request</SaveCancel> }
-  </Stack>
+</Flex>
+
+<Divider sx={{width: '100%' , m: 1}} />
+
+<Flex>
+ <Spacer />
+{showBody && <SaveCancel button disabled={!canSave} save={save} cancel={ onCancel }>save request</SaveCancel> }
+ 
+</Flex>
+
+ </Stack>
 }
 
 const HeaderRow = ({

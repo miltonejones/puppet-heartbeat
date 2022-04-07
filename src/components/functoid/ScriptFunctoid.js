@@ -127,7 +127,7 @@ export default function ScriptFunctoid ({
     onChange={e => setState(s => ({...s, cypressJS: !cypressJS, Cyscript: s.Cyscript || createCypressCode(0) })) } />;
 
   return (<>
-  <Grid container spacing={2}>
+  <Grid container spacing={2}  sx={{maxWidth: 768}}>
     <Grid item xs={8}>
       <TextField
         autoComplete="off"
@@ -181,7 +181,13 @@ export default function ScriptFunctoid ({
 
         <Grid item xs={12}>
 
+
+        <Divider sx={{width: '100%' , m: 1}} />
+        <Flex>
+          <Spacer />
           <SaveCancel button disabled={!!error} save={save} cancel={onCancel} variant="contained">save script</SaveCancel> 
+  
+        </Flex>
         </Grid>
 
   </Grid>

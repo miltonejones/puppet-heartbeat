@@ -48,7 +48,7 @@ export default function JsonContent ({ editMode, children, rows = 56, setValue, 
     if (!!editMode) {
       return <Stack>
         <TextField
-          classes={{ root: 'code-field' }}
+          classes={{ root: 'code-field mono' }}
           fullWidth
           value={markup}
           multiline
@@ -69,7 +69,7 @@ export default function JsonContent ({ editMode, children, rows = 56, setValue, 
       </Stack>
     }
 
-    return  <pre 
+    return  <pre className="mono"
       dangerouslySetInnerHTML={{
         __html: JsonColor(children, classes),
       }}

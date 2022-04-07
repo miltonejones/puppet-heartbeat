@@ -230,6 +230,11 @@ a,
   border-radius: 0 !important;
 }
 
+.mono,
+.mono .MuiOutlinedInput-root {
+  font-family: Inconsolata, monospace !important;
+}
+
 fieldset {
   border-style: solid;
   border-width: 1px;

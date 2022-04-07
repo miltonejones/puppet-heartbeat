@@ -57,12 +57,21 @@ function useCodeDialog () {
  
 
 
-function Panel ({header, on, tools, children, wait = false, sx, ...props}) {
+function Panel ({
+  header, 
+  on, 
+  tools, 
+  children, 
+  orientation = 'vertical',
+  wait = false, 
+  sx, 
+  ...props
+ }) {
   const style = {mb: 1, mt: 3, ...sx}
   if (wait && !on) {
     return <LinearProgress sx={style}  />
   }
-  return <Collapse in={on}><Card sx={style} { ...props}>
+  return <Collapse orientation={orientation} in={on}><Card sx={style} { ...props}>
       <Stack className="panel-content">
         <Flex className="panel-header" 
         ><Typography sx={{ mt: 1, ml: 2, mb: 1}} variant="h6">
