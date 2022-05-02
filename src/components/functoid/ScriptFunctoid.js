@@ -9,9 +9,17 @@ import { Box,
   Alert, 
   Chip, 
   Switch ,
-  Divider
+  Divider,
+  Tabs,
+  Tab
 } from '@mui/material';
 import { Add, DeleteForever, Terminal }  from '@mui/icons-material';
+
+const ScriptType = {
+  PUPPET: 0,
+  CYPRESS: 1,
+  JQUERY: 2
+}
 
 
 const createSampleCode = args => {
@@ -36,6 +44,17 @@ const createCypressCode = args => {
 }`;
 }; 
 
+const createJQueryCode = args => {
+  const argNames = [];
+  for (let i=0; i++ < args ; argNames.push(`arg${i}`));
+  const suffix = !!argNames.length ? `, ${argNames.join(', ')}` : ''
+  const action = !!argNames.length ? `\n  $(arg1).trigger("click");` : ''
+  return `async (page${suffix}) => {
+  // TODO: overwrite sample code
+  await page.waitForTimeout(100);${action}
+}`;
+}; 
+
 
 export default function ScriptFunctoid ({ 
   variables, 
@@ -43,6 +62,7 @@ export default function ScriptFunctoid ({
   label = 'Execute this suave new script', 
   properties = [], 
   cyscript, 
+  jqscript, 
   edit, 
   onSave  ,
   onCancel
@@ -50,18 +70,28 @@ export default function ScriptFunctoid ({
   const [state, setState] = React.useState({
     Value:  value, 
     Label: label, 
-    cypressJS: false,
+    scriptType: ScriptType.PUPPET, 
     Cyscript: cyscript,
+    Jqscript: jqscript,
     Properties: properties
   });
   
-  const { Label, Properties, Value, error, cypressJS, Cyscript } = state;
+  const { Label, Properties, Value, error, scriptType, Jqscript, Cyscript } = state;
+
+  const handleChange = (event, type) => {
+    const empty = [createSampleCode(0), createCypressCode(0), createJQueryCode(0)]
+    const field = ['Value', 'Cyscript', 'Jqscript'][type];  
+    const value = state[field];
+    const code = value || empty[type]
+    setState(s => ({...s, scriptType: type, [field]: code }));
+  };
 
   const save = () => {
     const step = {
         action: 'script',
         value: Value,
         cyscript: Cyscript,
+        jqscript: Jqscript,
         properties: Properties,
         label: Label
     }
@@ -89,8 +119,8 @@ export default function ScriptFunctoid ({
   const shownProps =  Array.from(new Set(variables))
           .filter(v => Properties.every(x => x !== v));
 
-  const setCode = v => {
-    const field = cypressJS ? 'Cyscript' : 'Value';
+  const setCode = v => { 
+    const field = ['Value', 'Cyscript', 'Jqscript'][scriptType];  
     try {
       setState(s => ({...s, [field]: v, error: null}))
       eval(v);
@@ -115,17 +145,20 @@ export default function ScriptFunctoid ({
       color: 'info',
       onClick: () => alert(cyscript)
     }
+    const jqueryProps = {
+      ...puppetProps,
+      label: 'JQuery',
+      color: 'success',
+      onClick: () => alert(jqscript)
+    }
     return <Flex>
       <Typography variant="subtitle1"><b>execute script</b>  "<u className="link" onClick={() => alert(value)}>{label}</u>" </Typography>
       <Chip {...puppetProps} />
       {!!cyscript && <Chip {...cypressProps} />}
+      {!!jqscript && <Chip {...jqueryProps} />}
     </Flex>
   }
-
-  const cypressSwitch = <Switch 
-    checked={cypressJS}  
-    onChange={e => setState(s => ({...s, cypressJS: !cypressJS, Cyscript: s.Cyscript || createCypressCode(0) })) } />;
-
+ 
   return (<>
   <Grid container spacing={2}  sx={{maxWidth: 768}}>
     <Grid item xs={8}>
@@ -140,9 +173,11 @@ export default function ScriptFunctoid ({
      <Grid item xs={4}>
        <Flex>
            {!!shownProps.length &&  <ActionsMenu label="arguments" options={shownProps} onClick={i => addProp(shownProps[i])} icon={<Add />} /> }
-       <FormControlLabel sx={{ ml: 1}} control={cypressSwitch} label="Cypress" />
+     
        </Flex>
     </Grid>
+
+
     <Panel on={Properties.length} sx={{minWidth: 600, ml: 2}} header="Arguments">
     {Properties.map(arg => (<Grid key={arg} item xs={12}>
       <Flex className="underline" sx={{ p: 1}}>
@@ -159,19 +194,22 @@ export default function ScriptFunctoid ({
 
     </Panel>
    
-
+      <Tabs value={scriptType} onChange={handleChange}  >
+        <Tab label="Puppeteer" />
+        <Tab label="Cypress" />
+        <Tab label="JQuery" />
+      </Tabs>
 
 
       <Grid item xs={12}>
         <TextField
-          classes={{input: 'coder', root: 'coder', outlined: 'coder'}}
+          classes={{ root: 'code-field mono' }} 
           fullWidth 
           autoComplete="off"
-          multiline
-          classes={{ root: 'code-field' }}
+          multiline 
           rows={10}
           size="small"
-          value={cypressJS ? Cyscript : Value} 
+          value={[Value, Cyscript, Jqscript][scriptType]} 
           onChange={e => setCode(e.target.value) }
           />
       </Grid>

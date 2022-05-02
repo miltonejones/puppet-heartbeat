@@ -224,7 +224,7 @@ class SocketSender extends React.Component {
   } 
 
   addTest (test) {  
-    saveTestSuite(test).then (this.repopulate.bind(this));
+    saveTestSuite(test).then (this.populate.bind(this));
   }
 
   repopulate () {
