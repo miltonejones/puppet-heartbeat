@@ -41,7 +41,7 @@ export default function EventFunctoid ({
   };
 
   if (!edit) {
-    return <Typography variant="subtitle1"><b>{event}</b> <em>{by}</em> [<b>{propName || key}</b>] {!value ? '' : <>to "{value}"</>} </Typography>
+    return <Typography variant="subtitle1"><b>{event}</b> <em>{by}</em> [<b>{propName || key}</b>] {!value ? '' : <>to "{JSON.stringify(value)}"</>} </Typography>
   }
 
   return (<> 
